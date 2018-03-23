@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Claims.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NCoreUtils.Authentication.Abstractions" Version="1.0.1" />
+  </ItemGroup>
+</Project>

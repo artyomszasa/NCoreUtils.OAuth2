@@ -1,0 +1,5 @@
+NCoreUtils*/bin
+NCoreUtils*/obj
+.vscode
+.vs
+google-credentials.json
