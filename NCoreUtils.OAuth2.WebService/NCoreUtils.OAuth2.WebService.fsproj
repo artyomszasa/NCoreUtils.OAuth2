@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <ServerGarbageCollection>True</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>True</ConcurrentGarbageCollection>
     <EnableDefaultContentItems>False</EnableDefaultContentItems>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="FSharpMiddleware.fs" />
-    <Compile Include="OAuth2Middleware.fs" />
     <Compile Include="Startup.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -16,7 +16,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.1" />
-    <PackageReference Include="NCoreUtils.FSharp.AspNetCore" Version="1.0.0" />
     <PackageReference Include="NCoreUtils.Net.AspNetCore" Version="1.0.5" />
     <PackageReference Include="NCoreUtils.Net.AspNetCore.Posix" Version="1.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
@@ -26,6 +25,7 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.Core\NCoreUtils.OAuth2.Core.fsproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.Data.EntityFrameworkCore\NCoreUtils.OAuth2.Data.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.Authentication\NCoreUtils.OAuth2.Authentication.fsproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.Middleware\NCoreUtils.OAuth2.Middleware.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.2" PrivateAssets="All" />

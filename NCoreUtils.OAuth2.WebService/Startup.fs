@@ -16,6 +16,12 @@ open NCoreUtils.OAuth2.Data
 
 type Startup() =
 
+  static let send404 =
+    RequestDelegate
+      (fun context ->
+        context.Response.StatusCode <- 404
+        Task.CompletedTask)
+
   member __.ConfigureServices (services: IServiceCollection) =
     let configuration =
       ConfigurationBuilder()
@@ -39,7 +45,7 @@ type Startup() =
       // login provider
       .AddLoginAuthenticator(fun b -> b.AddPasswordAuthentication<OAuth2UserManager, int, OAuth2PasswordLogin>() |> ignore)
       // core functions
-      .AddScoped<OAuth2Core>()
+      .AddScoped<IOAuth2Core, OAuth2Core>()
       |> ignore
 
     services
@@ -61,9 +67,6 @@ type Startup() =
 
     app
       .Use(OAuth2Middleware.run)
-      .Run
-        (fun context ->
-          context.Response.StatusCode <- 404
-          Task.CompletedTask)
+      .Run(send404)
 
     ()

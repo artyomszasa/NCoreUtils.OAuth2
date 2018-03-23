@@ -10,6 +10,7 @@ open NCoreUtils.Authentication
 open NCoreUtils.Data
 open NCoreUtils.Linq
 open NCoreUtils.OAuth2.Data
+open System.Runtime.CompilerServices
 
 type OAuth2Core (loginAuthenticator : LoginAuthenticator,
                   refreshTokenRepository : IDataRepository<RefreshToken>,
@@ -119,8 +120,7 @@ type OAuth2Core (loginAuthenticator : LoginAuthenticator,
     let! claims = authenticateUser username password
     return validateUserAndScopes claims clientApplicationId scopes }
 
-  member internal __.Logger = logger
-
+  [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
   member __.CreateAuthorizationCodeByPasswordAsync (clientApplicationId, redirectUri, username, password, scopes) = async {
     let! (userId, grantedScopes) = authenticateAndValidate clientApplicationId username password scopes
     let! authCode =
@@ -137,10 +137,12 @@ type OAuth2Core (loginAuthenticator : LoginAuthenticator,
       authorizationCodeRepository.AsyncPersist authCode
     return authCode.Id }
 
+  [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
   member __.AuthenticateByPasswordAsync (clientApplicationId, username, password, scopes) =
     authenticateAndValidate clientApplicationId username password scopes
     >>= (<||) createTokensAsync
 
+  [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
   member __.AuthenticateByCodeAsync (clientApplicationId, redirectUri, authorizationCodeGuid) =
     authorizationCodeRepository.Context.AsyncTransacted (
       System.Data.IsolationLevel.ReadCommitted,
@@ -153,6 +155,7 @@ type OAuth2Core (loginAuthenticator : LoginAuthenticator,
           >>* (fst >> authorizationCodeRepository.AsyncRemove)
           >>| snd)
 
+  [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
   member __.RefreshTokenAsync (refreshToken : Token) =
     refreshTokenRepository.Context.AsyncTransacted (
       System.Data.IsolationLevel.ReadCommitted,
@@ -178,3 +181,14 @@ type OAuth2Core (loginAuthenticator : LoginAuthenticator,
                   Scopes    = refreshToken.Scopes })
         >>* (fst >> refreshTokenRepository.AsyncPersist >> Async.Ignore)
         >>| snd)
+
+  interface IOAuth2Core with
+    member __.Logger = logger :> _
+    member this.CreateAuthorizationCodeByPasswordAsync (clientApplicationId, redirectUri, username, password, scopes) =
+      this.CreateAuthorizationCodeByPasswordAsync (clientApplicationId, redirectUri, username, password, scopes)
+    member this.AuthenticateByPasswordAsync (clientApplicationId, username, password, scopes) =
+      this.AuthenticateByPasswordAsync (clientApplicationId, username, password, scopes)
+    member this.AuthenticateByCodeAsync (clientApplicationId, redirectUri, authorizationCodeGuid) =
+      this.AuthenticateByCodeAsync (clientApplicationId, redirectUri, authorizationCodeGuid)
+    member this.RefreshTokenAsync refreshToken =
+      this.RefreshTokenAsync refreshToken

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Helpers.fs" />
+    <Compile Include="OAuth2ErrorResult.fs" />
+    <Compile Include="AppIdBinder.fs" />
+    <Compile Include="TokenServices.fs" />
+    <Compile Include="PasswordParameters.fs" />
+    <Compile Include="RefreshTokenParameters.fs" />
+    <Compile Include="CodeParameters.fs" />
+    <Compile Include="OAuth2Middleware.fs" />
+    <Compile Include="Library.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.2" />
+    <PackageReference Include="NCoreUtils.FSharp.AspNetCore" Version="1.0.0" />
+    <PackageReference Include="NCoreUtils.FSharp.Data" Version="1.0.0" />
+    <PackageReference Include="NCoreUtils.FSharp.Linq" Version="1.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NCoreUtils.OAuth2.Core.Abstractions\NCoreUtils.OAuth2.Core.Abstractions.fsproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.Data\NCoreUtils.OAuth2.Data.fsproj" />
+  </ItemGroup>
+</Project>

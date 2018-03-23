@@ -18,7 +18,7 @@ let inline private logAccessTokenIssued (logger : ILogger) (accessToken : Token)
 
 let inline private guidToByteArray (guid : Guid) = guid.ToByteArray ()
 
-type OAuth2Core with
+type IOAuth2Core with
   member this.RefreshTokenAsync (refreshToken : string, encryptionProvider : IEncryptionProvider) =
     let token = async {
       try

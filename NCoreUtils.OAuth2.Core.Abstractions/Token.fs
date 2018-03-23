@@ -3,7 +3,6 @@ namespace NCoreUtils.OAuth2.Data
 open System
 open System.IO
 open System.Runtime.CompilerServices
-open Newtonsoft.Json
 open NCoreUtils
 
 [<CustomEquality; NoComparison>]
@@ -38,18 +37,8 @@ type Token = {
       hash <- hash * 23 + this.IssuedAt.GetHashCode();
       hash <- hash * 23 + this.ExpiresAt.GetHashCode();
       for scope in this.Scopes do
-        hash <- hash * 23 + StringComparer.OrdinalIgnoreCase.GetHashCode(scope);
+        hash <- hash * 23 + scope.GetHashCode ();
       hash
-
-type OAuth2Response = {
-  [<JsonProperty("access_token")>]
-  AccessToken  : string
-  [<JsonProperty("token_type")>]
-  TokenType    : string
-  [<JsonProperty("expires_in")>]
-  ExpiresIn    : int
-  [<JsonProperty("refresh_token")>]
-  RefreshToken : string }
 
 [<RequireQualifiedAccess>]
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
@@ -89,5 +78,4 @@ module Token =
     writer.Write expiresAt.UtcTicks
     writer.Write scopes.Count
     scopes |> Set.iter (fun scope -> writer.Write scope.Value)
-
 
