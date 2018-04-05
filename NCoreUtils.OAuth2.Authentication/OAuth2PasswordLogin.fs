@@ -20,7 +20,7 @@ type OAuth2PasswordLogin (serviceProvider : IServiceProvider,
       let claims =
         match obj.ReferenceEquals (user.ClientApplication, null) with
         | true ->
-          [|  ClaimDescriptor (Claims.ClientApplicationId, user.ClientApplictionId.ToString ()) |]
+          [|  ClaimDescriptor (Claims.ClientApplicationId, user.ClientApplicationId.ToString ()) |]
         | _ ->
           [|  ClaimDescriptor (Claims.ClientApplicationId,   user.ClientApplication.Id.ToString ())
               ClaimDescriptor (Claims.ClientApplicationName, user.ClientApplication.Name) |]

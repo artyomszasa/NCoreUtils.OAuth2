@@ -33,10 +33,10 @@ namespace NCoreUtils.OAuth2.Data
                 b.Property(e => e.Email).HasMaxLength(500).IsUnicode(true).IsRequired(true);
                 b.Property(e => e.Salt).HasMaxLength(128).IsUnicode(true).IsRequired(true);
                 b.Property(e => e.Password).HasMaxLength(128).IsUnicode(true).IsRequired(true);
-                b.HasIndex(e => new { e.Email, e.ClientApplictionId }).IsUnique(true);
+                b.HasIndex(e => new { e.Email, e.ClientApplicationId }).IsUnique(true);
                 b.HasIndex(e => e.Created);
                 b.HasIndex(e => e.Updated);
-                b.HasOne(e => e.ClientApplication).WithMany(e => e.Users).HasForeignKey(e => e.ClientApplictionId).OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(e => e.ClientApplication).WithMany(e => e.Users).HasForeignKey(e => e.ClientApplicationId).OnDelete(DeleteBehavior.Restrict);
             });
 
             builder.Entity<Permission>(b =>

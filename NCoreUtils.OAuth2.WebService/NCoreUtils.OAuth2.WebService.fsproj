@@ -7,6 +7,7 @@
     <EnableDefaultContentItems>False</EnableDefaultContentItems>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GoogleLoggingConfiguration.fs" />
     <Compile Include="Startup.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -16,8 +17,8 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.1" />
-    <PackageReference Include="NCoreUtils.Net.AspNetCore" Version="1.0.5" />
-    <PackageReference Include="NCoreUtils.Net.AspNetCore.Posix" Version="1.0.4" />
+    <PackageReference Include="NCoreUtils.Logging.Google" Version="1.0.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.PosixConfiguration" Version="1.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
   </ItemGroup>
   <ItemGroup>

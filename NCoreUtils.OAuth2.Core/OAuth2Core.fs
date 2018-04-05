@@ -16,6 +16,7 @@ type OAuth2Core (loginAuthenticator : LoginAuthenticator,
                   refreshTokenRepository : IDataRepository<RefreshToken>,
                   authorizationCodeRepository : IDataRepository<AuthorizationCode, Guid>,
                   configurationOptions : IOptions<OAuth2Configuration>,
+                  currentClientApplication : CurrentClientApplication,
                   logger : ILogger<OAuth2Core>) =
 
   static let separator = new Regex (@"\s*,\s*", RegexOptions.Compiled ||| RegexOptions.CultureInvariant);
@@ -117,6 +118,7 @@ type OAuth2Core (loginAuthenticator : LoginAuthenticator,
     id, grantedScopes
 
   let authenticateAndValidate clientApplicationId username password scopes = async {
+    currentClientApplication.Id <- clientApplicationId
     let! claims = authenticateUser username password
     return validateUserAndScopes claims clientApplicationId scopes }
 
@@ -148,7 +150,7 @@ type OAuth2Core (loginAuthenticator : LoginAuthenticator,
       System.Data.IsolationLevel.ReadCommitted,
       fun () ->
           authorizationCodeRepository.Items
-          |>  Q.filter (fun code -> code.Id = authorizationCodeGuid && code.RedirectUri = redirectUri && code.User.ClientApplictionId = clientApplicationId)
+          |>  Q.filter (fun code -> code.Id = authorizationCodeGuid && code.RedirectUri = redirectUri && code.User.ClientApplicationId = clientApplicationId)
           |>  Q.asyncTryFirst
           >>| Option.defaultWith noAuthorizationCode
           >>+ (fun authCode -> createTokensAsync authCode.UserId (authCode.Scopes.Split ','))

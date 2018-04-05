@@ -46,6 +46,8 @@ module Token =
   [<Literal>]
   let private Magic = 0x7EE7us
 
+  let inline id ({ Id = id } : Token) = id
+
   [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
   let expiresIn ({ IssuedAt = issuedAt; ExpiresAt = expiresAt } : Token) =
     (expiresAt - issuedAt).TotalSeconds

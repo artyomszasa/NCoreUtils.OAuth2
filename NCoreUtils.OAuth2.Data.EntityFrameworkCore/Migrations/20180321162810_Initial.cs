@@ -70,7 +70,7 @@ namespace NCoreUtils.OAuth2.Data.EntityFrameworkCore.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    ClientApplictionId = table.Column<int>(nullable: false),
+                    ClientApplicationId = table.Column<int>(nullable: false),
                     Created = table.Column<long>(nullable: false),
                     Email = table.Column<string>(maxLength: 500, nullable: false),
                     FamilyName = table.Column<string>(maxLength: 250, nullable: false),
@@ -86,8 +86,8 @@ namespace NCoreUtils.OAuth2.Data.EntityFrameworkCore.Migrations
                 {
                     table.PrimaryKey("PK_User", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_User_ClientApplication_ClientApplictionId",
-                        column: x => x.ClientApplictionId,
+                        name: "FK_User_ClientApplication_ClientApplicationId",
+                        column: x => x.ClientApplicationId,
                         principalTable: "ClientApplication",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);

@@ -7,9 +7,11 @@
     <Compile Include="OAuth2ErrorResult.fs" />
     <Compile Include="AppIdBinder.fs" />
     <Compile Include="TokenServices.fs" />
+    <Compile Include="OpenIdServices.fs" />
     <Compile Include="PasswordParameters.fs" />
     <Compile Include="RefreshTokenParameters.fs" />
     <Compile Include="CodeParameters.fs" />
+    <Compile Include="OpenIdUserInfo.fs" />
     <Compile Include="OAuth2Middleware.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -17,6 +19,7 @@
     <PackageReference Include="NCoreUtils.FSharp.AspNetCore" Version="1.0.0" />
     <PackageReference Include="NCoreUtils.FSharp.Data" Version="1.0.0" />
     <PackageReference Include="NCoreUtils.FSharp.Linq" Version="1.0.0" />
+    <PackageReference Include="NCoreUtils.FSharp.Logging" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.Core.Abstractions\NCoreUtils.OAuth2.Core.Abstractions.fsproj" />

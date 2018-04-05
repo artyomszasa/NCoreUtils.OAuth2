@@ -1,5 +1,6 @@
 namespace NCoreUtils.OAuth2.WebService
 
+open System
 open System.Threading.Tasks
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
@@ -13,6 +14,8 @@ open NCoreUtils.AspNetCore
 open NCoreUtils.Authentication
 open NCoreUtils.OAuth2
 open NCoreUtils.OAuth2.Data
+open System.Threading
+open NCoreUtils.Logging
 
 type Startup() =
 
@@ -21,6 +24,16 @@ type Startup() =
       (fun context ->
         context.Response.StatusCode <- 404
         Task.CompletedTask)
+
+  let mutable counter = 0
+
+  let forceGC (_ : HttpContext) (next : Func<Task>) =
+    match Interlocked.Increment (&counter) % 32 with
+    | 0 ->
+      GC.Collect ()
+      GC.WaitForPendingFinalizers ()
+    | _ -> ()
+    next.Invoke ()
 
   member __.ConfigureServices (services: IServiceCollection) =
     let configuration =
@@ -31,7 +44,8 @@ type Startup() =
 
     services
       .AddSingleton<IConfiguration>(configuration)
-      .AddSingleton<GoogleEncryptionConfiguration>(configuration.GetSection("Google").Get<GoogleEncryptionConfiguration>())
+      .AddSingleton(configuration.GetSection("Google").Get<GoogleEncryptionConfiguration>())
+      .AddSingleton(configuration.GetSection("Google").Get<GoogleLoggingConfiguration>())
       // Logging
       .AddLogging(fun builder -> builder.ClearProviders().SetMinimumLevel(LogLevel.Trace) |> ignore)
       .AddOAuth2DbContext(fun builder -> builder.UseNpgsql(configuration.GetConnectionString("Default"), fun b -> b.MigrationsAssembly("NCoreUtils.OAuth2.Data.EntityFrameworkCore") |> ignore) |> ignore)
@@ -55,18 +69,12 @@ type Startup() =
 
     ()
 
-
-
-  member __.Configure (app: IApplicationBuilder, env: IHostingEnvironment, loggerFactory : ILoggerFactory) =
+  member __.Configure (app: IApplicationBuilder, env: IHostingEnvironment, loggerFactory : ILoggerFactory, googleLoggingConfiguration : GoogleLoggingConfiguration) =
     if env.IsDevelopment()
-      then
-        loggerFactory
-          .AddConsole()
-          .AddDebug()
-          |> ignore
-
+      then loggerFactory.AddConsole().AddDebug() |> ignore
+      else loggerFactory .AddGoogle(googleLoggingConfiguration)
     app
+      .Use(forceGC)
       .Use(OAuth2Middleware.run)
       .Run(send404)
-
     ()

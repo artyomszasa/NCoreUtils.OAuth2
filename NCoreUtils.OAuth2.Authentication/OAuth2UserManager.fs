@@ -7,9 +7,6 @@ open NCoreUtils.Data
 open NCoreUtils.Linq
 open NCoreUtils.OAuth2.Data
 
-[<CLIMutable>]
-type CurrentClientApplication = { mutable Id : int }
-
 type OAuth2UserManager (userRepository : IDataRepository<User>, currentClientApplication : CurrentClientApplication) =
 
   static let unwrapUnsafe x =
@@ -21,7 +18,7 @@ type OAuth2UserManager (userRepository : IDataRepository<User>, currentClientApp
   member private __.AsyncFindByEmail email =
     let appId = currentClientApplication.Id;
     userRepository.Items
-    |> Q.filter (fun u -> u.Email = email && u.ClientApplictionId = appId)
+    |> Q.filter (fun u -> u.Email = email && u.ClientApplicationId = appId)
     |> Q.asyncTryFirst
     >>| (fun u -> unwrapUnsafe u :> IUser<_>)
 

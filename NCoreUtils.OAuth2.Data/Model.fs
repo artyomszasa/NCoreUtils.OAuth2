@@ -40,22 +40,22 @@ and [<CLIMutable>] Permission = {
       member this.Id = this.Id
 
 and [<CLIMutable>] User = {
-  mutable Id                 : int
-  mutable Created            : int64
-  mutable Updated            : int64
-  mutable State              : State
-  mutable ClientApplictionId : int
-  mutable ClientApplication  : ClientApplication
-  mutable HonorificPrefix    : string
-  mutable FamilyName         : string
-  mutable GivenName          : string
-  mutable MiddleName         : string
-  mutable Email              : string
-  mutable Salt               : string
-  mutable Password           : string
-  mutable Permissions        : ICollection<UserPermission>
-  mutable RefreshTokens      : ICollection<RefreshToken>
-  mutable AuthorizationCodes : ICollection<AuthorizationCode> }
+  mutable Id                  : int
+  mutable Created             : int64
+  mutable Updated             : int64
+  mutable State               : State
+  mutable ClientApplicationId : int
+  mutable ClientApplication   : ClientApplication
+  mutable HonorificPrefix     : string
+  mutable FamilyName          : string
+  mutable GivenName           : string
+  mutable MiddleName          : string
+  mutable Email               : string
+  mutable Salt                : string
+  mutable Password            : string
+  mutable Permissions         : ICollection<UserPermission>
+  mutable RefreshTokens       : ICollection<RefreshToken>
+  mutable AuthorizationCodes  : ICollection<AuthorizationCode> }
   with
     interface IHasId<int> with
       [<TargetProperty("Id")>]
