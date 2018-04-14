@@ -8,7 +8,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NCoreUtils.Authentication.Password" Version="1.0.1" />
-    <PackageReference Include="NCoreUtils.FSharp.Linq" Version="1.0.0" />
+    <PackageReference Include="NCoreUtils.FSharp.Linq" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.Data\NCoreUtils.OAuth2.Data.fsproj" />

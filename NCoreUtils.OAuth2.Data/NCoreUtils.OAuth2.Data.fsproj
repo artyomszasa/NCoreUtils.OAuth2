@@ -10,7 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="NCoreUtils.Authentication.Password.Abstractions" Version="1.0.1" />
-    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.1.2" />
+    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.1.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
 </Project>

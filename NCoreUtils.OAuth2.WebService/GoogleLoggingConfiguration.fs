@@ -1,12 +1,14 @@
 namespace NCoreUtils.OAuth2.WebService
 
-open NCoreUtils.Logging
+open NCoreUtils.Logging.Google
 
 [<CLIMutable>]
 type GoogleLoggingConfiguration = {
-  ProjectId : string
-  LogName   : string }
+  ProjectId      : string
+  ServiceName    : string
+  ServiceVersion : string }
   with
-    interface IGoogleLoggingConfiguration with
-      member this.ProjectId = this.ProjectId
-      member this.LogName   = this.LogName
+    interface IGoogleAspNetCoreLoggingConfiguration with
+      member this.ProjectId      = this.ProjectId
+      member this.ServiceName    = this.ServiceName
+      member this.ServiceVersion = this.ServiceVersion

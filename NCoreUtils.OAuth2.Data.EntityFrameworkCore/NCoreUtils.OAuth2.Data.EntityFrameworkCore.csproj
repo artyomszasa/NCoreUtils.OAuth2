@@ -3,6 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.1.4" />
     <PackageReference Include="NCoreUtils.Data.EntityFrameworkCore" Version="1.1.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
     <PackageReference Include="System.Globalization" Version="4.3.0" />

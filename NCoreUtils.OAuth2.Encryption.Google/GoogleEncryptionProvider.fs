@@ -1,13 +1,12 @@
 namespace NCoreUtils.OAuth2
 
+open System
 open Google.Apis.Auth.OAuth2
 open Google.Apis.CloudKMS.v1
-open NCoreUtils
 open Google.Apis.CloudKMS.v1.Data
-open System
+open NCoreUtils
 
 type GoogleEncryptionProvider (configuration : GoogleEncryptionConfiguration) =
-
   static let googleCredentials =
     let credential = GoogleCredential.GetApplicationDefault();
     match credential.IsCreateScopedRequired with
@@ -26,6 +25,18 @@ type GoogleEncryptionProvider (configuration : GoogleEncryptionConfiguration) =
   static let getPlaintext (response : DecryptResponse) = response.Plaintext
 
   static let getChiphertext (response : EncryptResponse) = response.Ciphertext
+
+  // argument check
+  do
+    if isNull (box configuration) then ArgumentNullException "configuration" |> raise
+    if String.IsNullOrWhiteSpace configuration.ProjectId then
+      invalidArg "configuration.ProjectId" "ProjectId must be a non-empty string."
+    if String.IsNullOrWhiteSpace configuration.LocationId then
+      invalidArg "configuration.LocationId" "LocationId must be a non-empty string."
+    if String.IsNullOrWhiteSpace configuration.KeyRingId then
+      invalidArg "configuration.KeyRingId" "KeyRingId must be a non-empty string."
+    if String.IsNullOrWhiteSpace configuration.KeyId then
+      invalidArg "configuration.KeyId" "KeyId must be a non-empty string."
 
   let cryptoKey =
     sprintf "projects/%s/locations/%s/keyRings/%s/cryptoKeys/%s"

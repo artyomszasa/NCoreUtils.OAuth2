@@ -4,7 +4,6 @@ open System
 open System.Security.Claims
 open System.Text.RegularExpressions
 open Microsoft.Extensions.Logging
-open Microsoft.Extensions.Options
 open NCoreUtils
 open NCoreUtils.Authentication
 open NCoreUtils.Data
@@ -15,7 +14,7 @@ open System.Runtime.CompilerServices
 type OAuth2Core (loginAuthenticator : LoginAuthenticator,
                   refreshTokenRepository : IDataRepository<RefreshToken>,
                   authorizationCodeRepository : IDataRepository<AuthorizationCode, Guid>,
-                  configurationOptions : IOptions<OAuth2Configuration>,
+                  configuration : OAuth2Configuration,
                   currentClientApplication : CurrentClientApplication,
                   logger : ILogger<OAuth2Core>) =
 
@@ -35,8 +34,6 @@ type OAuth2Core (loginAuthenticator : LoginAuthenticator,
   static let vfst (struct (x, _)) = x
 
   static let vsnd (struct (_, x)) = x
-
-  let configuration = configurationOptions.Value
 
   let createTokensAsync userId (grantedScopes : string[]) = async {
     let issuedAt = DateTimeOffset.Now

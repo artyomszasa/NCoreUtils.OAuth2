@@ -17,8 +17,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.1" />
-    <PackageReference Include="NCoreUtils.Logging.Google" Version="1.0.0" />
-    <PackageReference Include="NCoreUtils.AspNetCore.PosixConfiguration" Version="1.0.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Logging.Google" Version="1.1.1" />
+    <PackageReference Include="NCoreUtils.AspNetCore.KestrelConfiguration" Version="1.0.2" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Rest" Version="1.0.7" />
+    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.1.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
   </ItemGroup>
   <ItemGroup>
@@ -27,6 +29,7 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.Data.EntityFrameworkCore\NCoreUtils.OAuth2.Data.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.Authentication\NCoreUtils.OAuth2.Authentication.fsproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.Middleware\NCoreUtils.OAuth2.Middleware.fsproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.Rest\NCoreUtils.OAuth2.Rest.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.2" PrivateAssets="All" />
