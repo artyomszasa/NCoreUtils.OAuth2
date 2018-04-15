@@ -12,6 +12,10 @@
 
   <ItemGroup>
     <PackageReference Include="NCoreUtils.FSharp" Version="1.0.2" />
+    <PackageReference Include="NCoreUtils.Maybe" Version="1.0.4" />
+    <PackageReference Include="System.Net.Requests" Version="4.3.0" />
+    <PackageReference Include="System.Net.WebHeaderCollection" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

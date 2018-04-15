@@ -9,6 +9,10 @@
   <ItemGroup>
     <PackageReference Include="NCoreUtils.Authentication.Password" Version="1.0.1" />
     <PackageReference Include="NCoreUtils.FSharp.Linq" Version="1.0.1" />
+    <PackageReference Include="NCoreUtils.Linq.Extensions" Version="1.0.4" />
+    <PackageReference Include="System.Net.Requests" Version="4.3.0" />
+    <PackageReference Include="System.Net.WebHeaderCollection" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.Data\NCoreUtils.OAuth2.Data.fsproj" />

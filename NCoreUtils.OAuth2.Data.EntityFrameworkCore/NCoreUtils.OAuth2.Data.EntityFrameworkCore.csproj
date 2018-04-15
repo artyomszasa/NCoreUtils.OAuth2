@@ -5,6 +5,7 @@
   <ItemGroup>
     <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.1.4" />
     <PackageReference Include="NCoreUtils.Data.EntityFrameworkCore" Version="1.1.2" />
+    <PackageReference Include="NCoreUtils.Linq.Abstractions" Version="1.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
     <PackageReference Include="System.Globalization" Version="4.3.0" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />

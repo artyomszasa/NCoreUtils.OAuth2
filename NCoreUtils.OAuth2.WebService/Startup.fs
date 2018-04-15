@@ -17,7 +17,7 @@ open NCoreUtils.Authentication
 open NCoreUtils.Logging
 open NCoreUtils.OAuth2
 open NCoreUtils.OAuth2.Data
-open Newtonsoft.Json
+open System.IO
 
 module RAV = NCoreUtils.OAuth2.RestAccessValidation
 
@@ -48,10 +48,15 @@ type Startup() =
 
   member __.ConfigureServices (services: IServiceCollection) =
     let configuration =
-      ConfigurationBuilder()
-        .SetBasePath(System.IO.Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json", optional = false, reloadOnChange = false)
-        .Build ()
+
+      let appsettingsPath = Path.Combine (System.IO.Directory.GetCurrentDirectory (), "appsettings.json")
+      match File.Exists appsettingsPath with
+      | true ->
+        ConfigurationBuilder()
+          .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+          .AddJsonFile("appsettings.json", optional = false, reloadOnChange = false)
+          .Build ()
+      | _ -> EnvConfig.buildConfigFromEnv ()
 
     services
       .AddSingleton<IConfiguration>(configuration)
@@ -77,6 +82,8 @@ type Startup() =
       .ConfigureRest(fun b -> b.WithPathPrefix(CaseInsensitive "/data").ConfigureAccess(configureRestAccess).AddRange [| typeof<User>; typeof<Permission> |] |> ignore)
       // REST access validation helper
       .AddScoped<InternalUserInfo>()
+      // CORS
+      .AddCors()
       // auth
       .AddAuthentication("internal").AddScheme<InternalAuthenticationSchemeOtions, InternalAuthenticationHandler>("internal", Action<_> ignore)
       |> ignore
@@ -93,6 +100,7 @@ type Startup() =
       then loggerFactory.AddConsole(LogLevel.Trace).AddDebug(LogLevel.Trace) |> ignore
       else loggerFactory.AddGoogleSink(httpContextAccessor, googleLoggingConfiguration) |> ignore
     app
+      .UseCors(fun builder -> builder.AllowAnyOrigin().AllowAnyHeader().AllowCredentials().AllowAnyMethod().WithExposedHeaders("X-Access-Token", "X-Total-Count", "Location", "X-Message") |> ignore)
       .Use(forceGC)
       .Use(OAuth2Middleware.run)
       .UseRequestErrorHandler()

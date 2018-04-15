@@ -8,10 +8,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="GoogleLoggingConfiguration.fs" />
+    <Compile Include="Config.fs" />
     <Compile Include="Startup.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Google.Apis" Version="1.32.2" />
+    <PackageReference Include="Grpc.Core" Version="1.10.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
@@ -19,9 +23,14 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.1" />
     <PackageReference Include="NCoreUtils.AspNetCore.Logging.Google" Version="1.1.1" />
     <PackageReference Include="NCoreUtils.AspNetCore.KestrelConfiguration" Version="1.0.2" />
-    <PackageReference Include="NCoreUtils.AspNetCore.Rest" Version="1.0.7" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Rest" Version="1.0.8" />
     <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.1.4" />
+    <PackageReference Include="NCoreUtils.FSharp.DependencyInjection" Version="1.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
+    <PackageReference Include="System.Net.Requests" Version="4.3.0" />
+    <PackageReference Include="System.Net.WebHeaderCollection" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.Encryption.Google\NCoreUtils.OAuth2.Encryption.Google.fsproj" />
