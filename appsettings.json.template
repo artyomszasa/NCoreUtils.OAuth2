@@ -1,0 +1,20 @@
+{
+  "ConnectionStrings": { "Default": "Host=DB_HOST;Port=DB_PORT;Username=DB_USER;Password=DB_PASSWORD;Database=DB_DATABASE" },
+  "Google": {
+    "ProjectId": "GOOGLE_PROJECTID",
+    "ServiceName: "oauth2"
+    "LocationId": "GOOGLE_LOCATIONID",
+    "KeyRingId": "GOOGLE_KEYRINGID",
+    "CryptoKeyId": "GOOGLE_KEYID"
+  },
+  "Logging": {
+    "LogLevel": {
+      "NCoreUtils.OAuth2": "Trace"
+    }
+  },
+  "OAuth2": {
+    "AccessTokenExpiry": "ACCESS_TOKEN_EXPIRY",
+    "AuthorizationCodeExpiry": "00:10:00",
+    "RefreshTokenExpiry": "45.00:00:00"
+  }
+}

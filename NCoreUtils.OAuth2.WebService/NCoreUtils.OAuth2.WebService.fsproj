@@ -23,7 +23,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.1" />
     <PackageReference Include="NCoreUtils.AspNetCore.Logging.Google" Version="1.1.1" />
     <PackageReference Include="NCoreUtils.AspNetCore.KestrelConfiguration" Version="1.0.2" />
-    <PackageReference Include="NCoreUtils.AspNetCore.Rest" Version="1.0.8" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Rest" Version="1.0.9" />
     <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.1.4" />
     <PackageReference Include="NCoreUtils.FSharp.DependencyInjection" Version="1.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />

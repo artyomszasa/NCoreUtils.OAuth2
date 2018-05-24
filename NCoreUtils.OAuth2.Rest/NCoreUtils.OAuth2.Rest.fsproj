@@ -8,16 +8,17 @@
     <Compile Include="InternalUserInfo.fs" />
     <Compile Include="Permissions.fs" />
     <Compile Include="InternalAuthenticationHandler.fs" />
-    <Compile Include="CreateAccessValidator.fs" />
+    <Compile Include="RestAccessValidation.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.0.3" />
-    <PackageReference Include="NCoreUtils.AspNetCore.Rest.Abstractions" Version="1.0.8" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Rest.Abstractions" Version="1.0.9" />
     <PackageReference Include="NCoreUtils.FSharp.AspNetCore" Version="1.0.3" />
     <PackageReference Include="NCoreUtils.FSharp.Data" Version="1.0.1" />
     <PackageReference Include="NCoreUtils.FSharp.DependencyInjection" Version="1.0.2" />
     <PackageReference Include="NCoreUtils.FSharp.Linq" Version="1.0.1" />
+    <PackageReference Include="NCoreUtils.FSharp.Logging" Version="1.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.Net.Requests" Version="4.3.0" />
     <PackageReference Include="System.Net.WebHeaderCollection" Version="4.3.0" />

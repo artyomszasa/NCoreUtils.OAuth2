@@ -200,9 +200,9 @@ namespace NCoreUtils.OAuth2.Data.EntityFrameworkCore.Migrations
                 columns: new[] { "State", "UserId", "IssuedAt", "ExpiresAt", "Scopes" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_ClientApplictionId",
+                name: "IX_User_ClientApplicationId",
                 table: "User",
-                column: "ClientApplictionId");
+                column: "ClientApplicationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_User_Created",
@@ -215,9 +215,9 @@ namespace NCoreUtils.OAuth2.Data.EntityFrameworkCore.Migrations
                 column: "Updated");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_Email_ClientApplictionId",
+                name: "IX_User_Email_ClientApplicationId",
                 table: "User",
-                columns: new[] { "Email", "ClientApplictionId" },
+                columns: new[] { "Email", "ClientApplicationId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(

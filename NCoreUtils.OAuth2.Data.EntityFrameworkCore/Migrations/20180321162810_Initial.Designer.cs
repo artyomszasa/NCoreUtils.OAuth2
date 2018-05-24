@@ -145,7 +145,7 @@ namespace NCoreUtils.OAuth2.Data.EntityFrameworkCore.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ClientApplictionId");
+                    b.Property<int>("ClientApplicationId");
 
                     b.Property<long>("Created");
 
@@ -187,13 +187,13 @@ namespace NCoreUtils.OAuth2.Data.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClientApplictionId");
+                    b.HasIndex("ClientApplicationId");
 
                     b.HasIndex("Created");
 
                     b.HasIndex("Updated");
 
-                    b.HasIndex("Email", "ClientApplictionId")
+                    b.HasIndex("Email", "ClientApplicationId")
                         .IsUnique();
 
                     b.ToTable("User");
@@ -248,7 +248,7 @@ namespace NCoreUtils.OAuth2.Data.EntityFrameworkCore.Migrations
                 {
                     b.HasOne("NCoreUtils.OAuth2.Data.ClientApplication", "ClientApplication")
                         .WithMany("Users")
-                        .HasForeignKey("ClientApplictionId")
+                        .HasForeignKey("ClientApplicationId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

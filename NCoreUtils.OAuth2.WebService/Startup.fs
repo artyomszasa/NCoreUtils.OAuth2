@@ -18,6 +18,8 @@ open NCoreUtils.Logging
 open NCoreUtils.OAuth2
 open NCoreUtils.OAuth2.Data
 open System.IO
+open Newtonsoft.Json
+open Newtonsoft.Json.Serialization
 
 module RAV = NCoreUtils.OAuth2.RestAccessValidation
 
@@ -82,6 +84,8 @@ type Startup() =
       .ConfigureRest(fun b -> b.WithPathPrefix(CaseInsensitive "/data").ConfigureAccess(configureRestAccess).AddRange [| typeof<User>; typeof<Permission> |] |> ignore)
       // REST access validation helper
       .AddScoped<InternalUserInfo>()
+      // Global JsonSerializerSettings
+      .AddSingleton(JsonSerializerSettings (ReferenceLoopHandling = ReferenceLoopHandling.Ignore, ContractResolver = CamelCasePropertyNamesContractResolver ()))
       // CORS
       .AddCors()
       // auth
@@ -96,6 +100,12 @@ type Startup() =
     ()
 
   member __.Configure (app: IApplicationBuilder, env: IHostingEnvironment, loggerFactory : ILoggerFactory, googleLoggingConfiguration : GoogleLoggingConfiguration, httpContextAccessor) =
+    //let struct (hash, salt) = PasswordLogin.GeneratePaswordHash "39c32190"
+    let struct (hash, salt) = PasswordLogin.GeneratePaswordHash "3983a190"
+    printfn "Salt = %s" salt
+    printfn "Hash = %s" hash
+    Environment.Exit 0
+
     if env.IsDevelopment()
       then loggerFactory.AddConsole(LogLevel.Trace).AddDebug(LogLevel.Trace) |> ignore
       else loggerFactory.AddGoogleSink(httpContextAccessor, googleLoggingConfiguration) |> ignore
