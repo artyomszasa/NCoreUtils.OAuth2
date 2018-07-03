@@ -12,3 +12,4 @@ type GoogleLoggingConfiguration = {
       member this.ProjectId      = this.ProjectId
       member this.ServiceName    = this.ServiceName
       member this.ServiceVersion = this.ServiceVersion
+      member __.PopulateLabels (_, _, _, _, _, _) = ()

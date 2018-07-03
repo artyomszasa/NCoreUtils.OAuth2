@@ -1,6 +1,6 @@
 # **********************************************************************************************************************
 # BUILD IMAGE
-FROM microsoft/dotnet:2.0-sdk AS build-env-oauth2
+FROM microsoft/dotnet:2.1-sdk AS build-env-oauth2
 WORKDIR /app
 # COPY NUGET config
 COPY ./NuGet.Config ./
@@ -36,7 +36,7 @@ RUN dotnet publish ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.f
 
 # **********************************************************************************************************************
 # RUNTIME IMAGE
-FROM microsoft/dotnet:2.0-runtime-deps
+FROM microsoft/dotnet:2.1-runtime-deps
 WORKDIR /app
 # INSTALL CURL
 RUN apt-get update && apt-get install -y curl

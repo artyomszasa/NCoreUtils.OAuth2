@@ -7,9 +7,9 @@
     <Compile Include="OAuth2PasswordLogin.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Authentication.Password" Version="1.0.1" />
-    <PackageReference Include="NCoreUtils.FSharp.Linq" Version="1.0.1" />
-    <PackageReference Include="NCoreUtils.Linq.Extensions" Version="1.0.4" />
+    <PackageReference Include="NCoreUtils.Authentication.Password" Version="1.1.1" />
+    <PackageReference Include="NCoreUtils.FSharp.Linq" Version="1.1.3" />
+    <PackageReference Include="NCoreUtils.Linq.Extensions" Version="1.0.5" />
     <PackageReference Include="System.Net.Requests" Version="4.3.0" />
     <PackageReference Include="System.Net.WebHeaderCollection" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />

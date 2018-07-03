@@ -1,6 +1,7 @@
 namespace NCoreUtils.OAuth2.WebService
 
 open System
+open System.IO
 open System.Threading
 open System.Threading.Tasks
 open Microsoft.AspNetCore.Builder
@@ -14,10 +15,10 @@ open Microsoft.Extensions.Logging
 open NCoreUtils
 open NCoreUtils.AspNetCore
 open NCoreUtils.Authentication
+open NCoreUtils.Data
 open NCoreUtils.Logging
 open NCoreUtils.OAuth2
 open NCoreUtils.OAuth2.Data
-open System.IO
 open Newtonsoft.Json
 open Newtonsoft.Json.Serialization
 
@@ -52,11 +53,19 @@ type Startup() =
     let configuration =
 
       let appsettingsPath = Path.Combine (System.IO.Directory.GetCurrentDirectory (), "appsettings.json")
+      let appsettingsSecretPath = Path.Combine (System.IO.Directory.GetCurrentDirectory (), "secrets", "appsettings.json")
       match File.Exists appsettingsPath with
       | true ->
         ConfigurationBuilder()
           .SetBasePath(System.IO.Directory.GetCurrentDirectory())
-          .AddJsonFile("appsettings.json", optional = false, reloadOnChange = false)
+          .AddJsonFile(appsettingsPath, optional = false, reloadOnChange = false)
+          .Build ()
+      | _ ->
+      match File.Exists appsettingsSecretPath with
+      | true ->
+        ConfigurationBuilder()
+          .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+          .AddJsonFile(appsettingsSecretPath, optional = false, reloadOnChange = false)
           .Build ()
       | _ -> EnvConfig.buildConfigFromEnv ()
 
@@ -67,8 +76,12 @@ type Startup() =
       .AddSingleton(configuration.GetSection("OAuth2").Get<OAuth2Configuration>())
       // Logging
       .AddLogging(fun builder -> builder.ClearProviders().SetMinimumLevel(LogLevel.Trace) |> ignore)
+      .AddPrePopulatedLoggingContext()
+      // data
       .AddOAuth2DbContext(fun builder -> builder.UseNpgsql(configuration.GetConnectionString("Default"), fun b -> b.MigrationsAssembly("NCoreUtils.OAuth2.Data.EntityFrameworkCore") |> ignore) |> ignore)
       .AddOAuth2DataRepositories()
+      // password encoding
+      .AddSingleton({ new IPasswordEncryption with member __.EncryptPassword p = let struct (hash, salt) = PasswordLogin.GeneratePaswordHash p in { PasswordHash = hash; Salt = salt }})
       // http context access
       .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
       // Encryption provider
@@ -100,21 +113,39 @@ type Startup() =
     ()
 
   member __.Configure (app: IApplicationBuilder, env: IHostingEnvironment, loggerFactory : ILoggerFactory, googleLoggingConfiguration : GoogleLoggingConfiguration, httpContextAccessor) =
-    //let struct (hash, salt) = PasswordLogin.GeneratePaswordHash "39c32190"
-    let struct (hash, salt) = PasswordLogin.GeneratePaswordHash "3983a190"
-    printfn "Salt = %s" salt
-    printfn "Hash = %s" hash
-    Environment.Exit 0
+    // let struct (hash, salt) = PasswordLogin.GeneratePaswordHash "39c32190"
+    // let struct (hash0, salt0) = PasswordLogin.GeneratePaswordHash "56a563bedb"
+    // printfn "Salt = %s" salt0
+    // printfn "Hash = %s" hash0
+    // let struct (hash1, salt1) = PasswordLogin.GeneratePaswordHash "43e894d3c4"
+    // printfn "Salt = %s" salt1
+    // printfn "Hash = %s" hash1
+    // let struct (hash2, salt2) = PasswordLogin.GeneratePaswordHash "e0e54deb05"
+    // printfn "Salt = %s" salt2
+    // printfn "Hash = %s" hash2
+    // Environment.Exit 0
 
     if env.IsDevelopment()
       then loggerFactory.AddConsole(LogLevel.Trace).AddDebug(LogLevel.Trace) |> ignore
       else loggerFactory.AddGoogleSink(httpContextAccessor, googleLoggingConfiguration) |> ignore
     app
       .UseCors(fun builder -> builder.AllowAnyOrigin().AllowAnyHeader().AllowCredentials().AllowAnyMethod().WithExposedHeaders("X-Access-Token", "X-Total-Count", "Location", "X-Message") |> ignore)
-      .Use(forceGC)
+      // .Use(forceGC)
+      .UsePrePopulateLoggingContext()
       .Use(OAuth2Middleware.run)
       .UseRequestErrorHandler()
       .UseAuthentication()
+      .Use(fun httpContext asyncNext -> async {
+        let  currentClientApplication = httpContext.RequestServices.GetRequiredService<CurrentClientApplication> ()
+        let  logger = httpContext.RequestServices.GetRequiredService<ILogger<Startup>> ()
+        let  repo = httpContext.RequestServices.GetRequiredService<IDataRepository<ClientApplication>> ()
+        let! clientApplication = CurrentClientApplicationResolver.resolveClientApplication logger repo httpContext
+        do
+          match box clientApplication with
+          | null -> ()
+          | _    -> currentClientApplication.Id <- clientApplication.Id
+        return! asyncNext
+      })
       .UseRest()
       .Run(send404)
     ()

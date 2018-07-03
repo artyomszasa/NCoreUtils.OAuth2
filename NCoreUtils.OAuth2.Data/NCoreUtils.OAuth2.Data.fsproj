@@ -9,9 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Authentication.Password.Abstractions" Version="1.0.1" />
-    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.1.4" />
-    <PackageReference Include="NCoreUtils.Linq.Extensions" Version="1.0.4" />
+    <PackageReference Include="NCoreUtils.Authentication.Password.Abstractions" Version="1.1.1" />
+    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.2.1" />
+    <PackageReference Include="NCoreUtils.Linq.Extensions" Version="1.0.5" />
     <PackageReference Include="NCoreUtils.Maybe" Version="1.0.4" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.Net.Requests" Version="4.3.0" />

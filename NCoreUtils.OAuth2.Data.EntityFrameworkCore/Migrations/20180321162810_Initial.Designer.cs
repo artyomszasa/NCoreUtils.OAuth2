@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using NCoreUtils.Data;
 using NCoreUtils.OAuth2.Data;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using System;
 
 namespace NCoreUtils.OAuth2.Data.EntityFrameworkCore.Migrations
