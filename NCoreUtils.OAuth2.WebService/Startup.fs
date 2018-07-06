@@ -75,7 +75,13 @@ type Startup() =
       .AddSingleton(configuration.GetSection("Google").Get<GoogleLoggingConfiguration>())
       .AddSingleton(configuration.GetSection("OAuth2").Get<OAuth2Configuration>())
       // Logging
-      .AddLogging(fun builder -> builder.ClearProviders().SetMinimumLevel(LogLevel.Trace) |> ignore)
+      .AddLogging(fun builder ->
+          builder
+            .ClearProviders()
+            .SetMinimumLevel(LogLevel.Information)
+            .AddFilter(DbLoggerCategory.Infrastructure.Name, LogLevel.Error)
+            .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Warning)
+          |> ignore)
       .AddPrePopulatedLoggingContext()
       // data
       .AddOAuth2DbContext(fun builder -> builder.UseNpgsql(configuration.GetConnectionString("Default"), fun b -> b.MigrationsAssembly("NCoreUtils.OAuth2.Data.EntityFrameworkCore") |> ignore) |> ignore)
