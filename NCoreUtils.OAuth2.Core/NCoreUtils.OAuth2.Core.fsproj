@@ -15,10 +15,13 @@
   <ItemGroup>
     <PackageReference Include="NCoreUtils.Authentication" Version="1.1.1" />
     <PackageReference Include="NCoreUtils.FSharp.Data" Version="1.1.3" />
-    <PackageReference Include="NCoreUtils.FSharp.Linq" Version="1.1.3" />
+    <PackageReference Include="NCoreUtils.FSharp.Linq" Version="1.2.0" />
     <PackageReference Include="NCoreUtils.Linq.Extensions" Version="1.0.5" />
+    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.2.2" />
+    <!--
     <PackageReference Include="System.Net.Requests" Version="4.3.0" />
     <PackageReference Include="System.Net.WebHeaderCollection" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
+    -->
   </ItemGroup>
 </Project>
