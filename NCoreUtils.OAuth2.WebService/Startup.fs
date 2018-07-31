@@ -13,14 +13,19 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.DependencyInjection.Extensions
 open Microsoft.Extensions.Logging
 open NCoreUtils
+open NCoreUtils.ContentDetection
 open NCoreUtils.AspNetCore
 open NCoreUtils.Authentication
 open NCoreUtils.Data
 open NCoreUtils.Logging
 open NCoreUtils.OAuth2
 open NCoreUtils.OAuth2.Data
+open NCoreUtils.Storage
 open Newtonsoft.Json
 open Newtonsoft.Json.Serialization
+open NCoreUtils.Text
+open NCoreUtils.Images
+open NCoreUtils.Features
 
 module RAV = NCoreUtils.OAuth2.RestAccessValidation
 
@@ -69,11 +74,16 @@ type Startup() =
           .Build ()
       | _ -> EnvConfig.buildConfigFromEnv ()
 
+    let googleBucketConfiguration =
+      configuration.GetSection("Google").Get<GoogleBucketConfiguration> ()
+      |?? (GoogleBucketConfiguration ())
+
     services
       .AddSingleton<IConfiguration>(configuration)
       .AddSingleton(configuration.GetSection("Google").Get<GoogleEncryptionConfiguration>())
       .AddSingleton(configuration.GetSection("Google").Get<GoogleLoggingConfiguration>())
       .AddSingleton(configuration.GetSection("OAuth2").Get<OAuth2Configuration>())
+      .AddSingleton(googleBucketConfiguration)
       // Logging
       .AddLogging(fun builder ->
           builder
@@ -98,9 +108,27 @@ type Startup() =
       .AddLoginAuthenticator(fun b -> b.AddPasswordAuthentication<OAuth2UserManager, int, OAuth2PasswordLogin>() |> ignore)
       // core functions
       .AddScoped<IOAuth2Core, OAuth2Core>()
-      // REST access
+      // name simplification (required for file name generation)
+      .AddSingleton<ISimplifier>(Simplifier.Default)
+      // content detection
+      .ConfigureContentDetection(fun b -> b.AddMagic(fun bb -> bb.AddLibmagicRules() |> ignore) |> ignore)
+      // image processing
+      .AddSingleton(configuration.GetSection("Images").Get<ImageResizerClientConfiguration>())
+      .AddImageResizer<ImageResizerClient>()
+      // google cloud storage
+      .AddTransient<IFeatureCollection<IStorageProvider>>(fun _ -> FeatureCollectionBuilder().Build<IStorageProvider>())
+      .AddGoogleCloudStorageProvider(
+        configuration.["Google:ProjectId"],
+        fun (b : GoogleCloudStorageOptionsBuilder) ->
+          b.ChunkSize           <- Nullable.mk 262144;
+          b.PredefinedAcl       <- Nullable.mk Google.Cloud.Storage.V1.PredefinedObjectAcl.PublicRead;
+          b.DefaultCacheControl <- "max-age=2628000, private"
+      )
+      // REST access + file upload
+      .AddFileUploader(configuration.GetSection "Images", fun path -> Uri (sprintf "gs://%s/%s" googleBucketConfiguration.BucketName (path.Trim '/'), UriKind.Absolute))
+      .AddCustomRestPipeline()
       .AddScoped<Rest.CurrentRestTypeName>()
-      .ConfigureRest(fun b -> b.WithPathPrefix(CaseInsensitive "/data").ConfigureAccess(configureRestAccess).AddRange [| typeof<User>; typeof<Permission> |] |> ignore)
+      .ConfigureRest(fun b -> b.WithPathPrefix(CaseInsensitive "/data").ConfigureAccess(configureRestAccess).AddRange [| typeof<User>; typeof<Permission>; typeof<File> |] |> ignore)
       // REST access validation helper
       .AddScoped<InternalUserInfo>()
       // Global JsonSerializerSettings
@@ -119,18 +147,6 @@ type Startup() =
     ()
 
   member __.Configure (app: IApplicationBuilder, env: IHostingEnvironment, loggerFactory : ILoggerFactory, googleLoggingConfiguration : GoogleLoggingConfiguration, httpContextAccessor) =
-    // let struct (hash, salt) = PasswordLogin.GeneratePaswordHash "39c32190"
-    // let struct (hash0, salt0) = PasswordLogin.GeneratePaswordHash "56a563bedb"
-    // printfn "Salt = %s" salt0
-    // printfn "Hash = %s" hash0
-    // let struct (hash1, salt1) = PasswordLogin.GeneratePaswordHash "43e894d3c4"
-    // printfn "Salt = %s" salt1
-    // printfn "Hash = %s" hash1
-    // let struct (hash2, salt2) = PasswordLogin.GeneratePaswordHash "e0e54deb05"
-    // printfn "Salt = %s" salt2
-    // printfn "Hash = %s" hash2
-    // Environment.Exit 0
-
     if env.IsDevelopment()
       then loggerFactory.AddConsole(LogLevel.Trace).AddDebug(LogLevel.Trace) |> ignore
       else loggerFactory.AddGoogleSink(httpContextAccessor, googleLoggingConfiguration) |> ignore

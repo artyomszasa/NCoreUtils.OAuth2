@@ -8,6 +8,17 @@ namespace NCoreUtils.OAuth2.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<File>(b =>
+            {
+                b.HasKey(e => e.Id);
+                b.HasAlternateKey(e => e.IdName);
+                b.HasIndex(e => e.Created);
+                b.HasIndex(e => e.Updated);
+                b.Property(e => e.IdName).HasMaxLength(320).IsUnicode(false).IsRequired(true);
+                b.Property(e => e.OriginalName).IsUnicode(true).IsRequired(true);
+                b.Property(e => e.MediaType).HasMaxLength(320).IsUnicode(false).IsRequired(true);
+            });
+
             builder.Entity<ClientApplication>(b =>
             {
                 b.HasKey(e => e.Id);
@@ -37,6 +48,7 @@ namespace NCoreUtils.OAuth2.Data
                 b.HasIndex(e => e.Created);
                 b.HasIndex(e => e.Updated);
                 b.HasOne(e => e.ClientApplication).WithMany(e => e.Users).HasForeignKey(e => e.ClientApplicationId).OnDelete(DeleteBehavior.Restrict);
+                b.HasOne(e => e.Avatar).WithMany().HasForeignKey(e => e.AvatarId).IsRequired(false).OnDelete(DeleteBehavior.SetNull);
             });
 
             builder.Entity<Permission>(b =>

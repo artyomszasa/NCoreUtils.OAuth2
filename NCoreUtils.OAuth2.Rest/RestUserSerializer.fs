@@ -1,0 +1,69 @@
+namespace NCoreUtils.OAuth2.Rest
+
+open NCoreUtils.Data
+open NCoreUtils.OAuth2.Data
+open NCoreUtils.AspNetCore.Rest
+
+type MappedClientApplication = {
+  Id          : int
+  Name        : string
+  Description : string }
+
+type MappedUser = {
+  Id                  : int
+  Created             : int64
+  Updated             : int64
+  State               : State
+  ClientApplicationId : int
+  ClientApplication   : MappedClientApplication
+  HonorificPrefix     : string
+  FamilyName          : string
+  GivenName           : string
+  MiddleName          : string
+  Email               : string
+  Avatar              : File
+  Permissions         : UserPermission[] }
+
+type IDefaultUserSerializer =
+  inherit ISerializer<MappedUser>
+
+type IDefaultUserCollectionSerializer =
+  inherit ISerializer<MappedUser[]>
+
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess>]
+module private MappedClientApplication =
+
+  let ofClientApplication (app : ClientApplication) =
+    { Id          = app.Id
+      Name        = app.Name
+      Description = app.Description }
+
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess>]
+module private MappedUser =
+
+  let ofUser (user : User) =
+    { Id                  = user.Id
+      Created             = user.Created
+      Updated             = user.Updated
+      State               = user.State
+      ClientApplicationId = user.ClientApplicationId
+      ClientApplication   = MappedClientApplication.ofClientApplication user.ClientApplication
+      HonorificPrefix     = user.HonorificPrefix
+      FamilyName          = user.FamilyName
+      GivenName           = user.GivenName
+      MiddleName          = user.MiddleName
+      Email               = user.Email
+      Avatar              = user.Avatar
+      Permissions         = user.Permissions |> Seq.toArray }
+
+type RestUserSerializer (defaultSerializer : IDefaultUserSerializer) =
+  interface ISerializer<User> with
+    member __.AsyncSerialize (output, item) =
+      defaultSerializer.AsyncSerialize (output, MappedUser.ofUser item)
+
+type RestUserCollectionSerializer (defaultSerializer : IDefaultUserCollectionSerializer) =
+  interface ISerializer<User[]> with
+    member __.AsyncSerialize (output, item) =
+      defaultSerializer.AsyncSerialize (output, Array.map MappedUser.ofUser item)

@@ -5,6 +5,42 @@ open System.Collections.Generic
 open NCoreUtils.Data
 open NCoreUtils.Authentication
 open Newtonsoft.Json
+open NCoreUtils.AspNetCore
+
+[<AutoOpen>]
+module private DateTimeHelpers =
+  let inline fmtAsDateTime (utcTicks : int64) =
+    DateTimeOffset(utcTicks, TimeSpan.Zero).ToLocalTime().ToString("o")
+
+type IHasIdName =
+  abstract IdName : string with get, set
+
+type File () =
+  member val Id           = Unchecked.defaultof<int>    with get, set
+  member val Created      = Unchecked.defaultof<int64>  with get, set
+  member val Updated      = Unchecked.defaultof<int64>  with get, set
+  member val IdName       = Unchecked.defaultof<string> with get, set
+  member val OriginalName = Unchecked.defaultof<string> with get, set
+  member val MediaType    = Unchecked.defaultof<string> with get, set
+  member val State        = Unchecked.defaultof<State>  with get, set
+  interface IHasId<int> with
+    member this.Id with [<TargetProperty("Id")>] get () = this.Id
+  interface IFile with
+    member this.IdName       = this.IdName
+    member this.OriginalName = this.OriginalName
+    member this.MediaType    = this.MediaType
+  interface IHasIdName with
+    member this.IdName with [<TargetProperty("IdName")>] get () = this.IdName
+    member this.IdName with [<TargetProperty("IdName")>] set value = this.IdName <- value
+  override this.ToString () =
+    sprintf "File[Id = %d, Created = %s, Updated = %s, IdName = %s, OriginalName = %s, MediaType = %s, State = %A]"
+      this.Id
+      (fmtAsDateTime this.Created)
+      (fmtAsDateTime this.Updated)
+      this.IdName
+      this.OriginalName
+      this.MediaType
+      this.State
 
 type [<CLIMutable; NoEquality; NoComparison>] ClientApplication = {
   [<field: JsonIgnore>]
@@ -80,6 +116,10 @@ and [<CLIMutable; NoEquality; NoComparison>] User = {
   mutable Salt                : string
   [<field: JsonIgnore>]
   mutable Password            : string
+  [<field: JsonIgnore>]
+  mutable AvatarId            : Nullable<int>
+  [<field: JsonIgnore>]
+  mutable Avatar              : File
   [<field: JsonIgnore>]
   mutable Permissions         : ICollection<UserPermission>
   [<field: JsonIgnore>]

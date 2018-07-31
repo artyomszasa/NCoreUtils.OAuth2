@@ -18,6 +18,7 @@ namespace NCoreUtils.OAuth2.Data
         public override IQueryable<User> Items
             => base.Items
                 .Include(e => e.Permissions)
+                .Include(e => e.Avatar)
                 .Include(e => e.ClientApplication);
 
         public UserRepository(
@@ -43,6 +44,15 @@ namespace NCoreUtils.OAuth2.Data
                     entry.Entity.ClientApplicationId = entry.Entity.ClientApplication.Id;
                 }
                 entry.Entity.ClientApplication = null;
+            }
+
+            if (null != entry.Entity.Avatar)
+            {
+                if (entry.Entity.Avatar.HasValidId())
+                {
+                    entry.Entity.AvatarId = entry.Entity.Avatar.Id;
+                }
+                entry.Entity.Avatar = null;
             }
 
             var e = await base.AttachNewOrUpdateAsync(entry, cancellationToken);

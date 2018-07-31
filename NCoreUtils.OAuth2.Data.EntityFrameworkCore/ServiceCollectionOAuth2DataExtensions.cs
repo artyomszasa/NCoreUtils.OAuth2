@@ -33,6 +33,7 @@ namespace NCoreUtils.OAuth2.Data
         {
             services
                 .AddDefaultDataRepositoryContext<OAuth2DbContext>()
+                .AddDataRepository<FileRepository, File, int>()
                 .AddDataRepository<AuthorizationCode, Guid>()
                 .AddDataRepository<ClientApplication, int>()
                 .AddDataRepository<Domain, int>()
