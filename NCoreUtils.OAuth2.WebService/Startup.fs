@@ -125,6 +125,7 @@ type Startup() =
           b.DefaultCacheControl <- "max-age=2628000, private"
       )
       // REST access + file upload
+      .AddDataQueryServices(fun _ -> ())
       .AddFileUploader(configuration.GetSection "Images", fun path -> Uri (sprintf "gs://%s/%s" googleBucketConfiguration.BucketName (path.Trim '/'), UriKind.Absolute))
       .AddCustomRestPipeline()
       .AddScoped<Rest.CurrentRestTypeName>()
