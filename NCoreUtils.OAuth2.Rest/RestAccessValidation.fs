@@ -132,5 +132,10 @@ module RestAccessValidation =
                     | true -> q |> Q.filter (fun u -> u.ClientApplicationId = user.ClientApplicationId) // user with read permission can access another user is same app
                     | _    -> q |> Q.filter (fun u -> u.Id = user.Id) // user can read own data without any further permissions
                   q :> IQueryable
+                | t when t = typeof<Permission> ->
+                  queryable
+                  :?> IQueryable<Permission>
+                  |> Q.filter (fun p -> p.ClientApplicationId = user.ClientApplicationId) // user can access permission only is the same app
+                  :> IQueryable
                 | _ -> queryable }
     }

@@ -41,24 +41,61 @@ namespace NCoreUtils.OAuth2.Data
 
         protected override async Task<EntityEntry<User>> AttachNewOrUpdateAsync(EntityEntry<User> entry, CancellationToken cancellationToken)
         {
-            var password = entry.Entity.Password;
+            var entity = entry.Entity;
+            var password = entity.Password;
 
-            if (null != entry.Entity.ClientApplication)
+            if (null != entity.ClientApplication)
             {
-                if (entry.Entity.ClientApplication.HasValidId())
+                if (entity.ClientApplication.HasValidId())
                 {
-                    entry.Entity.ClientApplicationId = entry.Entity.ClientApplication.Id;
+                    entity.ClientApplicationId = entity.ClientApplication.Id;
                 }
-                entry.Entity.ClientApplication = null;
+                entity.ClientApplication = null;
             }
 
-            if (null != entry.Entity.Avatar)
+            if (null != entity.Avatar)
             {
-                if (entry.Entity.Avatar.HasValidId())
+                if (entity.Avatar.HasValidId())
                 {
-                    entry.Entity.AvatarId = entry.Entity.Avatar.Id;
+                    entity.AvatarId = entity.Avatar.Id;
                 }
-                entry.Entity.Avatar = null;
+                entity.Avatar = null;
+            }
+
+            // Permissions
+            var dbContext = _context.DbContext;
+            if (entity.HasValidId())
+            {
+                var fixedPermissions = new HashSet<UserPermission>();
+                var toKeep = new HashSet<int>();
+                foreach (var rel in entity.Permissions)
+                {
+                    var dbRel = await dbContext.Set<UserPermission>().Where(up => up.UserId == entity.Id && up.PermissionId == rel.PermissionId).FirstOrDefaultAsync(cancellationToken);
+                    if (null == dbRel)
+                    {
+                        var dbRelEntry = await dbContext.AddAsync(new UserPermission
+                        {
+                            PermissionId = rel.PermissionId,
+                            UserId = entity.Id
+                        });
+                        dbRel = dbRelEntry.Entity;
+                    }
+                    fixedPermissions.Add(dbRel);
+                    toKeep.Add(rel.PermissionId);
+                }
+                entity.Permissions = fixedPermissions;
+                var toRemove = await dbContext.Set<UserPermission>().Where(up => up.UserId == entity.Id && !toKeep.Contains(up.PermissionId)).ToListAsync(cancellationToken);
+                if (toRemove.Count > 0)
+                {
+                    dbContext.RemoveRange(toRemove);
+                }
+            }
+            else
+            {
+                foreach (var rel in entity.Permissions)
+                {
+                    rel.User = entity;
+                }
             }
 
             var e = await base.AttachNewOrUpdateAsync(entry, cancellationToken);
@@ -104,6 +141,15 @@ namespace NCoreUtils.OAuth2.Data
                 if (!permissions.IsLoaded)
                 {
                     await permissions.Query().Include(p => p.Permission).LoadAsync(cancellationToken);
+                }
+                foreach (var up in permissions.CurrentValue)
+                {
+                    var upEntry = dbContext.Entry(up);
+                    var permission = upEntry.Reference(e => e.Permission);
+                    if (!permission.IsLoaded)
+                    {
+                        await permission.LoadAsync(cancellationToken);
+                    }
                 }
             }
             // revoke all refresh tokens with out-of-date permissions

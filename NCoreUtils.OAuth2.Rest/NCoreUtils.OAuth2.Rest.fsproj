@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.1" />
-    <PackageReference Include="NCoreUtils.AspNetCore.Rest.Abstraction" Version="2.0.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Rest.Abstraction" Version="2.0.1" />
     <PackageReference Include="NCoreUtils.ContentDetection.Abstractions" Version="1.1.1" />
     <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.2.2" />
     <PackageReference Include="NCoreUtils.FSharp" Version="2.0.0" />
