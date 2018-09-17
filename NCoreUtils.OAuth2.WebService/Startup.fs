@@ -29,6 +29,26 @@ open NCoreUtils.Features
 
 module RAV = NCoreUtils.OAuth2.RestAccessValidation
 
+[<RequireQualifiedAccess>]
+module private ProxyMiddleware =
+
+  let run httpContext (asyncNext : Async<unit>) =
+    let request = HttpContext.request httpContext
+    let headers = HttpRequest.headers request
+    let mutable values = Unchecked.defaultof<_>
+    match Headers.tryGetFirstValue "X-Forwarded-Proto" headers with
+    | ValueSome v ->
+      if StringComparer.OrdinalIgnoreCase.Equals ("https", v) then
+        request.Scheme <- "https"
+    | _ -> ()
+    match Headers.tryGetFirstValue "X-Forwarded-Port" headers with
+    | ValueSome v ->
+      match tryInt32Value v with
+      | ValueSome p when request.Host.HasValue && p <> 443 || not request.IsHttps -> request.Host <- HostString (request.Host.Host, p)
+      | _ -> ()
+    | _ -> ()
+    asyncNext
+
 type Startup() =
 
   static let send404 =
@@ -72,16 +92,26 @@ type Startup() =
           .SetBasePath(System.IO.Directory.GetCurrentDirectory())
           .AddJsonFile(appsettingsSecretPath, optional = false, reloadOnChange = false)
           .Build ()
-      | _ -> EnvConfig.buildConfigFromEnv ()
+      | _ ->
+        printfn "Using ENV to provide configuration"
+        EnvConfig.buildConfigFromEnv ()
 
     let googleBucketConfiguration =
       configuration.GetSection("Google").Get<GoogleBucketConfiguration> ()
       |?? (GoogleBucketConfiguration ())
 
+    let encryptionConfiguration = configuration.GetSection("Google").Get<GoogleEncryptionConfiguration>()
+    if isNull (box encryptionConfiguration) then
+      eprintfn "Unable to bind GoogleEncryptionConfiguration"
+
+    let googleLoggingConfiguration = configuration.GetSection("Google").Get<GoogleLoggingConfiguration>()
+    if isNull (box encryptionConfiguration) then
+      eprintfn "Unable to bind GoogleLoggingConfiguration"
+
     services
       .AddSingleton<IConfiguration>(configuration)
-      .AddSingleton(configuration.GetSection("Google").Get<GoogleEncryptionConfiguration>())
-      .AddSingleton(configuration.GetSection("Google").Get<GoogleLoggingConfiguration>())
+      .AddSingleton(encryptionConfiguration)
+      .AddSingleton(googleLoggingConfiguration)
       .AddSingleton(configuration.GetSection("OAuth2").Get<OAuth2Configuration>())
       .AddSingleton(googleBucketConfiguration)
       // Logging
@@ -154,6 +184,7 @@ type Startup() =
     app
       .UseCors(fun builder -> builder.AllowAnyOrigin().AllowAnyHeader().AllowCredentials().AllowAnyMethod().WithExposedHeaders("X-Access-Token", "X-Total-Count", "Location", "X-Message") |> ignore)
       // .Use(forceGC)
+      .Use(ProxyMiddleware.run)
       .UsePrePopulateLoggingContext()
       .Use(OAuth2Middleware.run)
       .UseRequestErrorHandler()

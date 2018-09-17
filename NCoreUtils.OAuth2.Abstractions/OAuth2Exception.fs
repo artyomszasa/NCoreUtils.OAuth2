@@ -27,6 +27,8 @@ type OAuth2Exception =
   member this.ErrorDescription
     with [<MethodImpl(MethodImplOptions.AggressiveInlining)>] get () = this.errorDescription
 
+  override this.Message = sprintf "%s [%A: %s]" base.Message this.Error this.ErrorDescription
+
   new (info : SerializationInfo, context) =
     { inherit Exception (info, context)
       error            = enum<OAuth2Error> (info.GetInt32 KeyError)

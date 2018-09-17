@@ -1,14 +1,17 @@
 [<RequireQualifiedAccess>]
 module NCoreUtils.OAuth2.OAuth2Middleware
 
+open System
+open System.Globalization
+open System.Runtime.CompilerServices
 open System.Text.RegularExpressions
 open NCoreUtils
 open NCoreUtils.AspNetCore
 open NCoreUtils.Data
 open NCoreUtils.Logging
 open NCoreUtils.OAuth2.Data
-open System
-open System.Runtime.CompilerServices
+
+let private date1970 = DateTimeOffset.Parse ("1970-01-01T00:00:00Z", CultureInfo.InvariantCulture)
 
 let private resGetBearerToken =
   let bearerRegex = Regex ("^Bearer\\s+(.*)$", RegexOptions.Compiled ||| RegexOptions.IgnoreCase ||| RegexOptions.CultureInvariant)
@@ -45,13 +48,16 @@ let inline private asyncResDecryptToken (encryptionProvider : IEncryptionProvide
   >>| handleResult
 
 let inline private mkOpenIdUserInfo (struct (user : User, token : Token)) =
-  { Id         = user.Id
-    GivenName  = user.GivenName
-    FamilyName = user.FamilyName
-    Picture    = null
-    Email      = user.Email
-    Locale     = null
-    Scopes     = token.Scopes |> Seq.map (fun scope -> scope.ToLowerString ()) |> Seq.toArray }
+  NCoreUtils.OAuth2.OpenIdUserInfo (
+    Sub        = user.Id.ToString (),
+    GivenName  = user.GivenName,
+    FamilyName = user.FamilyName,
+    Picture    = null,
+    Email      = user.Email,
+    Locale     = null,
+    UpdatedAt  = ((DateTimeOffset(user.Updated, TimeSpan.Zero) - date1970).TotalSeconds |> int64 |> Nullable.mk),
+    ExpiresAt  = ((token.ExpiresAt - date1970).TotalSeconds |> int64 |> Nullable.mk),
+    Scopes     = (token.Scopes |> Seq.map (fun scope -> scope.ToLowerString ()) |> Seq.toArray))
 
 let inline private send401 httpContext = HttpContext.setResponseStatusCode 401 httpContext
 
@@ -102,7 +108,7 @@ let openid httpContext (services : OpenIdServices) (_parameters : unit) =
       send401 httpContext
       async.Zero ()
     | Ok (info : OpenIdUserInfo) ->
-      debugf services.Logger "Sending OpenID user info for User[Id = %d, Email = %s]" info.Id info.Email
+      debugf services.Logger "Sending OpenID user info for User[Id = %s, Email = %s]" info.Sub info.Email
       json httpContext info
   HttpContext.requestHeaders httpContext
     // get authorization header

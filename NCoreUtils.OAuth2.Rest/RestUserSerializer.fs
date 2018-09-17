@@ -1,5 +1,6 @@
 namespace NCoreUtils.OAuth2.Rest
 
+open NCoreUtils
 open NCoreUtils.Data
 open NCoreUtils.OAuth2.Data
 open NCoreUtils.AspNetCore.Rest
@@ -8,6 +9,10 @@ type MappedClientApplication = {
   Id          : int
   Name        : string
   Description : string }
+
+type MappedUserPermission = {
+  UserId       : int
+  PermissionId : int }
 
 type MappedUser = {
   Id                  : int
@@ -22,7 +27,7 @@ type MappedUser = {
   MiddleName          : string
   Email               : string
   Avatar              : File
-  Permissions         : UserPermission[] }
+  Permissions         : MappedUserPermission[] }
 
 type IDefaultUserSerializer =
   inherit ISerializer<MappedUser>
@@ -56,7 +61,7 @@ module private MappedUser =
       MiddleName          = user.MiddleName
       Email               = user.Email
       Avatar              = user.Avatar
-      Permissions         = user.Permissions |> Seq.toArray }
+      Permissions         = user.Permissions |> Seq.mapToArray (fun up -> { UserId = up.UserId; PermissionId = up.PermissionId }) }
 
 type RestUserSerializer (defaultSerializer : IDefaultUserSerializer) =
   interface ISerializer<User> with

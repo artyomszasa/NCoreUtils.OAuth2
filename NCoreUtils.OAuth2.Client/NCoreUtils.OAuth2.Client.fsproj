@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.1.14</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Encoder.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NCoreUtils.OAuth2.Shared\NCoreUtils.OAuth2.Shared.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NCoreUtils.AspNetCore.Authentication.OpenId" Version="1.1.1" />
+    <PackageReference Include="NCoreUtils.FSharp.Interop" Version="1.0.0" />
+  </ItemGroup>
+
+</Project>

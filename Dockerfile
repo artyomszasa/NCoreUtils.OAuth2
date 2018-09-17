@@ -13,6 +13,7 @@ COPY ./NCoreUtils.OAuth2.Core.Abstractions/NCoreUtils.OAuth2.Core.Abstractions.f
 COPY ./NCoreUtils.OAuth2.Data/NCoreUtils.OAuth2.Data.fsproj ./NCoreUtils.OAuth2.Data/NCoreUtils.OAuth2.Data.fsproj
 COPY ./NCoreUtils.OAuth2.Data.EntityFrameworkCore/NCoreUtils.OAuth2.Data.EntityFrameworkCore.csproj ./NCoreUtils.OAuth2.Data.EntityFrameworkCore/NCoreUtils.OAuth2.Data.EntityFrameworkCore.csproj
 COPY ./NCoreUtils.OAuth2.Encryption.Google/NCoreUtils.OAuth2.Encryption.Google.fsproj ./NCoreUtils.OAuth2.Encryption.Google/NCoreUtils.OAuth2.Encryption.Google.fsproj
+COPY ./NCoreUtils.OAuth2.Shared/NCoreUtils.OAuth2.Shared.fsproj ./NCoreUtils.OAuth2.Shared/NCoreUtils.OAuth2.Shared.fsproj
 COPY ./NCoreUtils.OAuth2.Middleware/NCoreUtils.OAuth2.Middleware.fsproj ./NCoreUtils.OAuth2.Middleware/NCoreUtils.OAuth2.Middleware.fsproj
 COPY ./NCoreUtils.OAuth2.Rest/NCoreUtils.OAuth2.Rest.fsproj ./NCoreUtils.OAuth2.Rest/NCoreUtils.OAuth2.Rest.fsproj
 COPY ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.fsproj ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.fsproj
@@ -28,6 +29,7 @@ COPY ./NCoreUtils.OAuth2.Data/*.fs ./NCoreUtils.OAuth2.Data/
 COPY ./NCoreUtils.OAuth2.Data.EntityFrameworkCore/*.cs ./NCoreUtils.OAuth2.Data.EntityFrameworkCore/
 COPY ./NCoreUtils.OAuth2.Data.EntityFrameworkCore/Migrations ./NCoreUtils.OAuth2.Data.EntityFrameworkCore/Migrations/
 COPY ./NCoreUtils.OAuth2.Encryption.Google/*.fs ./NCoreUtils.OAuth2.Encryption.Google/
+COPY ./NCoreUtils.OAuth2.Shared/*.fs ./NCoreUtils.OAuth2.Shared/
 COPY ./NCoreUtils.OAuth2.Middleware/*.fs ./NCoreUtils.OAuth2.Middleware/
 COPY ./NCoreUtils.OAuth2.Rest/*.fs ./NCoreUtils.OAuth2.Rest/
 COPY ./NCoreUtils.OAuth2.WebService/*.fs ./NCoreUtils.OAuth2.WebService/
