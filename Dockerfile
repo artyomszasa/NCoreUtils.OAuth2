@@ -1,6 +1,8 @@
 # **********************************************************************************************************************
 # BUILD IMAGE
-FROM microsoft/dotnet:2.1-sdk AS build-env-oauth2
+FROM microsoft/dotnet:2.1-sdk-alpine AS build-env-oauth2
+# ADD BASH, see https://github.com/dotnet/dotnet-docker/issues/632
+RUN apk update && apk add --no-cache bash
 WORKDIR /app
 # COPY NUGET config
 COPY ./NuGet.Config ./
@@ -18,7 +20,7 @@ COPY ./NCoreUtils.OAuth2.Middleware/NCoreUtils.OAuth2.Middleware.fsproj ./NCoreU
 COPY ./NCoreUtils.OAuth2.Rest/NCoreUtils.OAuth2.Rest.fsproj ./NCoreUtils.OAuth2.Rest/NCoreUtils.OAuth2.Rest.fsproj
 COPY ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.fsproj ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.fsproj
 # RESTORE PACKAGES
-RUN dotnet restore ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.fsproj -r linux-x64
+RUN dotnet restore ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.fsproj -r alpine-x64
 # COPY SOURCES
 COPY ./NCoreUtils.OAuth2.Abstractions/*.fs ./NCoreUtils.OAuth2.Abstractions/
 COPY ./NCoreUtils.OAuth2.Authentication/*.fs ./NCoreUtils.OAuth2.Authentication/
@@ -34,14 +36,17 @@ COPY ./NCoreUtils.OAuth2.Middleware/*.fs ./NCoreUtils.OAuth2.Middleware/
 COPY ./NCoreUtils.OAuth2.Rest/*.fs ./NCoreUtils.OAuth2.Rest/
 COPY ./NCoreUtils.OAuth2.WebService/*.fs ./NCoreUtils.OAuth2.WebService/
 # PUBLISH APPLICATION
-RUN dotnet publish ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.fsproj -c Release -r linux-x64 --no-restore -o /app/out
+RUN dotnet publish ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.fsproj -c Release -r alpine-x64 --no-restore -o /app/out
 
 # **********************************************************************************************************************
 # RUNTIME IMAGE
-FROM microsoft/dotnet:2.1-runtime-deps
+FROM microsoft/dotnet:2.1-runtime-deps-alpine
 WORKDIR /app
-# INSTALL CURL
-RUN apt-get update && apt-get install -y curl
+# INSTALL GLOBALIZATION and CURL
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT false
+# libgrpc_csharp_ext.x64.so miatt
+RUN apk update && apk add --no-cache libc6-compat
+RUN apk update && apk add --no-cache icu-libs curl
 # SETUP ENVIRONMENT
 ENV ASPNETCORE_ENVIRONMENT=Production
 # COPY APP
