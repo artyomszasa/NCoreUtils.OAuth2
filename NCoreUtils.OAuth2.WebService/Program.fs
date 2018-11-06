@@ -1,16 +1,17 @@
 namespace NCoreUtils.OAuth2.WebService
 
+open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Hosting
-open NCoreUtils.AspNetCore
+// open NCoreUtils.AspNetCore
 // open NCoreUtils.Posix
 
 module Program =
   let exitCode = 0
 
   let BuildWebHost (args : string[]) =
-    WebHostBuilder()
+    WebHost.CreateDefaultBuilder(args)
       //.UseNCorePosixServer(args)
-      .UseKestrel(args)
+      .UseKestrel()
       .UseStartup<Startup>()
       .Build()
 

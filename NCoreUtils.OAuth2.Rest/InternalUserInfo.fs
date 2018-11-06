@@ -8,14 +8,19 @@ open System.Security.Claims
 
 type InternalUserInfo (httpContextAccessor : IHttpContextAccessor, userRepository : IDataRepository<User, int>) =
 
+  static let wrapUnsafe x =
+    match box x with
+    | null -> None
+    | _    -> Some x
+
   static let tryAuthenticatedUserId (user : ClaimsPrincipal) =
     let identity = user.Identity
     match identity.IsAuthenticated with
-    | false -> None
+    | false -> ValueNone
     | _     ->
     match user.FindFirst ClaimTypes.Sid with
-    | null  -> None
-    | claim -> tryInt claim.Value
+    | null  -> ValueNone
+    | claim -> tryIntValue claim.Value
 
   let httpContext = httpContextAccessor.HttpContext
   let mutable user = None : User option
@@ -25,8 +30,8 @@ type InternalUserInfo (httpContextAccessor : IHttpContextAccessor, userRepositor
     | _      -> async {
       let! user1 =
         match tryAuthenticatedUserId httpContext.User with
-        | None     -> async.Return None
-        | Some uid -> userRepository.AsyncLookup uid >>| Option.wrap
+        | ValueNone     -> async.Return None
+        | ValueSome uid -> userRepository.AsyncLookup uid >>| wrapUnsafe
       user <- user1
       return user1 }
 

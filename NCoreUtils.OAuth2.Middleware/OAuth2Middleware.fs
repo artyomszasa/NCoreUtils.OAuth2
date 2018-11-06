@@ -27,9 +27,9 @@ let inline private resEnsureNonExpiredToken (token : Token) =
 
 let inline private resParseTokenUserId token =
   let input = Token.id token
-  match tryInt32 input with
-  | Some uid -> Ok    <| struct (uid, token)
-  | _        -> Error <| sprintf "Invalid token user id: %s" input
+  match tryInt32Value input with
+  | ValueSome uid -> Ok    <| struct (uid, token)
+  | _             -> Error <| sprintf "Invalid token user id: %s" input
 
 let inline private asyncResLookupUser (userRespository : IDataRepository<User, int>) (struct (userId, token)) =
   userRespository.AsyncLookup userId

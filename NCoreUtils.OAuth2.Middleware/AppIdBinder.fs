@@ -33,8 +33,8 @@ module CurrentClientApplicationResolver =
     | SomeHost host ->
       repo.Items
         |> Q.filter (fun ca -> ca.Domains.Any(fun domain -> domain.DomainName = host))
-        |> Q.asyncTryFirst
-        >>| Option.defaultWith invalidAppIdForDomain
+        |> Q.asyncToResizeArray
+        >>| (Seq.tryHead >> Option.defaultWith invalidAppIdForDomain)
         >>* (fun app -> logger.LogDebug("Successfully resolved client application for {0} => {1}.", host, app.Name) |> async.Return)
 
 

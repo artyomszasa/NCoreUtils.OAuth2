@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.1.17</Version>
+    <Version>1.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="NCoreUtils.AspNetCore.Authentication.OpenId" Version="1.1.1" />
-    <PackageReference Include="NCoreUtils.FSharp.Interop" Version="1.0.0" />
+    <PackageReference Include="NCoreUtils.FSharp.Interop" Version="2.0.2" />
   </ItemGroup>
 
 </Project>

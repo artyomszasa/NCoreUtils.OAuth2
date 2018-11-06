@@ -148,8 +148,8 @@ type OAuth2Core (loginAuthenticator : LoginAuthenticator,
       fun () ->
           authorizationCodeRepository.Items
           |>  Q.filter (fun code -> code.Id = authorizationCodeGuid && code.RedirectUri = redirectUri && code.User.ClientApplicationId = clientApplicationId)
-          |>  Q.asyncTryFirst
-          >>| Option.defaultWith noAuthorizationCode
+          |>  Q.asyncToResizeArray
+          >>| (Seq.tryHead >> Option.defaultWith noAuthorizationCode)
           >>+ (fun authCode -> createTokensAsync authCode.UserId (authCode.Scopes.Split ','))
           >>* (fst >> authorizationCodeRepository.AsyncRemove)
           >>| snd)
@@ -167,8 +167,8 @@ type OAuth2Core (loginAuthenticator : LoginAuthenticator,
         let expiresAtUtcTicks = refreshToken.ExpiresAt.UtcTicks
         refreshTokenRepository.Items
         |> Q.filter (fun rt -> rt.State = State.Public && rt.UserId = userId && rt.IssuedAt = issuedAtUtcTicks && rt.ExpiresAt = expiresAtUtcTicks && rt.Scopes = scopes)
-        |> Q.asyncTryFirst
-        >>| Option.defaultWith invalidRefreshToken
+        |>  Q.asyncToResizeArray
+        >>| (Seq.tryHead >> Option.defaultWith invalidRefreshToken)
         >>+ (fun rtoken ->
               let now = DateTimeOffset.Now
               rtoken.LastUsed <- Nullable.mk now.UtcTicks

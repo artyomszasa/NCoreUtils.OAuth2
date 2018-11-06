@@ -49,8 +49,9 @@ RUN apk update && apk add --no-cache libc6-compat
 RUN apk update && apk add --no-cache icu-libs curl
 # SETUP ENVIRONMENT
 ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_URLS=http://0.0.0.0:80
 # COPY APP
 COPY --from=build-env-oauth2 /app/out ./
 # ENTRY POINT
-ENTRYPOINT ["./NCoreUtils.OAuth2.WebService", "--tcp=0.0.0.0:80"]
+ENTRYPOINT ["./NCoreUtils.OAuth2.WebService"]
 

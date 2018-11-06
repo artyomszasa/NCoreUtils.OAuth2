@@ -9,18 +9,18 @@ open NCoreUtils.OAuth2.Data
 
 type OAuth2UserManager (userRepository : IDataRepository<User>, currentClientApplication : CurrentClientApplication) =
 
-  static let unwrapUnsafe x =
-    match x with
-    | Some x -> x
-    | _      -> Unchecked.defaultof<_>
+  // static let unwrapUnsafe x =
+  //   match x with
+  //   | Some x -> x
+  //   | _      -> Unchecked.defaultof<_>
 
   [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
   member private __.AsyncFindByEmail email =
     let appId = currentClientApplication.Id;
     userRepository.Items
     |> Q.filter (fun u -> u.Email = email && u.ClientApplicationId = appId)
-    |> Q.asyncTryFirst
-    >>| (fun u -> unwrapUnsafe u :> IUser<_>)
+    |> Q.asyncToResizeArray
+    >>| (fun us -> us |> Seq.head :> IUser<_>)
 
   [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
   member private __.AsyncGetPermissionsAsync (user : IUser<_>) =
