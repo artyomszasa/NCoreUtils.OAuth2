@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.2.0</Version>
+    <Version>1.2.1-alpha0</Version>
     <IsPackable>false</IsPackable>
+    <NoWarn>FS2003</NoWarn>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="InternalUserInfo.fs" />
     <Compile Include="Permissions.fs" />
@@ -14,33 +13,25 @@
     <Compile Include="RestUserSerializer.fs" />
     <Compile Include="RestFileCreate.fs" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.1" />
-    <PackageReference Include="NCoreUtils.AspNetCore.Rest.Abstraction" Version="2.0.1" />
-    <PackageReference Include="NCoreUtils.ContentDetection.Abstractions" Version="1.1.2" />
-    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Rest.Abstraction" Version="2.0.3-alpha5" />
+    <PackageReference Include="NCoreUtils.ContentDetection.Abstractions" Version="1.1.3-alpha0" />
+    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.3.1-alpha1" />
     <PackageReference Include="NCoreUtils.FSharp" Version="2.0.2" />
-    <PackageReference Include="NCoreUtils.FSharp.AspNetCore" Version="2.0.2" />
-    <PackageReference Include="NCoreUtils.FSharp.Data" Version="2.0.2" />
-    <PackageReference Include="NCoreUtils.FSharp.DependencyInjection" Version="2.0.2" />
+    <PackageReference Include="NCoreUtils.FSharp.AspNetCore" Version="2.0.3-alpha0" />
+    <PackageReference Include="NCoreUtils.FSharp.Data" Version="2.0.3-alpha0" />
+    <PackageReference Include="NCoreUtils.FSharp.DependencyInjection" Version="2.0.3-alpha0" />
     <PackageReference Include="NCoreUtils.FSharp.Linq" Version="2.0.2" />
-    <PackageReference Include="NCoreUtils.FSharp.Logging" Version="2.0.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="NCoreUtils.FSharp.Logging" Version="2.0.3-alpha0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="System.Buffers" Version="4.5.0" />
-    <PackageReference Include="System.Memory" Version="4.5.1" />
+    <PackageReference Include="System.Memory" Version="4.5.2" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="System.Security.Cryptography.Cng" Version="4.5.0" />
-    <!--
-    <PackageReference Include="System.Net.Requests" Version="4.3.0" />
-    <PackageReference Include="System.Net.WebHeaderCollection" Version="4.3.0" />
-    <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
-    -->
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.Core.Abstractions\NCoreUtils.OAuth2.Core.Abstractions.fsproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.Data\NCoreUtils.OAuth2.Data.fsproj" />
   </ItemGroup>
-
 </Project>

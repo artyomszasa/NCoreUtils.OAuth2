@@ -1,6 +1,6 @@
 # **********************************************************************************************************************
 # BUILD IMAGE
-FROM microsoft/dotnet:2.1-sdk-alpine AS build-env-oauth2
+FROM microsoft/dotnet:2.2-sdk-alpine AS build-env-oauth2
 # ADD BASH, see https://github.com/dotnet/dotnet-docker/issues/632
 RUN apk update && apk add --no-cache bash
 WORKDIR /app
@@ -40,7 +40,7 @@ RUN dotnet publish ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.f
 
 # **********************************************************************************************************************
 # RUNTIME IMAGE
-FROM microsoft/dotnet:2.1-runtime-deps-alpine
+FROM microsoft/dotnet:2.2-runtime-deps-alpine
 WORKDIR /app
 # INSTALL GLOBALIZATION and CURL
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT false

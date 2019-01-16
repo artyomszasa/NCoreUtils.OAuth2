@@ -49,7 +49,7 @@ module private ProxyMiddleware =
     | _ -> ()
     asyncNext
 
-type Startup() =
+type Startup (env: IHostingEnvironment) =
 
   static let send404 =
     RequestDelegate
@@ -116,12 +116,16 @@ type Startup() =
       .AddSingleton(googleBucketConfiguration)
       // Logging
       .AddLogging(fun builder ->
-          builder
-            .ClearProviders()
-            .SetMinimumLevel(LogLevel.Information)
-            .AddFilter(DbLoggerCategory.Infrastructure.Name, LogLevel.Error)
-            .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Warning)
-          |> ignore)
+        builder
+          .ClearProviders()
+          .SetMinimumLevel(LogLevel.Information)
+          .AddFilter(DbLoggerCategory.Infrastructure.Name, LogLevel.Error)
+          .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Warning)
+          |> ignore
+        if env.IsDevelopment ()
+          then builder.AddConsole () |> ignore
+          else builder.AddGoogleSink(googleLoggingConfiguration) |> ignore
+      )
       .AddPrePopulatedLoggingContext()
       // data
       .AddOAuth2DbContext(fun builder -> builder.UseNpgsql(configuration.GetConnectionString("Default"), fun b -> b.MigrationsAssembly("NCoreUtils.OAuth2.Data.EntityFrameworkCore") |> ignore) |> ignore)
@@ -177,12 +181,17 @@ type Startup() =
 
     ()
 
-  member __.Configure (app: IApplicationBuilder, env: IHostingEnvironment, loggerFactory : ILoggerFactory, googleLoggingConfiguration : GoogleLoggingConfiguration, httpContextAccessor) =
-    if env.IsDevelopment()
-      then loggerFactory.AddConsole(LogLevel.Trace).AddDebug(LogLevel.Trace) |> ignore
-      else loggerFactory.AddGoogleSink(httpContextAccessor, googleLoggingConfiguration) |> ignore
+  member __.Configure (app: IApplicationBuilder) =
     app
-      .UseCors(fun builder -> builder.AllowAnyOrigin().AllowAnyHeader().AllowCredentials().AllowAnyMethod().WithExposedHeaders("X-Access-Token", "X-Total-Count", "Location", "X-Message") |> ignore)
+      .UseCors(fun builder ->
+        builder
+          .AllowAnyOrigin()
+          .AllowAnyHeader()
+          .AllowCredentials()
+          .AllowAnyMethod()
+          .WithExposedHeaders("X-Access-Token", "X-Total-Count", "Location", "X-Message")
+          |> ignore
+      )
       // .Use(forceGC)
       .Use(ProxyMiddleware.run)
       .UsePrePopulateLoggingContext()

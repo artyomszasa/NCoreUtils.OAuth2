@@ -63,7 +63,7 @@ namespace NCoreUtils.OAuth2.Data
             }
 
             // Permissions
-            var dbContext = _context.DbContext;
+            var dbContext = EFCoreContext.DbContext;
             if (entity.HasValidId())
             {
                 var fixedPermissions = new HashSet<UserPermission>();
@@ -133,7 +133,7 @@ namespace NCoreUtils.OAuth2.Data
         public override async Task<User> PersistAsync(User item, CancellationToken cancellationToken = default(CancellationToken))
         {
             var result = await base.PersistAsync(item, cancellationToken);
-            var dbContext = _context.DbContext;
+            var dbContext = EFCoreContext.DbContext;
             // ensure permissions loaded
             {
                 var entry = dbContext.Entry(result);

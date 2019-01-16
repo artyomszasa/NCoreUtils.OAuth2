@@ -1,24 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.2.0</Version>
+    <Version>1.2.1-alpha0</Version>
     <IsPackable>false</IsPackable>
+    <NoWarn>FS2003</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="OAuth2UserManager.fs" />
     <Compile Include="OAuth2PasswordLogin.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Authentication.Password" Version="1.1.1" />
+    <PackageReference Include="NCoreUtils.Authentication.Password" Version="1.1.2-alpha0" />
     <PackageReference Include="NCoreUtils.Extensions.Collections" Version="1.0.3" />
     <PackageReference Include="NCoreUtils.FSharp.Linq" Version="2.0.2" />
     <PackageReference Include="NCoreUtils.FSharp.Interop" Version="2.0.2" />
     <PackageReference Include="NCoreUtils.Linq.Extensions" Version="1.0.5" />
-    <!--
-    <PackageReference Include="System.Net.Requests" Version="4.3.0" />
-    <PackageReference Include="System.Net.WebHeaderCollection" Version="4.3.0" />
-    <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
-    -->
     <PackageReference Include="System.Buffers" Version="4.5.0" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
   </ItemGroup>
