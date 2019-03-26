@@ -32,6 +32,7 @@ module RAV = NCoreUtils.OAuth2.RestAccessValidation
 [<RequireQualifiedAccess>]
 module private ProxyMiddleware =
 
+  [<CompiledName("Run")>]
   let run httpContext (asyncNext : Async<unit>) =
     let request = HttpContext.request httpContext
     let headers = HttpRequest.headers request
