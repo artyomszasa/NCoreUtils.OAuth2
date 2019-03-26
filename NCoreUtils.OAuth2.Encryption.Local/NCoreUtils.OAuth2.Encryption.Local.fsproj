@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="AesEncryptionConfiguration.fs" />
+    <Compile Include="AesEncryptionProvider.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NCoreUtils.OAuth2.Abstractions\NCoreUtils.OAuth2.Abstractions.fsproj" />
+  </ItemGroup>
+
+</Project>

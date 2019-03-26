@@ -30,33 +30,14 @@ let private vx name def f = v name def f false
 
 let private vy name def f = v name def f true
 
-let private getLocation =
-  let regex = Regex "(europe|us|asia)-[a-z]+[0-9]"
-  fun (str : string) -> regex.Match(str).Groups.[0].Value
-
-let private getGoogleMetadata (uri : string) =
-  try
-    use client = new HttpClient ()
-    use request = new HttpRequestMessage (HttpMethod.Get, uri)
-    request.Headers.Add ("Metadata-Flavor", "Google")
-    use response = client.SendAsync(request).Result
-    response.Content.ReadAsStringAsync().Result |> Some
-  with exn ->
-    eprintfn "Unable to get google metadata (uri = %s): %s" uri exn.Message
-    None
-
-
 let private vars =
   [ vx "DB_HOST"                   (Some "127.0.0.1")   None
     vx "DB_PORT"                   (Some "5432")        None
     vx "DB_DATABASE"               (Some "oauth2")      None
     vx "DB_USER"                    None                None
     vy "DB_PASSWORD"                None                None
-    vx "GOOGLE_PROJECTID"           None               (Some (fun () -> getGoogleMetadata "http://metadata.google.internal/computeMetadata/v1/project/project-id"))
-    vx "GOOGLE_LOCATIONID"          None               (Some (fun () -> getGoogleMetadata "http://metadata.google.internal/computeMetadata/v1/instance/zone" >>| getLocation))
-    vx "GOOGLE_SERVICENAME"         None                None
-    vx "GOOGLE_KEYRINGID"           None                None
-    vx "GOOGLE_KEYID"               None                None
+    vx "AES_KEY"                    None                None
+    vx "AES_IV"                     None                None
     vx "ACCESS_TOKEN_EXPIRY"       (Some "00:15:00")    None
     vx "AUTHORIZATION_CODE_EXPIRY" (Some "00:10:00")    None
     vx "REFRESH_TOKEN_EXPIRY"      (Some "45.00:00:00") None ]
@@ -99,11 +80,8 @@ let buildConfigFromEnv () =
       d
     Dictionary ()
     |> add "ConnectionStrings:Default"       (sprintf "Host=%s; Port=%s; Username=%s; Password=%s;Database=%s" (vv "DB_HOST") (vv "DB_PORT") (vv "DB_USER") (vv "DB_PASSWORD") (vv "DB_DATABASE"))
-    |> add "Google:ProjectId"                (vv "GOOGLE_PROJECTID")
-    |> add "Google:ServiceName"              (vv "GOOGLE_SERVICENAME")
-    |> add "Google:LocationId"               (vv "GOOGLE_LOCATIONID")
-    |> add "Google:KeyRingid"                (vv "GOOGLE_KEYRINGID")
-    |> add "Google:KeyId"                    (vv "GOOGLE_KEYID")
+    |> add "Aes:Key"                         (vv "AES_KEY")
+    |> add "Aes:IV"                          (vv "AES_IV")
     |> add "OAuth2:AccessTokenExpiry"        (vv "ACCESS_TOKEN_EXPIRY")
     |> add "OAuth2:AuthorizationCodeExpiry"  (vv "AUTHORIZATION_CODE_EXPIRY")
     |> add "OAuth2:RefreshTokenExpiry"       (vv "REFRESH_TOKEN_EXPIRY")

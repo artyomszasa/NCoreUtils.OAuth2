@@ -17,7 +17,6 @@ open NCoreUtils.ContentDetection
 open NCoreUtils.AspNetCore
 open NCoreUtils.Authentication
 open NCoreUtils.Data
-open NCoreUtils.Logging
 open NCoreUtils.OAuth2
 open NCoreUtils.OAuth2.Data
 open NCoreUtils.Storage
@@ -28,6 +27,14 @@ open NCoreUtils.Images
 open NCoreUtils.Features
 
 module RAV = NCoreUtils.OAuth2.RestAccessValidation
+
+type internal DummyFileUploader () =
+  interface IFileUploader with
+    member __.AsyncResUpload (_ : IFile, _ : Stream) =
+      ((Result.Error "file uploads has been disabled") : Result<unit, string>) |> async.Return
+    member __.AsyncResUpload (_ : IFile, _: byte[]) =
+      ((Result.Error "file uploads has been disabled") : Result<unit, string>) |> async.Return
+
 
 [<RequireQualifiedAccess>]
 module private ProxyMiddleware =
@@ -97,24 +104,14 @@ type Startup (env: IHostingEnvironment) =
         printfn "Using ENV to provide configuration"
         EnvConfig.buildConfigFromEnv ()
 
-    let googleBucketConfiguration =
-      configuration.GetSection("Google").Get<GoogleBucketConfiguration> ()
-      |?? (GoogleBucketConfiguration ())
-
-    let encryptionConfiguration = configuration.GetSection("Google").Get<GoogleEncryptionConfiguration>()
+    let encryptionConfiguration = configuration.GetSection("Aes").Get<AesEncryptionConfiguration>()
     if isNull (box encryptionConfiguration) then
-      eprintfn "Unable to bind GoogleEncryptionConfiguration"
-
-    let googleLoggingConfiguration = configuration.GetSection("Google").Get<GoogleLoggingConfiguration>()
-    if isNull (box encryptionConfiguration) then
-      eprintfn "Unable to bind GoogleLoggingConfiguration"
+      eprintfn "Unable to bind AesEncryptionConfiguration"
 
     services
       .AddSingleton<IConfiguration>(configuration)
       .AddSingleton(encryptionConfiguration)
-      .AddSingleton(googleLoggingConfiguration)
       .AddSingleton(configuration.GetSection("OAuth2").Get<OAuth2Configuration>())
-      .AddSingleton(googleBucketConfiguration)
       // Logging
       .AddLogging(fun builder ->
         builder
@@ -122,12 +119,8 @@ type Startup (env: IHostingEnvironment) =
           .SetMinimumLevel(LogLevel.Information)
           .AddFilter(DbLoggerCategory.Infrastructure.Name, LogLevel.Error)
           .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Warning)
-          |> ignore
-        if env.IsDevelopment ()
-          then builder.AddConsole () |> ignore
-          else builder.AddGoogleSink(googleLoggingConfiguration) |> ignore
+          .AddConsole () |> ignore
       )
-      .AddPrePopulatedLoggingContext()
       // data
       .AddOAuth2DbContext(fun builder -> builder.UseNpgsql(configuration.GetConnectionString("Default"), fun b -> b.MigrationsAssembly("NCoreUtils.OAuth2.Data.EntityFrameworkCore") |> ignore) |> ignore)
       .AddOAuth2DataRepositories()
@@ -136,7 +129,7 @@ type Startup (env: IHostingEnvironment) =
       // http context access
       .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
       // Encryption provider
-      .AddSingleton<IEncryptionProvider, GoogleEncryptionProvider>()
+      .AddSingleton<IEncryptionProvider, AesEncryptionProvider>()
       // Session level client application id
       .AddScoped<CurrentClientApplication>()
       // login provider
@@ -152,16 +145,10 @@ type Startup (env: IHostingEnvironment) =
       .AddImageResizer<ImageResizerClient>()
       // google cloud storage
       .AddTransient<IFeatureCollection<IStorageProvider>>(fun _ -> FeatureCollectionBuilder().Build<IStorageProvider>())
-      .AddGoogleCloudStorageProvider(
-        configuration.["Google:ProjectId"],
-        fun (b : GoogleCloudStorageOptionsBuilder) ->
-          b.ChunkSize           <- Nullable.mk 262144;
-          b.PredefinedAcl       <- Nullable.mk Google.Cloud.Storage.V1.PredefinedObjectAcl.PublicRead;
-          b.DefaultCacheControl <- "max-age=2628000, private"
-      )
+      .AddFileSystemStorageProvider("/tmp")
       // REST access + file upload
       .AddDataQueryServices(fun _ -> ())
-      .AddFileUploader(configuration.GetSection "Images", fun path -> Uri (sprintf "gs://%s/%s" googleBucketConfiguration.BucketName (path.Trim '/'), UriKind.Absolute))
+      .AddSingleton<IFileUploader, DummyFileUploader>()
       .AddCustomRestPipeline()
       .AddScoped<Rest.CurrentRestTypeName>()
       .ConfigureRest(fun b -> b.WithPathPrefix(CaseInsensitive "/data").ConfigureAccess(configureRestAccess).AddRange [| typeof<User>; typeof<Permission>; typeof<File> |] |> ignore)
@@ -195,7 +182,6 @@ type Startup (env: IHostingEnvironment) =
       )
       // .Use(forceGC)
       .Use(ProxyMiddleware.run)
-      .UsePrePopulateLoggingContext()
       .Use(OAuth2Middleware.run)
       .UseRequestErrorHandler()
       .UseAuthentication()
