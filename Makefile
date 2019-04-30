@@ -1,6 +1,6 @@
 
 NAME=ncoreutils-oauth2
-VERSION?=1.1.9
+VERSION?=1.2.1-alpha2
 PREFIX?=gcr.io/hosting-666
 
 build-image:

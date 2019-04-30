@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="2.6.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+    <PackageReference Include="NCoreUtils.XUnit" Version="1.0.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <PackageReference Include="ReportGenerator" Version="4.1.4" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NCoreUtils.OAuth2.WebService\NCoreUtils.OAuth2.WebService.fsproj" />
+  </ItemGroup>
+  <Target Name="CopyDepsJson" BeforeTargets="CopyFilesToOutputDirectory">
+    <Copy SourceFiles="..\NCoreUtils.OAuth2.WebService\appsettings.json" DestinationFolder="$(OutputPath)" ContinueOnError="false" />
+    <Copy SourceFiles="..\NCoreUtils.OAuth2.WebService\bin\$(Configuration)\$(TargetFramework)\NCoreUtils.OAuth2.WebService.deps.json" DestinationFolder="$(OutputPath)" ContinueOnError="false" />
+  </Target>
+  <Target Name="RunCoverageTests">
+    <PropertyGroup>
+      <ReportGeneratorPaths>$([System.IO.Directory]::GetFiles($(NuGetPackageRoot), "ReportGenerator.exe", System.IO.SearchOption.AllDirectories))</ReportGeneratorPaths>
+    </PropertyGroup>
+    <ItemGroup>
+      <ReportGeneratorVersion Include="%(PackageReference.Version)" Condition="%(PackageReference.Identity) == 'ReportGenerator'" />
+    </ItemGroup>
+    <PropertyGroup>
+      <UseReportGeneratorVersion>@(ReportGeneratorVersion)</UseReportGeneratorVersion>
+    </PropertyGroup>
+    <ItemGroup>
+      <ReportGeneratorCandidates Include="$(ReportGeneratorPaths)" />
+      <ReportGeneratorPath Include="%(ReportGeneratorCandidates.Identity)" Condition="$([System.String]::new('%(ReportGeneratorCandidates.Identity)').Contains($(UseReportGeneratorVersion)))" />
+    </ItemGroup>
+    <PropertyGroup>
+      <UseReportGeneratorPath>@(ReportGeneratorPath)</UseReportGeneratorPath>
+    </PropertyGroup>
+    <Message Importance="High" Text="Version = @(ReportGeneratorVersion)" />
+    <Message Importance="High" Text="Candidates = %(ReportGeneratorCandidates.Identity)" />
+    <Message Importance="High" Text="Chosen path = $(UseReportGeneratorPath)" />
+    <PropertyGroup>
+      <CollectCoverage>True</CollectCoverage>
+      <CoverletOutputFormat>opencover</CoverletOutputFormat>
+    </PropertyGroup>
+    <!-- msbuild not integrated this yet...
+    <CallTarget Targets="VSTest" />
+    -->
+    <Exec Command="dotnet test --no-restore /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Include=&quot;[NCoreUtils.OAuth2*]*&quot; /p:Exclude=&quot;[NCoreUtils.OAuth2.Unit]*&quot; /p:Exclude=&quot;[NCoreUtils.OAuth2.Encryption.Google]*&quot; /p:ParallelizeTestCollections=false " />
+    <Exec Command="mono $(UseReportGeneratorPath) -reports:coverage.opencover.xml -targetdir:report -reporttypes:Html" Condition="'$(OS)' == 'Unix'" />
+    <Exec Command="$(UseReportGeneratorPath) -reports:coverage.opencover.xml -targetdir:report -reporttypes:Html" Condition="'$(OS)' != 'Unix'" />
+  </Target>
+</Project>

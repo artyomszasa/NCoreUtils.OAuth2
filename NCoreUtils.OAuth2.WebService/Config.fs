@@ -94,7 +94,7 @@ let buildConfigFromEnv () =
       Map.empty
   let vv key = Map.find key map
   let dict =
-    let inline add k v (d : Dictionary<string, string>) =
+    let add k v (d : Dictionary<string, string>) =
       d.Add (k, v)
       d
     Dictionary ()

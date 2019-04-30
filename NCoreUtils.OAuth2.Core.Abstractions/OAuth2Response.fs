@@ -1,7 +1,9 @@
 namespace NCoreUtils.OAuth2.Data
 
+open System.Diagnostics.CodeAnalysis
 open Newtonsoft.Json
 
+[<ExcludeFromCodeCoverage>]
 type OAuth2Response = {
   [<JsonProperty("access_token")>]
   AccessToken  : string

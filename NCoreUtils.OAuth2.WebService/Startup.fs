@@ -7,48 +7,28 @@ open System.Threading.Tasks
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.Http
+open Microsoft.AspNetCore.HttpOverrides
 open Microsoft.EntityFrameworkCore
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.DependencyInjection.Extensions
 open Microsoft.Extensions.Logging
 open NCoreUtils
-open NCoreUtils.ContentDetection
 open NCoreUtils.AspNetCore
 open NCoreUtils.Authentication
+open NCoreUtils.ContentDetection
 open NCoreUtils.Data
+open NCoreUtils.Features
+open NCoreUtils.Images
 open NCoreUtils.Logging
 open NCoreUtils.OAuth2
 open NCoreUtils.OAuth2.Data
 open NCoreUtils.Storage
+open NCoreUtils.Text
 open Newtonsoft.Json
 open Newtonsoft.Json.Serialization
-open NCoreUtils.Text
-open NCoreUtils.Images
-open NCoreUtils.Features
 
 module RAV = NCoreUtils.OAuth2.RestAccessValidation
-
-[<RequireQualifiedAccess>]
-module private ProxyMiddleware =
-
-  [<CompiledName("Run")>]
-  let run httpContext (asyncNext : Async<unit>) =
-    let request = HttpContext.request httpContext
-    let headers = HttpRequest.headers request
-    let mutable values = Unchecked.defaultof<_>
-    match Headers.tryGetFirstValue "X-Forwarded-Proto" headers with
-    | ValueSome v ->
-      if StringComparer.OrdinalIgnoreCase.Equals ("https", v) then
-        request.Scheme <- "https"
-    | _ -> ()
-    match Headers.tryGetFirstValue "X-Forwarded-Port" headers with
-    | ValueSome v ->
-      match tryInt32Value v with
-      | ValueSome p when request.Host.HasValue && p <> 443 || not request.IsHttps -> request.Host <- HostString (request.Host.Host, p)
-      | _ -> ()
-    | _ -> ()
-    asyncNext
 
 type Startup (env: IHostingEnvironment) =
 
@@ -110,6 +90,9 @@ type Startup (env: IHostingEnvironment) =
       eprintfn "Unable to bind GoogleLoggingConfiguration"
 
     services
+#if DEBUG
+      .AddSingleton<ITestContextInitializer>({ new ITestContextInitializer with member __.Initialize() = () })
+#endif
       .AddSingleton<IConfiguration>(configuration)
       .AddSingleton(encryptionConfiguration)
       .AddSingleton(googleLoggingConfiguration)
@@ -119,9 +102,9 @@ type Startup (env: IHostingEnvironment) =
       .AddLogging(fun builder ->
         builder
           .ClearProviders()
-          .SetMinimumLevel(LogLevel.Information)
-          .AddFilter(DbLoggerCategory.Infrastructure.Name, LogLevel.Error)
-          .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Warning)
+          .SetMinimumLevel(LogLevel.Debug)
+          // .AddFilter(DbLoggerCategory.Infrastructure.Name, LogLevel.Error)
+          // .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Warning)
           |> ignore
         if env.IsDevelopment ()
           then builder.AddConsole () |> ignore
@@ -182,7 +165,13 @@ type Startup (env: IHostingEnvironment) =
 
     ()
 
-  member __.Configure (app: IApplicationBuilder) =
+  member __.Configure (app: IApplicationBuilder, test : ITestContextInitializer) =
+    test.Initialize ()
+
+    let forwardedHeaderOptions = ForwardedHeadersOptions (ForwardedHeaders = ForwardedHeaders.All)
+    forwardedHeaderOptions.KnownNetworks.Clear();
+    forwardedHeaderOptions.KnownProxies.Clear();
+
     app
       .UseCors(fun builder ->
         builder
@@ -194,7 +183,8 @@ type Startup (env: IHostingEnvironment) =
           |> ignore
       )
       // .Use(forceGC)
-      .Use(ProxyMiddleware.run)
+      // .Use(ProxyMiddleware.run)
+      .UseForwardedHeaders(forwardedHeaderOptions)
       .UsePrePopulateLoggingContext()
       .Use(OAuth2Middleware.run)
       .UseRequestErrorHandler()

@@ -24,7 +24,7 @@ type InternalAuthenticationHandler (options, loggerFactory, encoder, clock, encr
 
   //FIXME: merge with OAuth2Middleware
   static let asyncResDecryptToken (encryptionProvider : IEncryptionProvider) encryptedToken =
-    let inline handleResult tokenResult =
+    let handleResult tokenResult =
       match tokenResult with
       | Choice1Of2 token       -> Ok token
       | Choice2Of2 (exn : exn) -> Error <| sprintf "Unable to decrypt token = %s, error = %s" encryptedToken exn.Message

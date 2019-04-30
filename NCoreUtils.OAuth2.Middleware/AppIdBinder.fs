@@ -1,5 +1,6 @@
 namespace NCoreUtils.OAuth2
 
+open System.Diagnostics.CodeAnalysis
 open System.Linq
 open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Logging
@@ -40,6 +41,7 @@ module CurrentClientApplicationResolver =
 
 [<AutoOpen>]
 module private AppIdBinderHelpers =
+  [<ExcludeFromCodeCoverage>]
   let inline getBoxedId (app : ClientApplication) = box app.Id
 
 type internal AppIdBinder (httpContextAccessor : IHttpContextAccessor, repo : IDataRepository<ClientApplication>, logger : ILogger<AppIdBinder>) =

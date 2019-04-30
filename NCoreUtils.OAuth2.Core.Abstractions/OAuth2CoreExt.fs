@@ -1,21 +1,25 @@
 [<AutoOpen>]
 module NCoreUtils.OAuth2.OAuth2CoreExt
 
+open System
+open System.Diagnostics.CodeAnalysis
 open Microsoft.Extensions.Logging
 open NCoreUtils
 open NCoreUtils.OAuth2.Data
-open System
 
+[<ExcludeFromCodeCoverage>]
 let inline private oauth2ResultFromAccessToken (accessToken : Token) encryptedAccessToken =
   { AccessToken  = encryptedAccessToken
     TokenType    = "Bearer"
     ExpiresIn    = (accessToken.ExpiresAt - accessToken.IssuedAt).TotalSeconds |> round |> int
     RefreshToken = null }
 
+[<ExcludeFromCodeCoverage>]
 let inline private logAccessTokenIssued (logger : ILogger) (accessToken : Token) =
   logger.LogTrace("Issued new access token for user #\"{0}\" from refresh token.", accessToken.Id)
   async.Zero ()
 
+[<ExcludeFromCodeCoverage>]
 let inline private guidToByteArray (guid : Guid) = guid.ToByteArray ()
 
 type IOAuth2Core with

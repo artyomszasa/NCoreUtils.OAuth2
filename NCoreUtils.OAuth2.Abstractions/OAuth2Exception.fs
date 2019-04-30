@@ -49,11 +49,17 @@ type OAuth2Exception =
 [<AutoOpen>]
 module OAuth2ExceptionExt =
 
+  [<CompiledName("AsOAuth2Exception")>]
+  [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
   let (|OAuth2Exception|_|) (exn : exn) =
     match exn with
     | :? OAuth2Exception as e -> Some (e.Error, e.ErrorDescription)
     | _                       -> None
 
+  [<CompiledName("CreateOAuth2Error")>]
+  [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
   let oauth2error error (message : string) = OAuth2Exception (error, message) |> raise
 
+  [<CompiledName("FormatMessageAndCreateOAuth2Error")>]
+  [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
   let oauth2errorf error fmt = Printf.kprintf (oauth2error error) fmt

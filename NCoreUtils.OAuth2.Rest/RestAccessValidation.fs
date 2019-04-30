@@ -84,7 +84,7 @@ module RestAccessValidation =
             let! user0 =
               getService<InternalUserInfo> serviceProvider
               |> InternalUserInfo.asyncTryUser
-            return
+            let grantAccess =
               match user0 with
               | None      ->
                 debug logger "No current user found --> access forbidden"
@@ -106,7 +106,8 @@ module RestAccessValidation =
                       debugf logger "Current user (id = %d) has no user.read access (requested id = %d) --> access forbidden" user.Id u.Id
                       false
                 | :? Permission -> true // permission read access is not guarded
-                | _ -> false }
+                | _ -> false
+            return grantAccess }
     }
 
   [<CompiledName("List")>]

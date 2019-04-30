@@ -34,10 +34,10 @@ namespace NCoreUtils.OAuth2.Data
             services
                 .AddDefaultDataRepositoryContext<OAuth2DbContext>()
                 .AddDataRepository<FileRepository, File, int>()
-                .AddDataRepository<AuthorizationCode, Guid>()
-                .AddDataRepository<ClientApplication, int>()
+                .AddDataRepository<AuthorizationCodeRepository, AuthorizationCode, Guid>()
+                .AddDataRepository<ClientApplicationRepository, ClientApplication, int>()
                 .AddDataRepository<Domain, int>()
-                .AddDataRepository<Permission, int>()
+                .AddDataRepository<PermissionRepository, Permission, int>()
                 .AddDataRepository<RefreshToken, long>()
                 .AddDataRepository<UserRepository, User, int>();
             return services;

@@ -1,11 +1,12 @@
 namespace NCoreUtils.OAuth2
 
 open System
+open System.Collections.Concurrent
+open System.Diagnostics.CodeAnalysis
 open Google.Apis.Auth.OAuth2
 open Google.Apis.CloudKMS.v1
 open Google.Apis.CloudKMS.v1.Data
 open NCoreUtils
-open System.Collections.Concurrent
 
 type private CloudKMSServiceEntry = {
   Instance : CloudKMSService
@@ -39,20 +40,26 @@ type private CloudKMSServicePool () =
 [<AutoOpen>]
 module private GoogleEncryptionProviderHelpers =
 
+  [<ExcludeFromCodeCoverage>]
   let inline asyncDecrypt cryptoKey (cloudKms : CloudKMSService) decryptRequest =
     Async.Adapt (fun cancellationToken -> cloudKms.Projects.Locations.KeyRings.CryptoKeys.Decrypt(decryptRequest, cryptoKey).ExecuteAsync cancellationToken)
 
+  [<ExcludeFromCodeCoverage>]
   let inline asyncEncrypt cryptoKey (cloudKms : CloudKMSService) encryptRequest =
     Async.Adapt (fun cancellationToken -> cloudKms.Projects.Locations.KeyRings.CryptoKeys.Encrypt(encryptRequest, cryptoKey).ExecuteAsync cancellationToken)
 
+  [<ExcludeFromCodeCoverage>]
   let inline getPlaintext (response : DecryptResponse) = response.Plaintext
 
+  [<ExcludeFromCodeCoverage>]
   let inline getChiphertext (response : EncryptResponse) = response.Ciphertext
 
+  [<ExcludeFromCodeCoverage>]
   let inline getPlaintextAndConvert (response : DecryptResponse) =
     getPlaintext response
     |> Convert.FromBase64String
 
+  [<ExcludeFromCodeCoverage>]
   let inline getChiphertextAndConvert (response : EncryptResponse) =
     getChiphertext response
     |> Convert.FromBase64String

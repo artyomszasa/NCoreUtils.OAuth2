@@ -1,6 +1,7 @@
 namespace NCoreUtils.OAuth2
 
 open System
+open System.Diagnostics.CodeAnalysis
 open System.IO
 open System.IO.Compression
 open System.Text
@@ -45,12 +46,14 @@ module EncryptionProviderExt =
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module OAuth2Response =
 
+  [<ExcludeFromCodeCoverage>]
   let inline private fromEncryptedTokens expiresIn encryptedAccessToken encryptedRefreshToken =
     { AccessToken  = encryptedAccessToken
       TokenType    = "Bearer"
       ExpiresIn    = expiresIn
       RefreshToken = encryptedRefreshToken }
 
+  [<ExcludeFromCodeCoverage>]
   let inline private encryptIfNotNull (encryptionProvider : IEncryptionProvider) token =
     match token with
     | None       -> async.Return null

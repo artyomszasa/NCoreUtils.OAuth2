@@ -18,7 +18,7 @@ type OAuth2Error =
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module OAuth2Error =
 
-  let private strings =
+  let internal strings =
     Map.ofList
       [ OAuth2Error.InvalidRequest,          "invalid_request"
         OAuth2Error.UnauthorizedClient,      "unauthorized_client"
@@ -29,6 +29,15 @@ module OAuth2Error =
         OAuth2Error.ServerError,             "server_error"
         OAuth2Error.TemporarilyUnavailable,  "temporarily_unavailable" ]
 
+  let internal errors =
+    strings
+    |> Map.toList
+    |> List.map (fun (k, v) -> (v, k))
+    |> Map.ofList
+
   [<CompiledName("Stringify")>]
   [<Extension>]
   let stringify error = Map.tryFind error strings |> Option.getOrDef "unknown_error"
+
+  [<CompiledName("Parse")>]
+  let parse errorString = Map.find errorString errors
