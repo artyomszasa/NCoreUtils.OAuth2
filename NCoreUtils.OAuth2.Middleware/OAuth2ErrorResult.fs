@@ -2,7 +2,7 @@ namespace NCoreUtils.OAuth2
 
 open Newtonsoft.Json
 
-type private OAuth2ErrorConverter () =
+type internal OAuth2ErrorConverter () =
   inherit JsonConverter ()
   override __.CanConvert ``type`` = ``type`` = typeof<OAuth2Error>
   override __.WriteJson (writer, value, _serializer) =
@@ -12,10 +12,11 @@ type private OAuth2ErrorConverter () =
     | _ -> invalidOp "should never happen"
   override __.ReadJson (reader, _objectType, _existingValue, _serializer) =
     match reader.TokenType with
-    | JsonToken.String  -> System.Enum.Parse (typeof<OAuth2Error>, reader.Value :?> string)
+    | JsonToken.String  -> reader.Value :?> string |> OAuth2Error.parse |> box
     | JsonToken.Integer -> System.Convert.ToInt32 reader.Value |> enum<OAuth2Error> |> box
     | token -> JsonSerializationException (sprintf "Unable to convert %A to OAuth2Error" token) |> raise
 
+[<StructuralEquality; NoComparison>]
 type OAuth2ErrorResult = {
   [<JsonProperty("error"); JsonConverter(typeof<OAuth2ErrorConverter>)>]
   Error            : OAuth2Error

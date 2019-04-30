@@ -7,24 +7,24 @@ open System.Threading.Tasks
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.Http
+open Microsoft.AspNetCore.HttpOverrides
 open Microsoft.EntityFrameworkCore
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.DependencyInjection.Extensions
 open Microsoft.Extensions.Logging
 open NCoreUtils
-open NCoreUtils.ContentDetection
 open NCoreUtils.AspNetCore
 open NCoreUtils.Authentication
+open NCoreUtils.ContentDetection
 open NCoreUtils.Data
+open NCoreUtils.Features
 open NCoreUtils.OAuth2
 open NCoreUtils.OAuth2.Data
 open NCoreUtils.Storage
+open NCoreUtils.Text
 open Newtonsoft.Json
 open Newtonsoft.Json.Serialization
-open NCoreUtils.Text
-open NCoreUtils.Images
-open NCoreUtils.Features
 
 module RAV = NCoreUtils.OAuth2.RestAccessValidation
 
@@ -34,28 +34,6 @@ type internal DummyFileUploader () =
       ((Result.Error "file uploads has been disabled") : Result<unit, string>) |> async.Return
     member __.AsyncResUpload (_ : IFile, _: byte[]) =
       ((Result.Error "file uploads has been disabled") : Result<unit, string>) |> async.Return
-
-
-[<RequireQualifiedAccess>]
-module private ProxyMiddleware =
-
-  [<CompiledName("Run")>]
-  let run httpContext (asyncNext : Async<unit>) =
-    let request = HttpContext.request httpContext
-    let headers = HttpRequest.headers request
-    let mutable values = Unchecked.defaultof<_>
-    match Headers.tryGetFirstValue "X-Forwarded-Proto" headers with
-    | ValueSome v ->
-      if StringComparer.OrdinalIgnoreCase.Equals ("https", v) then
-        request.Scheme <- "https"
-    | _ -> ()
-    match Headers.tryGetFirstValue "X-Forwarded-Port" headers with
-    | ValueSome v ->
-      match tryInt32Value v with
-      | ValueSome p when request.Host.HasValue && p <> 443 || not request.IsHttps -> request.Host <- HostString (request.Host.Host, p)
-      | _ -> ()
-    | _ -> ()
-    asyncNext
 
 type Startup (env: IHostingEnvironment) =
 
@@ -109,6 +87,9 @@ type Startup (env: IHostingEnvironment) =
       eprintfn "Unable to bind AesEncryptionConfiguration"
 
     services
+#if DEBUG
+      .AddSingleton<ITestContextInitializer>({ new ITestContextInitializer with member __.Initialize() = () })
+#endif
       .AddSingleton<IConfiguration>(configuration)
       .AddSingleton(encryptionConfiguration)
       .AddSingleton(configuration.GetSection("OAuth2").Get<OAuth2Configuration>())
@@ -140,9 +121,6 @@ type Startup (env: IHostingEnvironment) =
       .AddSingleton<ISimplifier>(Simplifier.Default)
       // content detection
       .ConfigureContentDetection(fun b -> b.AddMagic(fun bb -> bb.AddLibmagicRules() |> ignore) |> ignore)
-      // image processing
-      .AddSingleton(configuration.GetSection("Images").Get<ImageResizerClientConfiguration>())
-      .AddImageResizer<ImageResizerClient>()
       // google cloud storage
       .AddTransient<IFeatureCollection<IStorageProvider>>(fun _ -> FeatureCollectionBuilder().Build<IStorageProvider>())
       .AddFileSystemStorageProvider("/tmp")
@@ -169,7 +147,13 @@ type Startup (env: IHostingEnvironment) =
 
     ()
 
-  member __.Configure (app: IApplicationBuilder) =
+  member __.Configure (app: IApplicationBuilder, test : ITestContextInitializer) =
+    test.Initialize ()
+
+    let forwardedHeaderOptions = ForwardedHeadersOptions (ForwardedHeaders = ForwardedHeaders.All)
+    forwardedHeaderOptions.KnownNetworks.Clear();
+    forwardedHeaderOptions.KnownProxies.Clear();
+
     app
       .UseCors(fun builder ->
         builder
@@ -181,7 +165,7 @@ type Startup (env: IHostingEnvironment) =
           |> ignore
       )
       // .Use(forceGC)
-      .Use(ProxyMiddleware.run)
+      .UseForwardedHeaders(forwardedHeaderOptions)
       .Use(OAuth2Middleware.run)
       .UseRequestErrorHandler()
       .UseAuthentication()

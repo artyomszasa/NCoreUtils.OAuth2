@@ -1,6 +1,8 @@
 namespace NCoreUtils.OAuth2
 
 open System
+open System.Diagnostics.CodeAnalysis
+open System.Runtime.CompilerServices
 open System.Security.Claims
 open System.Text.RegularExpressions
 open Microsoft.Extensions.Logging
@@ -9,7 +11,13 @@ open NCoreUtils.Authentication
 open NCoreUtils.Data
 open NCoreUtils.Linq
 open NCoreUtils.OAuth2.Data
-open System.Runtime.CompilerServices
+
+module private Seq =
+
+  [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
+  [<CompiledName("HeadWithDefaultAction")>]
+  let headWith def seq =
+    Seq.tryHead seq |> Option.defaultWith def
 
 type OAuth2Core (loginAuthenticator : LoginAuthenticator,
                   refreshTokenRepository : IDataRepository<RefreshToken>,
@@ -20,6 +28,7 @@ type OAuth2Core (loginAuthenticator : LoginAuthenticator,
 
   static let separator = new Regex (@"\s*,\s*", RegexOptions.Compiled ||| RegexOptions.CultureInvariant);
 
+  [<ExcludeFromCodeCoverage>]
   static let toLower (input : string) = input.ToLowerInvariant ()
 
   static let noAuthorizationCode () =
@@ -30,10 +39,6 @@ type OAuth2Core (loginAuthenticator : LoginAuthenticator,
 
   static let invalidRefreshToken () =
     OAuth2Exception (OAuth2Error.InvalidGrant, OAuth2ErrorMessages.invalidRefreshToken) |> raise
-
-  static let vfst (struct (x, _)) = x
-
-  static let vsnd (struct (_, x)) = x
 
   let createTokensAsync userId (grantedScopes : string[]) = async {
     let issuedAt = DateTimeOffset.Now
@@ -166,9 +171,9 @@ type OAuth2Core (loginAuthenticator : LoginAuthenticator,
         let issuedAtUtcTicks  = refreshToken.IssuedAt.UtcTicks
         let expiresAtUtcTicks = refreshToken.ExpiresAt.UtcTicks
         refreshTokenRepository.Items
-        |> Q.filter (fun rt -> rt.State = State.Public && rt.UserId = userId && rt.IssuedAt = issuedAtUtcTicks && rt.ExpiresAt = expiresAtUtcTicks && rt.Scopes = scopes)
+        |>  Q.filter (fun rt -> rt.State = State.Public && rt.UserId = userId && rt.IssuedAt = issuedAtUtcTicks && rt.ExpiresAt = expiresAtUtcTicks && rt.Scopes = scopes)
         |>  Q.asyncToResizeArray
-        >>| (Seq.tryHead >> Option.defaultWith invalidRefreshToken)
+        >>| Seq.headWith invalidRefreshToken
         >>+ (fun rtoken ->
               let now = DateTimeOffset.Now
               rtoken.LastUsed <- Nullable.mk now.UtcTicks

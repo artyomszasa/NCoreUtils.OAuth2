@@ -2,6 +2,7 @@ namespace NCoreUtils.OAuth2
 
 open NCoreUtils
 
+[<NoEquality; NoComparison>]
 type CodeParameters = {
   [<ParameterBinder(typeof<AppIdBinder>)>]
   AppId       : int

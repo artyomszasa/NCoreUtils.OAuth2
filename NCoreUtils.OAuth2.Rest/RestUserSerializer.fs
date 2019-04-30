@@ -5,15 +5,18 @@ open NCoreUtils.Data
 open NCoreUtils.OAuth2.Data
 open NCoreUtils.AspNetCore.Rest
 
+[<NoEquality; NoComparison>]
 type MappedClientApplication = {
   Id          : int
   Name        : string
   Description : string }
 
+[<NoEquality; NoComparison>]
 type MappedUserPermission = {
   UserId       : int
   PermissionId : int }
 
+[<NoEquality; NoComparison>]
 type MappedUser = {
   Id                  : int
   Created             : int64

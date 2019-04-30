@@ -4,13 +4,15 @@ open System.ComponentModel
 open NCoreUtils
 
 [<NoEquality; NoComparison>]
-type PasswordParameters = {
+type LoginParameters = {
   [<ParameterBinder(typeof<AppIdBinder>)>]
-  AppId    : int
+  AppId       : int
   [<ParameterName(OAuth2Parameters.Username)>]
-  Username : string
+  Username    : string
   [<ParameterName(OAuth2Parameters.Password)>]
-  Password : string
+  Password    : string
+  [<ParameterName(OAuth2Parameters.RedirectUri)>]
+  RedirectUri : string
   [<DefaultValue(null)>]
   [<ParameterName(OAuth2Parameters.Scope)>]
-  Scopes   : string }
+  Scopes      : string }

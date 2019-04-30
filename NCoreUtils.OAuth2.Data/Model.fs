@@ -2,13 +2,16 @@ namespace NCoreUtils.OAuth2.Data
 
 open System
 open System.Collections.Generic
-open NCoreUtils.Data
-open NCoreUtils.Authentication
-open Newtonsoft.Json
+open System.Diagnostics.CodeAnalysis
 open NCoreUtils.AspNetCore
+open NCoreUtils.Authentication
+open NCoreUtils.Data
+open Newtonsoft.Json
 
 [<AutoOpen>]
 module private DateTimeHelpers =
+
+  [<ExcludeFromCodeCoverage>]
   let inline fmtAsDateTime (utcTicks : int64) =
     DateTimeOffset(utcTicks, TimeSpan.Zero).ToLocalTime().ToString("o")
 

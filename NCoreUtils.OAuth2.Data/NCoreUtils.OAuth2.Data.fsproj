@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.2.1-alpha2</Version>
+    <Version>1.3.0</Version>
     <IsPackable>false</IsPackable>
     <NoWarn>FS2003</NoWarn>
   </PropertyGroup>
@@ -9,10 +9,10 @@
     <Compile Include="Model.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.FileUploader.Abstractions" Version="2.0.3-alpha0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.FileUploader.Abstractions" Version="2.1.0-alpha0" />
     <PackageReference Include="NCoreUtils.Authentication.Password.Abstractions" Version="1.1.2-alpha0" />
-    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.3.1-alpha1" />
-    <PackageReference Include="NCoreUtils.FSharp" Version="2.0.3-alpha0" />
+    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.3.1-alpha2" />
+    <PackageReference Include="NCoreUtils.FSharp" Version="2.1.0-alpha0" />
     <PackageReference Include="NCoreUtils.Linq.Extensions" Version="1.0.5" />
     <PackageReference Include="NCoreUtils.Maybe" Version="1.0.5" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />

@@ -11,7 +11,10 @@ open NCoreUtils.OAuth2.Data
 type OAuth2PasswordLogin (serviceProvider : IServiceProvider,
                           userManager     : OAuth2UserManager,
                           logger          : ILogger<OAuth2PasswordLogin>) =
-  inherit PasswordLogin<int> (userManager, logger :?> ILogger<PasswordLogin<int>>, serviceProvider.GetService<PasswordLoginOptions> (), serviceProvider.GetService<IUsernameFormatter> ())
+  inherit PasswordLogin<int> (userManager,
+                              logger :?> ILogger<PasswordLogin<int>>,
+                              serviceProvider.GetService<PasswordLoginOptions> (),
+                              serviceProvider.GetService<IUsernameFormatter> ())
 
   override __.GetClaimsAsync (user, forceName) =
     let baseClaims = base.GetClaimsAsync(user, forceName)

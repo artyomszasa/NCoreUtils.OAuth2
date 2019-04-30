@@ -68,20 +68,23 @@ namespace NCoreUtils.OAuth2.Data
             {
                 var fixedPermissions = new HashSet<UserPermission>();
                 var toKeep = new HashSet<int>();
-                foreach (var rel in entity.Permissions)
+                if (null != entity.Permissions)
                 {
-                    var dbRel = await dbContext.Set<UserPermission>().Where(up => up.UserId == entity.Id && up.PermissionId == rel.PermissionId).FirstOrDefaultAsync(cancellationToken);
-                    if (null == dbRel)
+                    foreach (var rel in entity.Permissions)
                     {
-                        var dbRelEntry = await dbContext.AddAsync(new UserPermission
+                        var dbRel = await dbContext.Set<UserPermission>().Where(up => up.UserId == entity.Id && up.PermissionId == rel.PermissionId).FirstOrDefaultAsync(cancellationToken);
+                        if (null == dbRel)
                         {
-                            PermissionId = rel.PermissionId,
-                            UserId = entity.Id
-                        });
-                        dbRel = dbRelEntry.Entity;
+                            var dbRelEntry = await dbContext.AddAsync(new UserPermission
+                            {
+                                PermissionId = rel.PermissionId,
+                                UserId = entity.Id
+                            });
+                            dbRel = dbRelEntry.Entity;
+                        }
+                        fixedPermissions.Add(dbRel);
+                        toKeep.Add(rel.PermissionId);
                     }
-                    fixedPermissions.Add(dbRel);
-                    toKeep.Add(rel.PermissionId);
                 }
                 entity.Permissions = fixedPermissions;
                 var toRemove = await dbContext.Set<UserPermission>().Where(up => up.UserId == entity.Id && !toKeep.Contains(up.PermissionId)).ToListAsync(cancellationToken);
@@ -92,9 +95,16 @@ namespace NCoreUtils.OAuth2.Data
             }
             else
             {
-                foreach (var rel in entity.Permissions)
+                if (null != entity.Permissions)
                 {
-                    rel.User = entity;
+                    foreach (var rel in entity.Permissions)
+                    {
+                        rel.User = entity;
+                    }
+                }
+                else
+                {
+                    entity.Permissions = new HashSet<UserPermission>();
                 }
             }
 
