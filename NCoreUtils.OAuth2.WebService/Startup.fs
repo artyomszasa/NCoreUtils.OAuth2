@@ -102,9 +102,9 @@ type Startup (env: IHostingEnvironment) =
       .AddLogging(fun builder ->
         builder
           .ClearProviders()
-          .SetMinimumLevel(LogLevel.Debug)
-          // .AddFilter(DbLoggerCategory.Infrastructure.Name, LogLevel.Error)
-          // .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Warning)
+          .SetMinimumLevel(LogLevel.Information)
+          .AddFilter(DbLoggerCategory.Infrastructure.Name, LogLevel.Error)
+          .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Warning)
           |> ignore
         if env.IsDevelopment ()
           then builder.AddConsole () |> ignore
