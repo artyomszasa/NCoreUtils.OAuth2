@@ -1,8 +1,4 @@
-before_install:
-  - sudo apt-get install -y dpkg
-addons:
-  apt:
-    update: true
+dist: xenial
 language: csharp
 solution: NCoreUtils.OAuth2.sln
 mono: none
