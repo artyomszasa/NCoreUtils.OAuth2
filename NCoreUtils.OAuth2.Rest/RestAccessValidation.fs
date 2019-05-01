@@ -80,7 +80,9 @@ module RestAccessValidation =
           match entity with
           | :? File -> return true
           | _ ->
-            let logger = (getService<ILoggerFactory> serviceProvider).CreateLogger "NCoreUtils.OAuth2.Rest.AccessValidation.Item"
+            let logger =
+              getService<ILoggerFactory> serviceProvider
+              |> createLoggerByCategoryName "NCoreUtils.OAuth2.Rest.AccessValidation.Item"
             let! user0 =
               getService<InternalUserInfo> serviceProvider
               |> InternalUserInfo.asyncTryUser
@@ -94,18 +96,27 @@ module RestAccessValidation =
                 | :? User as u ->
                   match principal.IsInRole Permissions.User.Read with
                   | true ->
-                    match u.ClientApplicationId = user.ClientApplicationId with // user with read permission can access another user is same app
+                    // user with read permission can access another user is same app
+                    match u.ClientApplicationId = user.ClientApplicationId with
                     | true -> true
                     | _    ->
-                      debugf logger "Current user belongs to different application (expected = %d, actual = %d) --> access forbidden" u.ClientApplicationId user.ClientApplicationId
+                      debugf logger
+                        "Current user belongs to different application (expected = %d, actual = %d) --> access forbidden"
+                        u.ClientApplicationId
+                        user.ClientApplicationId
                       false
                   | _    ->
-                    match u.Id = user.Id with // user can read own data without any further permissions
+                    // user can read own data without any further permissions
+                    match u.Id = user.Id with
                     | true -> true
                     | _    ->
-                      debugf logger "Current user (id = %d) has no user.read access (requested id = %d) --> access forbidden" user.Id u.Id
+                      debugf logger
+                        "Current user (id = %d) has no user.read access (requested id = %d) --> access forbidden"
+                        user.Id
+                        u.Id
                       false
-                | :? Permission -> true // permission read access is not guarded
+                // permission read access is not guarded
+                | :? Permission -> true
                 | _ -> false
             return grantAccess }
     }
