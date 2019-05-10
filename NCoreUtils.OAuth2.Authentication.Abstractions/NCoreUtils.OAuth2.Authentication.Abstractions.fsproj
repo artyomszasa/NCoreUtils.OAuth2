@@ -10,6 +10,6 @@
     <Compile Include="CurrentClientApplication.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Authentication.Abstractions" Version="1.1.2-alpha0" />
+    <PackageReference Include="NCoreUtils.Authentication.Abstractions" Version="1.1.2" />
   </ItemGroup>
 </Project>

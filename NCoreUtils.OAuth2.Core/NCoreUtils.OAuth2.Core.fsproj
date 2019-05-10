@@ -16,12 +16,15 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.Core.Abstractions\NCoreUtils.OAuth2.Core.Abstractions.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Authentication" Version="1.1.2-alpha0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="2.2.0" />
+    <PackageReference Include="NCoreUtils.Authentication" Version="1.1.2" />
     <PackageReference Include="NCoreUtils.Extensions.Collections" Version="1.0.3" />
-    <PackageReference Include="NCoreUtils.FSharp" Version="2.1.0-alpha0" />
-    <PackageReference Include="NCoreUtils.FSharp.Data" Version="2.1.0-alpha0" />
-    <PackageReference Include="NCoreUtils.FSharp.Linq" Version="2.1.0-alpha0" />
+    <PackageReference Include="NCoreUtils.FSharp" Version="2.1.0" />
+    <PackageReference Include="NCoreUtils.FSharp.Data" Version="2.1.0" />
+    <PackageReference Include="NCoreUtils.FSharp.Linq" Version="2.1.0" />
     <PackageReference Include="NCoreUtils.Linq.Extensions" Version="1.0.5" />
-    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.3.1-alpha2" />
+    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.3.1" />
+    <PackageReference Include="NCoreUtils.Maybe" Version="1.0.5" />
+    <PackageReference Include="System.Interactive.Async" Version="3.2.0" />
   </ItemGroup>
 </Project>

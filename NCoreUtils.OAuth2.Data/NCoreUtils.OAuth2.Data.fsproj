@@ -9,12 +9,14 @@
     <Compile Include="Model.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.FileUploader.Abstractions" Version="2.1.0-alpha0" />
-    <PackageReference Include="NCoreUtils.Authentication.Password.Abstractions" Version="1.1.2-alpha0" />
-    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.3.1-alpha2" />
-    <PackageReference Include="NCoreUtils.FSharp" Version="2.1.0-alpha0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="2.2.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.FileUploader.Abstractions" Version="2.1.0" />
+    <PackageReference Include="NCoreUtils.Authentication.Password.Abstractions" Version="1.1.2" />
+    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.3.1" />
+    <PackageReference Include="NCoreUtils.FSharp" Version="2.1.0" />
     <PackageReference Include="NCoreUtils.Linq.Extensions" Version="1.0.5" />
     <PackageReference Include="NCoreUtils.Maybe" Version="1.0.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.Interactive.Async" Version="3.2.0" />
   </ItemGroup>
 </Project>
