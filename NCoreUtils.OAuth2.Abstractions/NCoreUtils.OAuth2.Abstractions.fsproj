@@ -13,7 +13,8 @@
     <Compile Include="IEncryptionProvider.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.FSharp" Version="2.1.0-alpha0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="2.2.0" />
+    <PackageReference Include="NCoreUtils.FSharp" Version="2.1.0" />
     <PackageReference Include="NCoreUtils.Maybe" Version="1.0.5" />
   </ItemGroup>
 </Project>

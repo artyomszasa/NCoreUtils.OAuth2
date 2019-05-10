@@ -3,6 +3,14 @@
 FROM microsoft/dotnet:2.2-sdk-alpine AS build-env-oauth2
 # ADD BASH, see https://github.com/dotnet/dotnet-docker/issues/632
 RUN apk update && apk add --no-cache bash
+# PREFETCH FSharp.Core and System.Net.Http INTO SEPARATE LAYER
+RUN mkdir /tmp/prefetch \
+    && cd /tmp/prefetch \
+    && dotnet new web \
+    && echo '<Project Sdk="Microsoft.NET.Sdk.Web"><PropertyGroup><TargetFramework>netcoreapp2.2</TargetFramework><TargetLatestRuntimePatch>true</TargetLatestRuntimePatch></PropertyGroup><ItemGroup><PackageReference Include="Microsoft.AspNetCore.App" /></ItemGroup></Project>' > prefetch.csproj \
+    && dotnet add package FSharp.Core --version 4.6.2 \
+    && dotnet add package System.Net.Http --version 4.3.4 \
+    && dotnet restore -r alpine-x64 -v n
 WORKDIR /app
 # COPY NUGET config
 COPY ./NuGet.Config ./
@@ -20,7 +28,7 @@ COPY ./NCoreUtils.OAuth2.Middleware/NCoreUtils.OAuth2.Middleware.fsproj ./NCoreU
 COPY ./NCoreUtils.OAuth2.Rest/NCoreUtils.OAuth2.Rest.fsproj ./NCoreUtils.OAuth2.Rest/NCoreUtils.OAuth2.Rest.fsproj
 COPY ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.fsproj ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.fsproj
 # RESTORE PACKAGES
-RUN dotnet restore ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.fsproj -r alpine-x64
+RUN dotnet restore ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.fsproj -r alpine-x64 -v n
 # COPY SOURCES
 COPY ./NCoreUtils.OAuth2.Abstractions/*.fs ./NCoreUtils.OAuth2.Abstractions/
 COPY ./NCoreUtils.OAuth2.Authentication/*.fs ./NCoreUtils.OAuth2.Authentication/

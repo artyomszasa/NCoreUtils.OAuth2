@@ -1,6 +1,5 @@
 namespace NCoreUtils.OAuth2
 
-open NCoreUtils
 open System.Runtime.CompilerServices
 
 type OAuth2Error =
@@ -37,7 +36,10 @@ module OAuth2Error =
 
   [<CompiledName("Stringify")>]
   [<Extension>]
-  let stringify error = Map.tryFind error strings |> Option.getOrDef "unknown_error"
+  let stringify error =
+    Map.tryFind error strings
+    |> Option.defaultValue "unknown_error"
 
   [<CompiledName("Parse")>]
-  let parse errorString = Map.find errorString errors
+  let parse errorString =
+    Map.find errorString errors

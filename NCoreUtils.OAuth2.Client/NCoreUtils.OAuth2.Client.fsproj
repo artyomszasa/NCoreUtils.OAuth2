@@ -11,7 +11,7 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.Shared\NCoreUtils.OAuth2.Shared.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.Authentication.OpenId" Version="1.1.2-alpha0" />
-    <PackageReference Include="NCoreUtils.FSharp.Interop" Version="2.1.0-alpha0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Authentication.OpenId" Version="1.1.2" />
+    <PackageReference Include="NCoreUtils.FSharp.Interop" Version="2.1.0" />
   </ItemGroup>
 </Project>
