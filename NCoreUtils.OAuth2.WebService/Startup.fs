@@ -87,9 +87,7 @@ type Startup (env: IHostingEnvironment) =
       eprintfn "Unable to bind AesEncryptionConfiguration"
 
     services
-#if DEBUG
       .AddSingleton<ITestContextInitializer>({ new ITestContextInitializer with member __.Initialize() = () })
-#endif
       .AddSingleton<IConfiguration>(configuration)
       .AddSingleton(encryptionConfiguration)
       .AddSingleton(configuration.GetSection("OAuth2").Get<OAuth2Configuration>())

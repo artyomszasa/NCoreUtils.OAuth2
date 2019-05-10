@@ -17,9 +17,6 @@
     <Compile Include="Startup.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <PackageReference Include="NCoreUtils.XUnit.Abstractions" Version="1.0.0" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
@@ -52,6 +49,7 @@
     <PackageReference Include="NCoreUtils.Storage.Abstractions" Version="2.0.1" />
     <PackageReference Include="NCoreUtils.Storage.FileSystem" Version="2.0.1" />
     <PackageReference Include="NCoreUtils.Text" Version="1.1.0" />
+    <PackageReference Include="NCoreUtils.XUnit.Abstractions" Version="1.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
     <PackageReference Include="System.Interactive.Async" Version="3.2.0" />
