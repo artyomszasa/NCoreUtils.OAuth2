@@ -165,8 +165,12 @@ type Startup (env: IHostingEnvironment) =
 
     ()
 
+#if DEBUG
   member __.Configure (app: IApplicationBuilder, test : ITestContextInitializer) =
     test.Initialize ()
+#else
+  member __.Configure (app: IApplicationBuilder) =
+#endif
 
     let forwardedHeaderOptions = ForwardedHeadersOptions (ForwardedHeaders = ForwardedHeaders.All)
     forwardedHeaderOptions.KnownNetworks.Clear();
