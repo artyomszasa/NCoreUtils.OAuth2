@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -24,6 +25,16 @@ namespace NCoreUtils.OAuth2.Unit
     [CollectionDefinition(nameof(NCoreUtils.OAuth2.Unit.WebServiceTests), DisableParallelization = true)]
     public class WebServiceTests : WebTestBase<Startup>
     {
+        sealed class SyncWebApplicationFactory : WebApplicationFactory<Startup>
+        {
+            protected override TestServer CreateServer(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
+            {
+                var server = base.CreateServer(builder);
+                server.AllowSynchronousIO = true;
+                return server;
+            }
+        }
+
         private const string TestEmail = "test@test.dbg";
         private const string TestPassword = "xasd";
 
@@ -33,11 +44,14 @@ namespace NCoreUtils.OAuth2.Unit
 
         int _clientApplicationId;
 
-        public WebServiceTests(WebApplicationFactory<Startup> factory)
+        WebServiceTests(WebApplicationFactory<Startup> factory)
             : base(factory)
         {
+            factory.Server.AllowSynchronousIO = true;
             factory.ClientOptions.AllowAutoRedirect = false;
         }
+
+        public WebServiceTests() : this(new SyncWebApplicationFactory()) { }
 
         void InitDb(IServiceProvider serviceProvider)
         {
@@ -94,11 +108,11 @@ namespace NCoreUtils.OAuth2.Unit
             }
         }
 
-
         protected override void InitializeServices(IServiceCollection services)
         {
             base.InitializeServices(services);
             services
+                .Configure<TestServer>(o => o.AllowSynchronousIO = true)
                 .ForceInMemoryDatabase<OAuth2DbContext>()
                 .RemoveAll(typeof(IEncryptionProvider))
                 .AddSingleton<IEncryptionProvider, DummyEncryption>()
@@ -351,11 +365,12 @@ namespace NCoreUtils.OAuth2.Unit
 
                 using (var request = new HttpRequestMessage(HttpMethod.Post, "/data/permission"))
                 {
-                    request.Content = new StringContent(JsonConvert.SerializeObject(new Permission
+                    var inputText = JsonConvert.SerializeObject(new Permission
                     {
                         Name = "test",
                         ClientApplicationId = _clientApplicationId
-                    }), new UTF8Encoding(false), "application/json");
+                    });
+                    request.Content = new StringContent(inputText, new UTF8Encoding(false), "application/json");
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     using (var response = await client.SendAsync(request, HttpCompletionOption.ResponseContentRead))
                     {

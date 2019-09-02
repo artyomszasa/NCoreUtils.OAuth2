@@ -1,16 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
-    <ServerGarbageCollection>True</ServerGarbageCollection>
-    <ConcurrentGarbageCollection>True</ConcurrentGarbageCollection>
-    <EnableDefaultContentItems>False</EnableDefaultContentItems>
-    <TargetLatestRuntimePatch>True</TargetLatestRuntimePatch>
-    <Version>1.3.0</Version>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <RetainVMGarbageCollection>false</RetainVMGarbageCollection>
+    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
+    <PublishTrimmed>true</PublishTrimmed>
+    <Version>2.0.0-alpha3</Version>
     <NoWarn>FS2003</NoWarn>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+  <ItemGroup>
+    <TrimmerRootAssembly Include="System.Threading.Tasks" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="GoogleBucketConfiguration.fs" />
     <Compile Include="GoogleLoggingConfiguration.fs" />
@@ -20,53 +24,36 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <PackageReference Include="NCoreUtils.XUnit.Abstractions" Version="1.0.0" />
+    <PackageReference Include="NCoreUtils.XUnit.Abstractions" Version="3.0.0-preview8" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Api.CommonProtos" Version="1.6.0" />
-    <PackageReference Include="Google.Api.Gax" Version="2.7.0" />
-    <PackageReference Include="Google.Api.Gax.Grpc" Version="2.7.0" />
-    <PackageReference Include="Google.Apis" Version="1.40.0" />
-    <PackageReference Include="Google.Apis.Auth" Version="1.40.0" />
-    <PackageReference Include="Google.Apis.Core" Version="1.40.0" />
-    <PackageReference Include="Google.Protobuf" Version="3.7.0" />
-    <PackageReference Include="Grpc.Auth" Version="1.20.1" />
-    <PackageReference Include="Grpc.Core" Version="1.20.1" />
-    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.0" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="2.2.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
-    <PackageReference Include="NCoreUtils.AspNetCore.FileUploader" Version="2.1.0" />
-    <PackageReference Include="NCoreUtils.AspNetCore.Logging.Google" Version="2.1.0" />
-    <PackageReference Include="NCoreUtils.AspNetCore.Rest" Version="2.1.0" />
-    <PackageReference Include="NCoreUtils.ContentDetection" Version="1.1.3" />
-    <PackageReference Include="NCoreUtils.ContentDetection.Magic.Libmagic" Version="1.1.3" />
-    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="1.3.1" />
-    <PackageReference Include="NCoreUtils.Data.Protocol" Version="2.2.0" />
-    <PackageReference Include="NCoreUtils.FSharp" Version="2.1.0" />
-    <PackageReference Include="NCoreUtils.FSharp.AspNetCore" Version="2.1.0" />
-    <PackageReference Include="NCoreUtils.FSharp.DependencyInjection" Version="2.1.0" />
-    <PackageReference Include="NCoreUtils.Images.Client" Version="2.2.0" />
-    <PackageReference Include="NCoreUtils.Images.DependencyInjection" Version="2.2.0" />
-    <PackageReference Include="NCoreUtils.Storage.Abstractions" Version="2.0.1" />
-    <PackageReference Include="NCoreUtils.Storage.GoogleCloudStorage" Version="2.0.1" />
+    <PackageReference Include="Google.Api.CommonProtos" Version="1.7.0" />
+    <PackageReference Include="Google.Api.Gax" Version="2.9.0" />
+    <PackageReference Include="Google.Api.Gax.Grpc" Version="2.9.0" />
+    <PackageReference Include="Google.Apis" Version="1.40.3" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.40.3" />
+    <PackageReference Include="Google.Apis.Core" Version="1.40.3" />
+    <PackageReference Include="Google.Protobuf" Version="3.9.0" />
+    <PackageReference Include="Grpc.Auth" Version="1.22.0" />
+    <PackageReference Include="Grpc.Core" Version="1.22.0" />
+    <PackageReference Update="FSharp.Core" Version="4.7.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.FileUploader" Version="3.0.0-preview8.1" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Logging.Google" Version="3.0.0-preview8.1" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Rest" Version="3.0.0-preview8.1" />
+    <PackageReference Include="NCoreUtils.ContentDetection" Version="3.0.0-preview8" />
+    <PackageReference Include="NCoreUtils.ContentDetection.Magic.Libmagic" Version="3.0.0-preview8" />
+    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="3.0.0-preview8.1" />
+    <PackageReference Include="NCoreUtils.Data.Protocol" Version="3.0.0-preview8.1" />
+    <PackageReference Include="NCoreUtils.FSharp" Version="3.0.0-preview8.1" />
+    <PackageReference Include="NCoreUtils.FSharp.AspNetCore" Version="3.0.0-preview8.1" />
+    <PackageReference Include="NCoreUtils.FSharp.DependencyInjection" Version="3.0.0-preview8.1" />
+    <PackageReference Include="NCoreUtils.Images.Client" Version="2.9.0-alpha3" />
+    <PackageReference Include="NCoreUtils.Images.DependencyInjection" Version="2.9.0-alpha3" />
+    <PackageReference Include="NCoreUtils.Storage.Abstractions" Version="3.0.0-preview8" />
+    <PackageReference Include="NCoreUtils.Storage.GoogleCloudStorage" Version="3.0.0-preview8" />
     <PackageReference Include="NCoreUtils.Text" Version="1.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
-    <PackageReference Include="System.Interactive.Async" Version="3.2.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.6.0-preview8.19405.3" />
     <PackageReference Include="System.Net.Requests" Version="4.3.0" />
     <PackageReference Include="System.Net.WebHeaderCollection" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />

@@ -30,7 +30,7 @@ open Newtonsoft.Json.Serialization
 
 module RAV = NCoreUtils.OAuth2.RestAccessValidation
 
-type Startup (env: IHostingEnvironment) =
+type Startup (env: IWebHostEnvironment) =
 
   static let send404 =
     RequestDelegate
@@ -106,7 +106,7 @@ type Startup (env: IHostingEnvironment) =
           .AddFilter(DbLoggerCategory.Infrastructure.Name, LogLevel.Error)
           .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Warning)
           |> ignore
-        if env.IsDevelopment ()
+        if "Development" = env.EnvironmentName
           then builder.AddConsole () |> ignore
           else builder.AddGoogleSink(googleLoggingConfiguration) |> ignore
       )
@@ -153,7 +153,18 @@ type Startup (env: IHostingEnvironment) =
       // Global JsonSerializerSettings
       .AddSingleton(JsonSerializerSettings (ReferenceLoopHandling = ReferenceLoopHandling.Ignore, ContractResolver = CamelCasePropertyNamesContractResolver ()))
       // CORS
-      .AddCors()
+      .AddCors(fun o ->
+                o.AddPolicy(
+                  "AllowAny",
+                  fun b ->
+                    b
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .SetIsOriginAllowed(isOriginAllowed = (fun _ -> true))
+                      .AllowCredentials()
+                      |> ignore
+                )
+      )
       // auth
       .AddAuthentication("internal").AddScheme<InternalAuthenticationSchemeOtions, InternalAuthenticationHandler>("internal", Action<_> ignore)
       |> ignore
@@ -177,15 +188,7 @@ type Startup (env: IHostingEnvironment) =
     forwardedHeaderOptions.KnownProxies.Clear();
 
     app
-      .UseCors(fun builder ->
-        builder
-          .AllowAnyOrigin()
-          .AllowAnyHeader()
-          .AllowCredentials()
-          .AllowAnyMethod()
-          .WithExposedHeaders("X-Access-Token", "X-Total-Count", "Location", "X-Message")
-          |> ignore
-      )
+      .UseCors("AllowAny")
       // .Use(forceGC)
       // .Use(ProxyMiddleware.run)
       .UseForwardedHeaders(forwardedHeaderOptions)

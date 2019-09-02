@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-    <Version>2.0.0-alpha0</Version>
+    <Version>2.0.0-alpha3</Version>
     <IsPackable>false</IsPackable>
     <NoWarn>FS2003</NoWarn>
   </PropertyGroup>
@@ -13,7 +13,8 @@
     <Compile Include="IEncryptionProvider.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.FSharp" Version="3.0.0-alpha0" />
+    <PackageReference Update="FSharp.Core" Version="4.7.0" />
+    <PackageReference Include="NCoreUtils.FSharp" Version="3.0.0-preview8.1" />
     <PackageReference Include="NCoreUtils.Maybe" Version="1.0.5" />
   </ItemGroup>
 </Project>
