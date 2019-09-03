@@ -35,7 +35,7 @@ type internal DummyFileUploader () =
     member __.AsyncResUpload (_ : IFile, _: byte[]) =
       ((Result.Error "file uploads has been disabled") : Result<unit, string>) |> async.Return
 
-type Startup (env: IHostingEnvironment) =
+type Startup (env: IWebHostEnvironment) =
 
   static let send404 =
     RequestDelegate
@@ -133,7 +133,18 @@ type Startup (env: IHostingEnvironment) =
       // Global JsonSerializerSettings
       .AddSingleton(JsonSerializerSettings (ReferenceLoopHandling = ReferenceLoopHandling.Ignore, ContractResolver = CamelCasePropertyNamesContractResolver ()))
       // CORS
-      .AddCors()
+      .AddCors(fun o ->
+                o.AddPolicy(
+                  "AllowAny",
+                  fun b ->
+                    b
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .SetIsOriginAllowed(isOriginAllowed = (fun _ -> true))
+                      .AllowCredentials()
+                      |> ignore
+                )
+      )
       // auth
       .AddAuthentication("internal").AddScheme<InternalAuthenticationSchemeOtions, InternalAuthenticationHandler>("internal", Action<_> ignore)
       |> ignore
@@ -145,23 +156,19 @@ type Startup (env: IHostingEnvironment) =
 
     ()
 
+#if DEBUG
   member __.Configure (app: IApplicationBuilder, test : ITestContextInitializer) =
     test.Initialize ()
+#else
+  member __.Configure (app: IApplicationBuilder) =
+#endif
 
     let forwardedHeaderOptions = ForwardedHeadersOptions (ForwardedHeaders = ForwardedHeaders.All)
     forwardedHeaderOptions.KnownNetworks.Clear();
     forwardedHeaderOptions.KnownProxies.Clear();
 
     app
-      .UseCors(fun builder ->
-        builder
-          .AllowAnyOrigin()
-          .AllowAnyHeader()
-          .AllowCredentials()
-          .AllowAnyMethod()
-          .WithExposedHeaders("X-Access-Token", "X-Total-Count", "Location", "X-Message")
-          |> ignore
-      )
+      .UseCors("AllowAny")
       // .Use(forceGC)
       .UseForwardedHeaders(forwardedHeaderOptions)
       .Use(OAuth2Middleware.run)

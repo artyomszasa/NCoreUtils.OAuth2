@@ -4,4 +4,5 @@ NCoreUtils.OAuth2.Unit/report
 NCoreUtils.OAuth2.Unit/coverage.opencover.xml
 .vscode
 .vs
+.ionide
 google-credentials.json

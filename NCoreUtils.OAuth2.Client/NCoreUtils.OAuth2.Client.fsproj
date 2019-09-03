@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.3.0</Version>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Version>2.0.0-alpha3</Version>
     <NoWarn>FS2003</NoWarn>
   </PropertyGroup>
   <ItemGroup>
@@ -11,7 +11,8 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.Shared\NCoreUtils.OAuth2.Shared.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.Authentication.OpenId" Version="1.1.2" />
-    <PackageReference Include="NCoreUtils.FSharp.Interop" Version="2.1.0" />
+    <PackageReference Update="FSharp.Core" Version="4.7.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Authentication.OpenId" Version="3.0.0-preview8" />
+    <PackageReference Include="NCoreUtils.FSharp" Version="3.0.0-preview8.1" />
   </ItemGroup>
 </Project>
