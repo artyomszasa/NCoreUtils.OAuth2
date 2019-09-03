@@ -7,7 +7,9 @@
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
+    <!--
     <PublishTrimmed>true</PublishTrimmed>
+    -->
     <Version>2.0.0-alpha3</Version>
     <NoWarn>FS2003</NoWarn>
     <IsPackable>false</IsPackable>
@@ -21,23 +23,13 @@
     <Compile Include="Startup.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
-  <ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
     <PackageReference Include="NCoreUtils.XUnit.Abstractions" Version="3.0.0-preview8" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Api.CommonProtos" Version="1.7.0" />
-    <PackageReference Include="Google.Api.Gax" Version="2.9.0" />
-    <PackageReference Include="Google.Api.Gax.Grpc" Version="2.9.0" />
-    <PackageReference Include="Google.Apis" Version="1.40.3" />
-    <PackageReference Include="Google.Apis.Auth" Version="1.40.3" />
-    <PackageReference Include="Google.Apis.Core" Version="1.40.3" />
-    <PackageReference Include="Google.Protobuf" Version="3.9.0" />
-    <PackageReference Include="Grpc.Auth" Version="1.22.0" />
-    <PackageReference Include="Grpc.Core" Version="1.22.0" />
     <PackageReference Update="FSharp.Core" Version="4.7.0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.0.0-preview8.19405.3" />
     <PackageReference Include="NCoreUtils.AspNetCore.FileUploader" Version="3.0.0-preview8.1" />
-    <PackageReference Include="NCoreUtils.AspNetCore.Logging.Google" Version="3.0.0-preview8.1" />
     <PackageReference Include="NCoreUtils.AspNetCore.Rest" Version="3.0.0-preview8.1" />
     <PackageReference Include="NCoreUtils.ContentDetection" Version="3.0.0-preview8" />
     <PackageReference Include="NCoreUtils.ContentDetection.Magic.Libmagic" Version="3.0.0-preview8" />
@@ -49,11 +41,12 @@
     <PackageReference Include="NCoreUtils.Images.Client" Version="2.9.0-alpha3" />
     <PackageReference Include="NCoreUtils.Images.DependencyInjection" Version="2.9.0-alpha3" />
     <PackageReference Include="NCoreUtils.Storage.Abstractions" Version="3.0.0-preview8" />
-    <PackageReference Include="NCoreUtils.Storage.GoogleCloudStorage" Version="3.0.0-preview8" />
+    <PackageReference Include="NCoreUtils.Storage.FileSystem" Version="3.0.0-preview8" />
     <PackageReference Include="NCoreUtils.Text" Version="1.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.Collections.Immutable" Version="1.6.0-preview8.19405.3" />
     <PackageReference Include="System.Net.Requests" Version="4.3.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Net.WebHeaderCollection" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
@@ -68,7 +61,9 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.Rest\NCoreUtils.OAuth2.Rest.fsproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.Encryption.Local\NCoreUtils.OAuth2.Encryption.Local.fsproj" />
   </ItemGroup>
+  <!--
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.0.0-preview5.19227.1" PrivateAssets="All" />
   </ItemGroup>
+  -->
 </Project>

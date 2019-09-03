@@ -1,16 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <Version>2.0.0-alpha3</Version>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="AesEncryptionConfiguration.fs" />
     <Compile Include="AesEncryptionProvider.fs" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.Abstractions\NCoreUtils.OAuth2.Abstractions.fsproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.7.0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.0.0-preview8.19405.3" />
+  </ItemGroup>
 </Project>

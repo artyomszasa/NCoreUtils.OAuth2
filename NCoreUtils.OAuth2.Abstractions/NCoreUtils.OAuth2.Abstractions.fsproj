@@ -14,7 +14,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.7.0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.0.0-preview8.19405.3" />
     <PackageReference Include="NCoreUtils.FSharp" Version="3.0.0-preview8.1" />
     <PackageReference Include="NCoreUtils.Maybe" Version="1.0.5" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.6.0-preview8.19405.3" />
   </ItemGroup>
 </Project>

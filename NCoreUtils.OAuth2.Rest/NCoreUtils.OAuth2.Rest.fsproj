@@ -15,7 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.7.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="3.0.0-preview4-19123-01" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.0-preview8.19405.4" />
     <PackageReference Include="NCoreUtils.AspNetCore.Rest.Abstraction" Version="3.0.0-preview8.1" />
     <PackageReference Include="NCoreUtils.ContentDetection.Abstractions" Version="3.0.0-preview8" />

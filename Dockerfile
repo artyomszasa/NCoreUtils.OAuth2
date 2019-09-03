@@ -1,15 +1,31 @@
 # **********************************************************************************************************************
 # BUILD IMAGE
-FROM microsoft/dotnet:2.2-sdk-alpine AS build-env-oauth2
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0-alpine AS build-env-oauth2
 # ADD BASH, see https://github.com/dotnet/dotnet-docker/issues/632
 RUN apk update && apk add --no-cache bash
 # PREFETCH FSharp.Core and System.Net.Http INTO SEPARATE LAYER
-RUN mkdir /tmp/prefetch \
+COPY ./NuGet.Config /tmp/prefetch/
+RUN mkdir -p /tmp/prefetch \
     && cd /tmp/prefetch \
     && dotnet new web \
-    && echo '<Project Sdk="Microsoft.NET.Sdk.Web"><PropertyGroup><TargetFramework>netcoreapp2.2</TargetFramework><TargetLatestRuntimePatch>true</TargetLatestRuntimePatch></PropertyGroup><ItemGroup><PackageReference Include="Microsoft.AspNetCore.App" /></ItemGroup></Project>' > prefetch.csproj \
-    && dotnet add package FSharp.Core --version 4.6.2 \
-    && dotnet add package System.Net.Http --version 4.3.4 \
+    && dotnet add package NCoreUtils.IO --version 3.0.0-preview8.1 --no-restore \
+    && dotnet add package NCoreUtils.Data.Protocol --version 3.0.0-preview8.1 --no-restore \
+    && dotnet add package System.Buffers --version 4.5.0 --no-restore \
+    && dotnet add package System.Memory --version 4.5.3 --no-restore \
+    && dotnet add package System.Numerics.Vectors --version 4.5.0 --no-restore \
+    && dotnet add package System.Net.Http --version 4.3.4 --no-restore \
+    && dotnet add package System.Runtime.CompilerServices.Unsafe --version 4.6.0-preview8.19405.3 --no-restore \
+    && dotnet add package System.Threading.Thread --version 4.3.0 --no-restore \
+    && dotnet add package System.Threading.ThreadPool --version 4.3.0 --no-restore \
+    && dotnet add package System.Threading.Tasks.Extensions --version 4.6.0-preview.18571.3 --no-restore \
+    && dotnet add package System.Threading.Tasks.Parallel --version 4.3.0 --no-restore \
+    && dotnet add package Microsoft.NETCore.Platforms --version 3.0.0-preview8.19405.3 --no-restore \
+    && dotnet add package Microsoft.NETCore.Targets --version 3.0.0-preview8.19405.3 --no-restore \
+    && dotnet add package Newtonsoft.Json --version 12.0.2 --no-restore \
+    && dotnet add package NETStandard.Library --version 2.0.3 --no-restore \
+    && dotnet add package NCoreUtils.Data.EntityFrameworkCore --version 3.0.0-preview8.1 --no-restore \
+    && dotnet add package Npgsql --version 4.0.7 --no-restore \
+    && dotnet add package Antlr4.Runtime --version 4.6.6 --no-restore \
     && dotnet restore -r alpine-x64 -v n
 WORKDIR /app
 # COPY NUGET config
@@ -48,7 +64,7 @@ RUN dotnet publish ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.f
 
 # **********************************************************************************************************************
 # RUNTIME IMAGE
-FROM microsoft/dotnet:2.2-runtime-deps-alpine
+FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.0-alpine
 WORKDIR /app
 # INSTALL GLOBALIZATION and CURL
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT false
