@@ -95,6 +95,7 @@ namespace NCoreUtils.OAuth2.Data
             }
             else
             {
+                entity.ClientApplicationId = _currentClientApplication.Id;
                 if (null != entity.Permissions)
                 {
                     foreach (var rel in entity.Permissions)
