@@ -8,23 +8,22 @@ COPY ./NuGet.Config /tmp/prefetch/
 RUN mkdir -p /tmp/prefetch \
     && cd /tmp/prefetch \
     && dotnet new web \
-    && dotnet add package NCoreUtils.IO --version 3.0.0-preview8.1 --no-restore \
-    && dotnet add package NCoreUtils.Data.Protocol --version 3.0.0-preview8.1 --no-restore \
+    && dotnet add package NCoreUtils.IO --version 3.0.0 --no-restore \
+    && dotnet add package NCoreUtils.Data.Protocol --version 3.0.0 --no-restore \
     && dotnet add package System.Buffers --version 4.5.0 --no-restore \
     && dotnet add package System.Memory --version 4.5.3 --no-restore \
     && dotnet add package System.Numerics.Vectors --version 4.5.0 --no-restore \
     && dotnet add package System.Net.Http --version 4.3.4 --no-restore \
-    && dotnet add package System.Runtime.CompilerServices.Unsafe --version 4.6.0-preview8.19405.3 --no-restore \
+    && dotnet add package System.Runtime.CompilerServices.Unsafe --version 4.6.0 --no-restore \
     && dotnet add package System.Threading.Thread --version 4.3.0 --no-restore \
     && dotnet add package System.Threading.ThreadPool --version 4.3.0 --no-restore \
-    && dotnet add package System.Threading.Tasks.Extensions --version 4.6.0-preview.18571.3 --no-restore \
+    && dotnet add package System.Threading.Tasks.Extensions --version 4.5.3 --no-restore \
     && dotnet add package System.Threading.Tasks.Parallel --version 4.3.0 --no-restore \
-    && dotnet add package Microsoft.NETCore.Platforms --version 3.0.0-preview8.19405.3 --no-restore \
-    && dotnet add package Microsoft.NETCore.Targets --version 3.0.0-preview8.19405.3 --no-restore \
+    && dotnet add package Microsoft.NETCore.Platforms --version 3.0.0 --no-restore \
+    && dotnet add package Microsoft.NETCore.Targets --version 3.0.0 --no-restore \
     && dotnet add package Newtonsoft.Json --version 12.0.2 --no-restore \
     && dotnet add package NETStandard.Library --version 2.0.3 --no-restore \
-    && dotnet add package NCoreUtils.Data.EntityFrameworkCore --version 3.0.0-preview8.1 --no-restore \
-    && dotnet add package Npgsql --version 4.0.7 --no-restore \
+    && dotnet add package NCoreUtils.Data.EntityFrameworkCore --version 3.0.0 --no-restore \
     && dotnet add package Antlr4.Runtime --version 4.6.6 --no-restore \
     && dotnet restore -r alpine-x64 -v n
 WORKDIR /app

@@ -72,7 +72,7 @@ type OAuth2Core (loginAuthenticator : LoginAuthenticator,
 
   let authenticateUser (username : string) password = async {
     logger.LogTrace("Authenticating \"{0}\" using password authentication.", username);
-    let! claims = Async.Adapt (fun cancellationToken -> loginAuthenticator.AuthenticateAsync ("password", sprintf "%s:%s" username password, cancellationToken));
+    let! claims = Async.VAdapt (fun cancellationToken -> loginAuthenticator.AuthenticateAsync ("password", sprintf "%s:%s" username password, cancellationToken));
     return
       match claims with
       | null ->

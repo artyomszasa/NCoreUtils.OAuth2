@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <Version>2.0.0-alpha4</Version>
+    <Version>2.0.0</Version>
     <IsPackable>false</IsPackable>
     <NoWarn>FS2003</NoWarn>
   </PropertyGroup>
@@ -15,15 +15,15 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.0-preview8.19405.4" />
-    <PackageReference Include="NCoreUtils.AspNetCore.Rest.Abstraction" Version="3.0.0-preview8.1" />
-    <PackageReference Include="NCoreUtils.ContentDetection.Abstractions" Version="3.0.0-preview8" />
-    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="3.0.0-preview8.1" />
-    <PackageReference Include="NCoreUtils.FSharp" Version="3.0.0-preview8.1" />
-    <PackageReference Include="NCoreUtils.FSharp.AspNetCore" Version="3.0.0-preview8.1" />
-    <PackageReference Include="NCoreUtils.FSharp.Data" Version="3.0.0-preview8.1" />
-    <PackageReference Include="NCoreUtils.FSharp.Linq" Version="3.0.0-preview8.1" />
-    <PackageReference Include="NCoreUtils.FSharp.Logging" Version="3.0.0-preview8.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Rest.Abstraction" Version="3.0.0" />
+    <PackageReference Include="NCoreUtils.ContentDetection.Abstractions" Version="3.0.0" />
+    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="3.0.0" />
+    <PackageReference Include="NCoreUtils.FSharp" Version="3.0.0" />
+    <PackageReference Include="NCoreUtils.FSharp.AspNetCore" Version="3.0.0" />
+    <PackageReference Include="NCoreUtils.FSharp.Data" Version="3.0.0" />
+    <PackageReference Include="NCoreUtils.FSharp.Linq" Version="3.0.0" />
+    <PackageReference Include="NCoreUtils.FSharp.Logging" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.Buffers" Version="4.5.0" />
     <PackageReference Include="System.Memory" Version="4.5.3" />

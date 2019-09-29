@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-    <Version>2.0.0-alpha4</Version>
+    <Version>2.0.0</Version>
     <IsPackable>false</IsPackable>
     <NoWarn>FS2003</NoWarn>
   </PropertyGroup>
@@ -9,11 +9,13 @@
     <Compile Include="Claims.fs" />
     <Compile Include="CurrentClientApplication.fs" />
   </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.3" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.7.0" />
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.0.0-preview8.19405.3" />
-    <PackageReference Include="NCoreUtils.Authentication.Abstractions" Version="3.0.0-preview8" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.6.0-preview8.19405.3" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.0-preview.18571.3" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.0.0" />
+    <PackageReference Include="NCoreUtils.Authentication.Abstractions" Version="3.0.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.6.0" />
   </ItemGroup>
 </Project>

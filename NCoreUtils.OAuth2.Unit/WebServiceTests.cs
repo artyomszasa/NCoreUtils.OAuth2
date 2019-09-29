@@ -225,7 +225,7 @@ namespace NCoreUtils.OAuth2.Unit
                 using (var scope = _serviceProvider.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<OAuth2DbContext>();
-                    var rtoken = await dbContext.Set<RefreshToken>().FirstOrDefaultAsync();
+                    var rtoken = await EntityFrameworkQueryableExtensions.FirstOrDefaultAsync(dbContext.Set<RefreshToken>());
                     rtoken.State = State.Deleted;
                     await dbContext.SaveChangesAsync();
                 }

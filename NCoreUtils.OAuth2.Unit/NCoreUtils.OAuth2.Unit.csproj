@@ -5,14 +5,14 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="coverlet.msbuild" Version="2.6.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.0.0-preview8.19405.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.0.0-preview5.19227.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-    <PackageReference Include="Microsoft.NETCore.App" Version="3.0.0-preview8-28405-07" />
-    <PackageReference Include="NCoreUtils.XUnit" Version="3.0.0-preview8" />
+    <PackageReference Include="NCoreUtils.XUnit" Version="3.0.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     <PackageReference Include="ReportGenerator" Version="4.1.4" PrivateAssets="All" />
+    <PackageReference Include="System.Linq.Async" Version="4.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.WebService\NCoreUtils.OAuth2.WebService.fsproj" />

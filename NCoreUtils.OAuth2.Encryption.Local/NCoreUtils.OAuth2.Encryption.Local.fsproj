@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-    <Version>2.0.0-alpha4</Version>
+    <Version>2.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AesEncryptionConfiguration.fs" />
@@ -12,6 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.7.0" />
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.0.0-preview8.19405.3" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.0.0" />
   </ItemGroup>
 </Project>
