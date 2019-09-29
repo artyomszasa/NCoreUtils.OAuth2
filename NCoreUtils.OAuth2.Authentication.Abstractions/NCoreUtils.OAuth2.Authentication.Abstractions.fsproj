@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-    <Version>2.0.0-alpha3</Version>
+    <Version>2.0.0</Version>
     <IsPackable>false</IsPackable>
     <NoWarn>FS2003</NoWarn>
   </PropertyGroup>
@@ -11,6 +11,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.7.0" />
-    <PackageReference Include="NCoreUtils.Authentication.Abstractions" Version="3.0.0-preview8" />
+    <PackageReference Include="NCoreUtils.Authentication.Abstractions" Version="3.0.0" />
   </ItemGroup>
 </Project>

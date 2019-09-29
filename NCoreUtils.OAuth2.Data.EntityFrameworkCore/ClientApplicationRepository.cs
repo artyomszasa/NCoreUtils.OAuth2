@@ -75,7 +75,7 @@ namespace NCoreUtils.OAuth2.Data
             : base(serviceProvider, context, eventHandlers)
         { }
 
-        protected override async Task<EntityEntry<ClientApplication>> AttachNewOrUpdateAsync(
+        protected override async ValueTask<EntityEntry<ClientApplication>> AttachNewOrUpdateAsync(
             EntityEntry<ClientApplication> entry,
             CancellationToken cancellationToken)
         {

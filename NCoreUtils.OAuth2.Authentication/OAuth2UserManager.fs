@@ -56,7 +56,9 @@ type OAuth2UserManager (userRepository : IDataRepository<User>, currentClientApp
       |> Q.toAsyncSeq
 
   interface IUserManager<int> with
-    member this.FindByEmailAsync (email, cancellationToken) = Async.StartAsTask (this.AsyncFindByEmail email, cancellationToken = cancellationToken)
+    member this.FindByEmailAsync (email, cancellationToken) =
+      Async.StartAsTask (this.AsyncFindByEmail email, cancellationToken = cancellationToken)
+      |> ValueTask<IUser<_>>
 
     member this.GetPermissionsAsync user =
         this.AsyncGetPermissionsAsync user

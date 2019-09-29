@@ -39,7 +39,7 @@ namespace NCoreUtils.OAuth2.Data
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        protected override async Task<EntityEntry<User>> AttachNewOrUpdateAsync(EntityEntry<User> entry, CancellationToken cancellationToken)
+        protected override async ValueTask<EntityEntry<User>> AttachNewOrUpdateAsync(EntityEntry<User> entry, CancellationToken cancellationToken)
         {
             var entity = entry.Entity;
             var password = entity.Password;

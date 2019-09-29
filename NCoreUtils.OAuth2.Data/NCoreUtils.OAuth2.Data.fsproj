@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-    <Version>2.0.0-alpha3</Version>
+    <Version>2.0.0</Version>
     <IsPackable>false</IsPackable>
     <NoWarn>FS2003</NoWarn>
   </PropertyGroup>
@@ -10,12 +10,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.7.0" />
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.0.0-preview8.19405.3" />
-    <PackageReference Include="Microsoft.NETCore.Targets" Version="3.0.0-preview8.19405.3" />
-    <PackageReference Include="NCoreUtils.AspNetCore.FileUploader.Abstractions" Version="3.0.0-preview8.1" />
-    <PackageReference Include="NCoreUtils.Authentication.Password.Abstractions" Version="3.0.0-preview8" />
-    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="3.0.0-preview8.1" />
-    <PackageReference Include="NCoreUtils.FSharp" Version="3.0.0-preview8.1" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.0.0" />
+    <PackageReference Include="Microsoft.NETCore.Targets" Version="3.0.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.FileUploader.Abstractions" Version="3.0.0" />
+    <PackageReference Include="NCoreUtils.Authentication.Password.Abstractions" Version="3.0.0" />
+    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="3.0.0" />
+    <PackageReference Include="NCoreUtils.FSharp" Version="3.0.0" />
     <PackageReference Include="NCoreUtils.Maybe" Version="1.0.5" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
