@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.Data.Abstractions\NCoreUtils.OAuth2.LoginProvider.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.Abstractions\NCoreUtils.OAuth2.LoginProvider.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NCoreUtils.Linq.Abstractions" Version="3.0.0" />
+  </ItemGroup>
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
+  </PropertyGroup>
+</Project>

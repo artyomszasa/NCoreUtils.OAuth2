@@ -1,0 +1,8 @@
+.vs
+.vscode
+.ionide
+
+NCoreUtils*/obj
+NCoreUtils*/bin
+NCoreUtils*Unit/coverage*.xml
+NCoreUtils*Unit/report
