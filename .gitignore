@@ -6,3 +6,5 @@ NCoreUtils.OAuth2.Unit/coverage.opencover.xml
 .vs
 .ionide
 google-credentials.json
+
+.fake

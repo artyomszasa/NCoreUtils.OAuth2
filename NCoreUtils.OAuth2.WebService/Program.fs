@@ -24,7 +24,7 @@ module Program =
   let CreateWebHostBuilder (args : string[]) =
     WebHostBuilder()
       .UseContentRoot(IO.Directory.GetCurrentDirectory ())
-      .UseKestrel(fun o -> o.AllowSynchronousIO <- true)
+      .UseKestrel(fun o -> o.Listen(Environment.GetEnvironmentVariable "ASPNETCORE_LISTEN_AT" |> parseEndpoint); o.AllowSynchronousIO <- true)
       .UseStartup<Startup>()
 
   [<EntryPoint>]
