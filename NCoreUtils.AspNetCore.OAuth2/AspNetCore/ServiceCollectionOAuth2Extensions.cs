@@ -1,0 +1,104 @@
+using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using NCoreUtils.AspNetCore.Proto;
+using NCoreUtils.OAuth2;
+using ServiceDescriptor = Microsoft.Extensions.DependencyInjection.ServiceDescriptor;
+
+namespace NCoreUtils.AspNetCore
+{
+    public static class ServiceCollectionOAuth2Extensions
+    {
+        private static IServiceCollection AddRemoteOAuth2Authentication(
+            this IServiceCollection services,
+            ServiceDescriptor tokenHandler,
+            IEndpointConfiguration configuration)
+        {
+            services
+                .AddTokenServiceClient(configuration)
+                .Add(tokenHandler);
+            services.AddAuthentication()
+                .AddRemoteOAuth2AuthenticationScheme();
+            return services;
+        }
+
+        public static IServiceCollection AddRemoteOAuth2Authentication<TTokenHandler>(
+            this IServiceCollection services,
+            IEndpointConfiguration configuration,
+            ServiceLifetime tokenHandlerLifetime = ServiceLifetime.Singleton)
+            where TTokenHandler : class, ITokenHandler
+            => services.AddRemoteOAuth2Authentication(
+                ServiceDescriptor.Describe(typeof(ITokenHandler), typeof(TTokenHandler), tokenHandlerLifetime),
+                configuration
+            );
+
+        public static IServiceCollection AddRemoteOAuth2Authentication(
+            this IServiceCollection services,
+            IEndpointConfiguration configuration,
+            TokenHandlers tokenHandlers = TokenHandlers.Bearer | TokenHandlers.Cookie | TokenHandlers.Query)
+        {
+            var handlers = new List<ITokenHandler>(4);
+            if (tokenHandlers.HasFlag(TokenHandlers.Bearer))
+            {
+                handlers.Add(new BearerTokenHandler());
+            }
+            if (tokenHandlers.HasFlag(TokenHandlers.Cookie))
+            {
+                handlers.Add(new CookieTokenHandler());
+            }
+            if (tokenHandlers.HasFlag(TokenHandlers.Query))
+            {
+                handlers.Add(new QueryTokenHandler());
+            }
+            if (tokenHandlers.HasFlag(TokenHandlers.Form))
+            {
+                handlers.Add(new FormTokenHandler());
+            }
+            var tokenHandler = handlers.Count == 1 ? handlers[0] : new CompositeTokenHandler(handlers);
+            return services.AddRemoteOAuth2Authentication(
+                ServiceDescriptor.Singleton<ITokenHandler>(tokenHandler),
+                configuration
+            );
+        }
+
+        public static IServiceCollection AddRemoteOAuth2Authentication<TTokenHandler>(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            ServiceLifetime tokenHandlerLifetime = ServiceLifetime.Singleton)
+            where TTokenHandler : class, ITokenHandler
+        {
+            var config = new EndpointConfiguration();
+            configuration.Bind(config);
+            return services.AddRemoteOAuth2Authentication<TTokenHandler>(config, tokenHandlerLifetime);
+        }
+
+        public static IServiceCollection AddRemoteOAuth2Authentication<TTokenHandler>(
+            this IServiceCollection services,
+            string endpoint,
+            ServiceLifetime tokenHandlerLifetime = ServiceLifetime.Singleton)
+            where TTokenHandler : class, ITokenHandler
+        {
+            var config = new EndpointConfiguration { Endpoint = endpoint };
+            return services.AddRemoteOAuth2Authentication<TTokenHandler>(config, tokenHandlerLifetime);
+        }
+
+        public static IServiceCollection AddRemoteOAuth2Authentication(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            TokenHandlers tokenHandlers = TokenHandlers.Bearer | TokenHandlers.Cookie | TokenHandlers.Query)
+        {
+            var config = new EndpointConfiguration();
+            configuration.Bind(config);
+            return services.AddRemoteOAuth2Authentication(config, tokenHandlers);
+        }
+
+        public static IServiceCollection AddRemoteOAuth2Authentication(
+            this IServiceCollection services,
+            string endpoint,
+            TokenHandlers tokenHandlers = TokenHandlers.Bearer | TokenHandlers.Cookie | TokenHandlers.Query)
+        {
+            var config = new EndpointConfiguration { Endpoint = endpoint };
+            return services.AddRemoteOAuth2Authentication(config, tokenHandlers);
+        }
+    }
+}

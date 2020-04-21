@@ -10,10 +10,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Shared\NCoreUtils.OAuth2.TokenService.Shared.csproj" />
-    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService\NCoreUtils.OAuth2.TokenService.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.Proto" Version="3.1.0-alpha0" />
+    <ProjectReference Include="..\NCoreUtils.AspNetCore.OAuth2.Abstractions\NCoreUtils.AspNetCore.OAuth2.Abstractions.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.AspNetCore.Client\NCoreUtils.OAuth2.TokenService.AspNetCore.Client.csproj" />
   </ItemGroup>
 </Project>
