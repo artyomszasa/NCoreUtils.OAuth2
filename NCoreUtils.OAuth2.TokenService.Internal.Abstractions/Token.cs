@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using NCoreUtils.OAuth2.Internal;
 
@@ -112,6 +113,18 @@ namespace NCoreUtils.OAuth2
             }
             size = default;
             return false;
+        }
+
+        public void WriteTo(BinaryWriter writer)
+        {
+            writer.WriteUtf8String(TokenType);
+            writer.WriteUtf8String(Sub);
+            writer.WriteUtf8String(Issuer);
+            writer.WriteUtf8String(Email);
+            writer.WriteUtf8String(Username);
+            writer.WriteUtf8Strings(Scopes);
+            writer.Write(IssuedAt.UtcTicks);
+            writer.Write(ExpiresAt.UtcTicks);
         }
 
         public bool Equals(Token other)

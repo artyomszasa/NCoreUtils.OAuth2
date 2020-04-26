@@ -9,11 +9,11 @@ namespace NCoreUtils.AspNetCore
 {
     public static class EndpointBuilderTokenServiceExtensions
     {
-        public static IEndpointConventionBuilder MapTokenService(this IEndpointRouteBuilder builder)
+        public static IEndpointConventionBuilder MapTokenService(this IEndpointRouteBuilder builder, string? prefix = default)
             => builder.MapProto<ITokenServiceEndpoints>(
                 build: b =>
                 {
-                    b.ApplyDefaultTokenServiceConfiguration();
+                    b.ApplyDefaultTokenServiceConfiguration(prefix);
                     var introspect = b.Methods.First(m => m.Method.Name == nameof(ITokenServiceEndpoints.IntrospectAsync));
                     introspect.Input = new IntrospectionServiceInput();
                 },

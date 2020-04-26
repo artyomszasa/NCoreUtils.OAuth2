@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>NCoreUtils.AspNetCore.OAuth2</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NCoreUtils.AspNetCore.OAuth2\NCoreUtils.AspNetCore.OAuth2.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.AspNetCore\NCoreUtils.OAuth2.TokenService.AspNetCore.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Encryption.Rijndael\NCoreUtils.OAuth2.TokenService.Encryption.Rijndael.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NCoreUtils.AspNetCore.Logging.GoogleFluentd" Version="3.1.0-alpha0" />
+  </ItemGroup>
+</Project>

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -6,19 +7,18 @@ namespace NCoreUtils.OAuth2.Internal
 {
     public class NoopTokenEncryption : ITokenEncryption
     {
-        public ValueTask<Token?> DecryptTokenAsync(ReadOnlyMemory<byte> encryptedToken, CancellationToken cancellationToken = default)
+        public ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, CancellationToken cancellationToken = default)
         {
-            if (Token.TryReadFrom(encryptedToken.Span, out var token))
+            if (Token.TryReadFrom(encryptedToken.AsSpan(), out var token))
             {
-                return new ValueTask<Token?>(token);
+                return new ValueTask<Token>(token);
             }
-            return default;
+            throw new InvalidOperationException("Unable to read token: invalid token.");
         }
 
-        public ValueTask<EncryptTokenResult> TryEncryptTokenAsync(Token token, Memory<byte> buffer, CancellationToken cancellationToken = default)
+        public ValueTask<byte[]> EncryptTokenAsync(Token token, CancellationToken cancellationToken = default)
         {
-            var success = token.TryWriteTo(buffer.Span, out var size);
-            return new ValueTask<EncryptTokenResult>(new EncryptTokenResult(success, size));
+            return new ValueTask<byte[]>(token.ToByteArray());
         }
     }
 }
