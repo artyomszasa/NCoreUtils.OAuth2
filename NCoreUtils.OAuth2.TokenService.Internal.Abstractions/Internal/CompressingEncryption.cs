@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace NCoreUtils.OAuth2.Internal
 {
+    #if NETSTANDARD2_1
+
     public class CompressingEncryption : ITokenEncryption
     {
         private readonly ITokenEncryption _encryption;
@@ -51,4 +53,6 @@ namespace NCoreUtils.OAuth2.Internal
             }
         }
     }
+
+    #endif
 }

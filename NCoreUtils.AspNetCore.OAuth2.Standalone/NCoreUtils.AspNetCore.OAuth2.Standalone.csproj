@@ -10,6 +10,7 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.AspNetCore\NCoreUtils.OAuth2.TokenService.AspNetCore.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Encryption.Rijndael\NCoreUtils.OAuth2.TokenService.Encryption.Rijndael.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.TokenRepositories.GoogleCloudFirestore\NCoreUtils.OAuth2.TokenService.TokenRepositories.GoogleCloudFirestore.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NCoreUtils.AspNetCore.Logging.GoogleFluentd" Version="3.1.0-alpha0" />

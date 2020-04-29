@@ -44,7 +44,8 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .AddHttpContextAccessor()
                 // token service
                 .AddSingleton(aesConfiguration)
-                .AddTokenService<CompressedRijndaelTokenEncryption, X>(tokenServiceConfiguration)
+                .AddFirestoreTokenRepository(_configuration["Google:ProjectId"])
+                .AddTokenService<CompressedRijndaelTokenEncryption, FirestoreTokenRepository>(tokenServiceConfiguration)
                 // scoped login provider client
                 .AddScopedProtoClient<ILoginProvider>(
                     serviceProvider =>
