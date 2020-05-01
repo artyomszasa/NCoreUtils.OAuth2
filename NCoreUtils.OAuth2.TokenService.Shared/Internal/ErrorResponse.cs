@@ -1,9 +1,12 @@
 using System;
+using NCoreUtils.AspNetCore.Proto;
 
 namespace NCoreUtils.OAuth2.Internal
 {
-    public class ErrorResponse : IEquatable<ErrorResponse>
+    public class ErrorResponse : IEquatable<ErrorResponse>, IErrorDescription
     {
+        string? IErrorDescription.ErrorMessage => ErrorDescription;
+
         public string ErrorCode { get; }
 
         public string? ErrorDescription { get; }
@@ -24,5 +27,18 @@ namespace NCoreUtils.OAuth2.Internal
 
         public override int GetHashCode()
             => HashCode.Combine(ErrorCode, ErrorDescription);
+
+        public Exception ToException(string endpoint)
+        {
+            if (ErrorCode == TokenServiceErrorCodes.AccessDenied)
+            {
+                return new RemoteAccessDeniedException(endpoint, ErrorDescription ?? "Access denied.");
+            }
+            if (ErrorCode == TokenServiceErrorCodes.InvalidCredentials)
+            {
+                throw new RemoteInvalidCredentialsException(endpoint, ErrorDescription ?? "Invalid credentials.");
+            }
+            throw new RemoteTokenServiceException(endpoint, ErrorCode, ErrorCode == TokenServiceErrorCodes.InternalError ? 500 : 400, ErrorDescription!);
+        }
     }
 }

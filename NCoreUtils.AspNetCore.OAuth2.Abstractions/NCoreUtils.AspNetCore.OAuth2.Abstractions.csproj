@@ -4,6 +4,6 @@
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
-    <Version>3.1.0-alpha0</Version>
+    <Version>3.1.0-alpha1</Version>
   </PropertyGroup>
 </Project>

@@ -6,7 +6,6 @@
     <RootNamespace>NCoreUtils.AspNetCore.OAuth2</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NCoreUtils.AspNetCore.OAuth2\NCoreUtils.AspNetCore.OAuth2.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.AspNetCore\NCoreUtils.OAuth2.TokenService.AspNetCore.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Encryption.Rijndael\NCoreUtils.OAuth2.TokenService.Encryption.Rijndael.csproj" />

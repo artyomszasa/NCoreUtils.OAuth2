@@ -1,11 +1,14 @@
 using System;
 using System.Runtime.Serialization;
+using NCoreUtils.AspNetCore;
 
 namespace NCoreUtils.OAuth2
 {
     [Serializable]
-    public class TokenServiceException : Exception
+    public class TokenServiceException : Exception, IStatusCodeResponse
     {
+        int IStatusCodeResponse.StatusCode => DesiredStatusCode;
+
         public string ErrorCode { get; }
 
         public int DesiredStatusCode { get; }

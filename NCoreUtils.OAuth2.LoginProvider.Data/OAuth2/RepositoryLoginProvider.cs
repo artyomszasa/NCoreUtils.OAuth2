@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,12 +28,21 @@ namespace NCoreUtils.OAuth2
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         }
 
+        protected virtual Expression<Func<TUser, bool>> CreateUsernamePredicate(string username)
+        {
+            if (_configuration.UseEmailAsUsername)
+            {
+                return e => e.Email == username;
+            }
+            return e => e.Username == username;
+        }
+
         public ValueTask<LoginIdentity?> ExtensionGrantAsync(string type, string passcode, ScopeCollection scopes, CancellationToken cancellationToken = default)
             => default;
 
         public async ValueTask<LoginIdentity?> PasswordGrantAsync(string username, string password, ScopeCollection scopes, CancellationToken cancellationToken = default)
         {
-            var user = await _userRepository.Items.FirstOrDefaultAsync(e => e.Username == username, cancellationToken);
+            var user = await _userRepository.Items.FirstOrDefaultAsync(CreateUsernamePredicate(username), cancellationToken);
             if (user is null)
             {
                 return null;
@@ -40,7 +50,7 @@ namespace NCoreUtils.OAuth2
             var sha512 = Sha512Helper.Rent();
             try
             {
-                if (PasswordHelpers.ComputeHash(password, user.Salt) == user.Password)
+                if (PasswordHelpers.ComputeHash(password, user.Salt) != user.Password)
                 {
                     return null;
                 }

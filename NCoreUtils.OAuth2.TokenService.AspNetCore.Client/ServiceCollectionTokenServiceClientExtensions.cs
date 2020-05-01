@@ -19,6 +19,7 @@ namespace NCoreUtils.OAuth2
                     builder =>
                     {
                         builder.ApplyDefaultTokenServiceConfiguration();
+                        builder.DefaultError = new OAuth2ClientError();
                         var introspect = builder.Methods.First(m => m.Method.Name == nameof(ITokenServiceEndpoints.IntrospectAsync));
                         introspect.Input = new IntrospectionClientInput();
                     }
@@ -34,7 +35,7 @@ namespace NCoreUtils.OAuth2
         {
             var config = configuration.Get<AspNetCore.Proto.EndpointConfiguration>()
                 ?? throw new InvalidOperationException("No token service endpoint configuration found.");
-            return services.AddTokenServiceClient(configuration);
+            return services.AddTokenServiceClient(config);
         }
     }
 }

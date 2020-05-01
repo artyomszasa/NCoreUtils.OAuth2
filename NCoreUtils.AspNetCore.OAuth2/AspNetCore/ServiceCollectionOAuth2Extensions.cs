@@ -17,7 +17,7 @@ namespace NCoreUtils.AspNetCore
             services
                 .AddTokenServiceClient(configuration)
                 .Add(tokenHandler);
-            services.AddAuthentication()
+            services.AddAuthentication(OAuth2AuthenticationSchemeOptions.Name)
                 .AddRemoteOAuth2AuthenticationScheme();
             return services;
         }

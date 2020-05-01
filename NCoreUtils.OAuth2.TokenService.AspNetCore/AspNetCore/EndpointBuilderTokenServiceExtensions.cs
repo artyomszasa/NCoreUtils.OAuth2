@@ -14,6 +14,7 @@ namespace NCoreUtils.AspNetCore
                 build: b =>
                 {
                     b.ApplyDefaultTokenServiceConfiguration(prefix);
+                    b.DefaultError = new OAuth2ServiceError();
                     var introspect = b.Methods.First(m => m.Method.Name == nameof(ITokenServiceEndpoints.IntrospectAsync));
                     introspect.Input = new IntrospectionServiceInput();
                 },

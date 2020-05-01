@@ -7,10 +7,30 @@ namespace NCoreUtils
 {
     public static class ServiceCollectionRepositoryLoginProviderExtensions
     {
-        public static IServiceCollection AddRepositoryLoginProvider<TUser, TId>(this IServiceCollection services)
+        private class LoginProviderConfiguration : ILoginProviderConfiguration
+        {
+            public string Issuer { get; set; } = default!;
+
+            public bool UseEmailAsUsername { get; set; } = false;
+        }
+
+        public static IServiceCollection AddRepositoryLoginProvider<TUser, TId>(this IServiceCollection services, ILoginProviderConfiguration configuration)
             where TUser : ILocalUser<TId>
             where TId : IConvertible
             => services
+                .AddSingleton(configuration)
                 .AddScoped<ILoginProvider, RepositoryLoginProvider<TUser, TId>>();
+
+        public static IServiceCollection AddRepositoryLoginProvider<TUser, TId>(
+            this IServiceCollection services,
+            string issuer,
+            bool useEmailAsUsername = false)
+            where TUser : ILocalUser<TId>
+            where TId : IConvertible
+            => services.AddRepositoryLoginProvider<TUser, TId>(new LoginProviderConfiguration {
+                Issuer = issuer,
+                UseEmailAsUsername = useEmailAsUsername
+            });
+
     }
 }
