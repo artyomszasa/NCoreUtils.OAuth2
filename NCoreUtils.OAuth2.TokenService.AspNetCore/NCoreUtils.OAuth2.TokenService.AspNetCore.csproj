@@ -14,6 +14,6 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService\NCoreUtils.OAuth2.TokenService.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.Proto" Version="3.1.0-alpha0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Proto" Version="3.1.0-alpha1" />
   </ItemGroup>
 </Project>
