@@ -26,6 +26,25 @@ namespace NCoreUtils.AspNetCore.OAuth2
             }
         }
 
+        /// <summary>
+        /// Listening ip/port is determined as follows:
+        /// <para>
+        /// - if <c>PORT</c> environment variable is set --> listen at <c>0.0.0.0:{PORT}</c>;
+        /// </para>
+        /// <para>
+        /// - if <c>ASPNETCORE_LISTEN_AT</c> environment variable is set --> listen at <c>{ASPNETCORE_LISTEN_AT}</c>;
+        /// </para>
+        /// <para>
+        /// - otherwise listen at <c>127.0.0.1:5000</c>.
+        /// </para>
+        /// </summary>
+        private static IPEndPoint GetListenEndpoint()
+            => Environment.GetEnvironmentVariable("PORT") switch
+            {
+                null => ParseEndpoint(Environment.GetEnvironmentVariable("ASPNETCORE_LISTEN_AT")),
+                var rawPort => new IPEndPoint(IPAddress.Any, int.Parse(rawPort))
+            };
+
         private static IConfiguration CreateConfiguration()
             => new ConfigurationBuilder()
                 .SetBasePath(Environment.CurrentDirectory)
@@ -63,7 +82,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                     webBuilder
                         .UseConfiguration(configuration)
                         .UseStartup<Startup>()
-                        .UseKestrel(opts => opts.Listen(ParseEndpoint(Environment.GetEnvironmentVariable("ASPNETCORE_LISTEN_AT"))));
+                        .UseKestrel(opts => opts.Listen(GetListenEndpoint()));
                 });
         }
     }
