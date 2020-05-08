@@ -10,6 +10,8 @@ namespace NCoreUtils.OAuth2
     {
         public IReadOnlyList<ITokenHandler> Handlers { get; }
 
+        public string? CurrentToken { get; private set; }
+
         public CompositeTokenHandler(IReadOnlyList<ITokenHandler> handlers)
             => Handlers = handlers ?? throw new ArgumentNullException(nameof(handlers));
 
@@ -20,6 +22,7 @@ namespace NCoreUtils.OAuth2
                 var token = await handler.ReadTokenAsync(request, cancellationToken);
                 if (null != token)
                 {
+                    CurrentToken = token;
                     return token;
                 }
             }

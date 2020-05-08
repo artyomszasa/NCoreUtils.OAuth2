@@ -56,13 +56,8 @@ namespace NCoreUtils.OAuth2
                 expiresAt: now + Configuration.RefreshTokenExpiry
             );
 
-        protected virtual async ValueTask<AccessTokenResponse> CreateTokensAndResponseAsync(LoginIdentity? identity, CancellationToken cancellationToken = default)
+        protected virtual async ValueTask<AccessTokenResponse> CreateTokensAndResponseAsync(LoginIdentity identity, CancellationToken cancellationToken = default)
         {
-            if (identity is null)
-            {
-                // FIXME: error
-                throw new InvalidOperationException("WIP");
-            }
             var now = DateTimeOffset.Now.Normalize();
             var refreshToken = CreateRefreshToken(now, identity);
             var accessToken = CreateAccessToken(now, identity);
@@ -82,6 +77,10 @@ namespace NCoreUtils.OAuth2
         public async ValueTask<AccessTokenResponse> ExtensionGrantAsync(string type, string passcode, ScopeCollection scopes, CancellationToken cancellationToken = default)
         {
             var identity = await LoginProvider.ExtensionGrantAsync(type, passcode, scopes, cancellationToken);
+            if (identity is null)
+            {
+                throw new InvalidCredentialsException("Specified credentials are not valid.");
+            }
             return await CreateTokensAndResponseAsync(identity, cancellationToken);
         }
 
@@ -122,6 +121,10 @@ namespace NCoreUtils.OAuth2
         public async ValueTask<AccessTokenResponse> PasswordGrantAsync(string username, string password, ScopeCollection scopes, CancellationToken cancellationToken = default)
         {
             var identity = await LoginProvider.PasswordGrantAsync(username, password, scopes, cancellationToken);
+            if (identity is null)
+            {
+                throw new InvalidCredentialsException("Invalid username or password.");
+            }
             return await CreateTokensAndResponseAsync(identity, cancellationToken);
         }
 

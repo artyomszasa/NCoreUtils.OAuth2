@@ -11,6 +11,8 @@ namespace NCoreUtils.OAuth2
             => contentType.StartsWith("application/x-www-form-urlencoded", true, CultureInfo.InvariantCulture)
                 || contentType.StartsWith("multipart/form-data", true, CultureInfo.InvariantCulture);
 
+        public string? CurrentToken { get; private set; }
+
         public async ValueTask<string?> ReadTokenAsync(HttpRequest request, CancellationToken cancellationToken = default)
         {
             if ((request.Method == "POST" || request.Method == "PUT") && IsFormCompatibleContentType(request.ContentType))
@@ -18,6 +20,7 @@ namespace NCoreUtils.OAuth2
                 var form = await request.ReadFormAsync(cancellationToken);
                 if (form.TryGetValue("access_token", out var values) && values.Count > 0)
                 {
+                    CurrentToken = values[0];
                     return values[0];
                 }
             }

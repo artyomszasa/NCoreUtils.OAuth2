@@ -22,7 +22,13 @@ namespace NCoreUtils.OAuth2
             return default;
         }
 
+        public string? CurrentToken { get; private set; }
+
         public ValueTask<string?> ReadTokenAsync(HttpRequest request, CancellationToken cancellationToken = default)
-            => new ValueTask<string?>(GetBearerToken(request));
+        {
+            var token = GetBearerToken(request);
+            CurrentToken = token;
+            return new ValueTask<string?>(token);
+        }
     }
 }

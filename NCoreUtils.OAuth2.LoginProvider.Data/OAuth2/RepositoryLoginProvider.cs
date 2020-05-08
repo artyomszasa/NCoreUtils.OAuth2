@@ -59,7 +59,7 @@ namespace NCoreUtils.OAuth2
                     _configuration.Issuer,
                     user.Username,
                     user.Email,
-                    new ScopeCollection(user.GetAvailableScopes().Intersect(scopes))
+                    new ScopeCollection(scopes.HasValue ? user.GetAvailableScopes().Intersect(scopes) : user.GetAvailableScopes())
                 );
             }
             finally
