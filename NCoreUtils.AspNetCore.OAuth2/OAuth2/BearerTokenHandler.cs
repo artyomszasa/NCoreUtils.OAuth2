@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +11,7 @@ namespace NCoreUtils.OAuth2
         {
             var headers = request.Headers;
             var auth = headers.TryGetValue("Authorization", out var values) && values.Count > 0 ? values[0] : default;
-            if (!string.IsNullOrEmpty(auth) && auth.StartsWith("bearer "))
+            if (!string.IsNullOrEmpty(auth) && auth.StartsWith("bearer ", StringComparison.InvariantCultureIgnoreCase))
             {
                 var tokenIndex = 7;
                 while (auth.Length > tokenIndex && char.IsWhiteSpace(auth[tokenIndex]))
