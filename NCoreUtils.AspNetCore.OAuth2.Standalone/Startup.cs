@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +14,15 @@ namespace NCoreUtils.AspNetCore.OAuth2
 {
     public class Startup
     {
+        static ForwardedHeadersOptions ConfigureForwardedHeaders()
+        {
+            var opts = new ForwardedHeadersOptions();
+            opts.KnownNetworks.Clear();
+            opts.KnownProxies.Clear();
+            opts.ForwardedHeaders = ForwardedHeaders.All;
+            return opts;
+        }
+
         private readonly IWebHostEnvironment _env;
 
         private readonly IConfiguration _configuration;
@@ -61,6 +71,16 @@ namespace NCoreUtils.AspNetCore.OAuth2
                     },
                     b => b.ApplyDefaultLoginProviderConfiguration()
                 )
+                // CORS
+                .AddCors(b => b.AddDefaultPolicy(opts => opts
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    // must be at least 2 domains for CORS middleware to send Vary: Origin
+                    .WithOrigins("https://example.com", "http://127.0.0.1")
+                    .SetIsOriginAllowed(_ => true)
+                ))
+                // routing
                 .AddRouting();
         }
 
@@ -73,11 +93,14 @@ namespace NCoreUtils.AspNetCore.OAuth2
             }
             #endif
 
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapTokenService(string.Empty);
-            });
+            app
+                .UseForwardedHeaders(ConfigureForwardedHeaders())
+                .UseCors()
+                .UseRouting()
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapTokenService(string.Empty);
+                });
         }
     }
 }

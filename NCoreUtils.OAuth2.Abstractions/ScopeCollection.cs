@@ -165,5 +165,38 @@ namespace NCoreUtils.OAuth2
             }
             return builder.Length;
         }
+
+        public bool TryEmplace(Span<char> span, out int used)
+        {
+            if (_scopes is null)
+            {
+                used = 0;
+                return true;
+            }
+            var first = true;
+            var builder = new SpanBuilder(span);
+            foreach (var scope in _scopes)
+            {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    if (!builder.TryAppend(' '))
+                    {
+                        used = default;
+                        return false;
+                    }
+                }
+                if (!builder.TryAppend(scope))
+                {
+                    used = default;
+                    return false;
+                }
+            }
+            used = builder.Length;
+            return true;
+        }
     }
 }

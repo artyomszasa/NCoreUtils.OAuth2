@@ -5,10 +5,12 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NCoreUtils.Data;
 using NCoreUtils.Linq;
 using NCoreUtils.OAuth2.Data;
 using NCoreUtils.OAuth2.Internal;
+using NCoreUtils.OAuth2.Logging;
 
 namespace NCoreUtils.OAuth2
 {
@@ -18,19 +20,25 @@ namespace NCoreUtils.OAuth2
     {
         private static readonly UTF8Encoding _utf8 = new UTF8Encoding(false);
 
-        private readonly ILoginProviderConfiguration _configuration;
+        protected ILoginProviderConfiguration Configuration { get; }
 
-        private readonly IDataRepository<TUser> _userRepository;
+        protected IDataRepository<TUser> UserRepository { get; }
 
-        public RepositoryLoginProvider(ILoginProviderConfiguration configuration, IDataRepository<TUser> userRepository)
+        protected ILogger Logger { get; }
+
+        public RepositoryLoginProvider(
+            ILoginProviderConfiguration configuration,
+            IDataRepository<TUser> userRepository,
+            ILogger<ILoginProvider> logger)
         {
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            UserRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         protected virtual Expression<Func<TUser, bool>> CreateUsernamePredicate(string username)
         {
-            if (_configuration.UseEmailAsUsername)
+            if (Configuration.UseEmailAsUsername)
             {
                 return e => e.Email == username;
             }
@@ -42,10 +50,18 @@ namespace NCoreUtils.OAuth2
 
         public async ValueTask<LoginIdentity?> PasswordGrantAsync(string username, string password, ScopeCollection scopes, CancellationToken cancellationToken = default)
         {
-            var user = await _userRepository.Items.FirstOrDefaultAsync(CreateUsernamePredicate(username), cancellationToken);
+            var user = await UserRepository.Items.FirstOrDefaultAsync(CreateUsernamePredicate(username), cancellationToken);
             if (user is null)
             {
+                if (Logger.IsEnabled(LogLevel.Debug))
+                {
+                    Logger.Log(LogLevel.Debug, default, new PasswordGrantNoUserEntry(Configuration.UseEmailAsUsername, username), default, L.Fmt);
+                }
                 return null;
+            }
+            if (Logger.IsEnabled(LogLevel.Trace))
+            {
+                Logger.Log(LogLevel.Trace, default, new PaswordGrantUserFoundEntry<TId>(Configuration.UseEmailAsUsername, username, user), default, L.Fmt);
             }
             var sha512 = Sha512Helper.Rent();
             try
@@ -56,7 +72,7 @@ namespace NCoreUtils.OAuth2
                 }
                 return new LoginIdentity(
                     user.Sub.ToString(CultureInfo.InvariantCulture),
-                    _configuration.Issuer,
+                    Configuration.Issuer,
                     user.Username,
                     user.Email,
                     new ScopeCollection(scopes.HasValue ? user.GetAvailableScopes().Intersect(scopes) : user.GetAvailableScopes())

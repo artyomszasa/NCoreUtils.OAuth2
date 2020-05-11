@@ -4,9 +4,9 @@
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
-    <Version>3.1.0-alpha2</Version>
+    <Version>3.1.0-alpha3</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Extensions.Memory" Version="1.0.4" />
+    <PackageReference Include="NCoreUtils.Extensions.Memory" Version="1.0.5" />
   </ItemGroup>
 </Project>
