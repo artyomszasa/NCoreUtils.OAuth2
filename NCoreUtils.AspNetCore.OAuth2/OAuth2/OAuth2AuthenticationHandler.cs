@@ -14,17 +14,21 @@ namespace NCoreUtils.OAuth2
 
         public ITokenService TokenService { get; }
 
+        public IIntrospectionCache Cache { get; }
+
         public OAuth2AuthenticationHandler(
             IOptionsMonitor<OAuth2AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
             ITokenHandler tokenHandler,
-            ITokenService tokenService)
+            ITokenService tokenService,
+            IIntrospectionCache? introspectionCache = default)
             : base(options, logger, encoder, clock)
         {
             TokenHandler = tokenHandler ?? throw new ArgumentNullException(nameof(tokenHandler));
             TokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+            Cache = introspectionCache ?? new IntrospectionNoCache();
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -37,7 +41,7 @@ namespace NCoreUtils.OAuth2
             IntrospectionResponse data;
             try
             {
-                data = await TokenService.IntrospectAsync(token, cancellationToken: Context.RequestAborted);
+                data = await Cache.IntrospectAsync(TokenService, token, cancellationToken: Context.RequestAborted);
             }
             catch (Exception exn)
             {

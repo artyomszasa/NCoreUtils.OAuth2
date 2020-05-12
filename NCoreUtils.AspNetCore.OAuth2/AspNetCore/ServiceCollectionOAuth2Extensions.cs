@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NCoreUtils.AspNetCore.Proto;
 using NCoreUtils.OAuth2;
 using ServiceDescriptor = Microsoft.Extensions.DependencyInjection.ServiceDescriptor;
@@ -35,7 +36,8 @@ namespace NCoreUtils.AspNetCore
         public static IServiceCollection AddRemoteOAuth2Authentication(
             this IServiceCollection services,
             IEndpointConfiguration configuration,
-            TokenHandlers tokenHandlers = TokenHandlers.Bearer | TokenHandlers.Cookie | TokenHandlers.Query)
+            TokenHandlers tokenHandlers = TokenHandlers.Bearer | TokenHandlers.Cookie | TokenHandlers.Query,
+            IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
         {
             var handlers = new List<ITokenHandler>(4);
             if (tokenHandlers.HasFlag(TokenHandlers.Bearer))
@@ -55,6 +57,10 @@ namespace NCoreUtils.AspNetCore
                 handlers.Add(new FormTokenHandler());
             }
             var tokenHandler = handlers.Count == 1 ? handlers[0] : new CompositeTokenHandler(handlers);
+            if (cacheOptions == IntrospectionCacheOptions.MemoryCache)
+            {
+                services.TryAddSingleton<IIntrospectionCache, IntrospectionMemoryCache>();
+            }
             return services.AddRemoteOAuth2Authentication(
                 ServiceDescriptor.Singleton<ITokenHandler>(tokenHandler),
                 configuration
@@ -85,20 +91,22 @@ namespace NCoreUtils.AspNetCore
         public static IServiceCollection AddRemoteOAuth2Authentication(
             this IServiceCollection services,
             IConfiguration configuration,
-            TokenHandlers tokenHandlers = TokenHandlers.Bearer | TokenHandlers.Cookie | TokenHandlers.Query)
+            TokenHandlers tokenHandlers = TokenHandlers.Bearer | TokenHandlers.Cookie | TokenHandlers.Query,
+            IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
         {
             var config = new EndpointConfiguration();
             configuration.Bind(config);
-            return services.AddRemoteOAuth2Authentication(config, tokenHandlers);
+            return services.AddRemoteOAuth2Authentication(config, tokenHandlers, cacheOptions);
         }
 
         public static IServiceCollection AddRemoteOAuth2Authentication(
             this IServiceCollection services,
             string endpoint,
-            TokenHandlers tokenHandlers = TokenHandlers.Bearer | TokenHandlers.Cookie | TokenHandlers.Query)
+            TokenHandlers tokenHandlers = TokenHandlers.Bearer | TokenHandlers.Cookie | TokenHandlers.Query,
+            IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
         {
             var config = new EndpointConfiguration { Endpoint = endpoint };
-            return services.AddRemoteOAuth2Authentication(config, tokenHandlers);
+            return services.AddRemoteOAuth2Authentication(config, tokenHandlers, cacheOptions);
         }
     }
 }
