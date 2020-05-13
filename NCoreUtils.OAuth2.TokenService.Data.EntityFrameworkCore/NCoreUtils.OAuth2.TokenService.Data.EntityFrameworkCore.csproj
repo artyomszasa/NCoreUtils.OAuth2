@@ -4,9 +4,9 @@
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
-    <Version>3.1.0-alpha4</Version>
+    <Version>3.1.0-alpha8</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Data.EntityFrameworkCore" Version="3.1.0-alpha1" />
+    <PackageReference Include="NCoreUtils.Data.EntityFrameworkCore" Version="3.1.0-alpha8" />
   </ItemGroup>
 </Project>

@@ -4,10 +4,10 @@
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
-    <Version>3.1.0-alpha4</Version>
+    <Version>3.1.0-alpha8</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.Proto.Abstractions" Version="3.1.0-alpha0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Proto.Abstractions" Version="3.1.0-alpha8" />
     <PackageReference Include="System.Text.Json" Version="4.7.1" />
   </ItemGroup>
   <ItemGroup>
