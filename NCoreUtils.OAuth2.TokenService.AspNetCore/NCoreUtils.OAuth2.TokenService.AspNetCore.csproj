@@ -4,7 +4,7 @@
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>NCoreUtils</RootNamespace>
-    <Version>3.1.0-alpha8</Version>
+    <Version>3.1.0-beta00</Version>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
