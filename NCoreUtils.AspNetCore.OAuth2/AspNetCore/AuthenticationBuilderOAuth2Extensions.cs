@@ -7,7 +7,14 @@ namespace NCoreUtils.AspNetCore
     {
         public static AuthenticationBuilder AddRemoteOAuth2AuthenticationScheme(this AuthenticationBuilder builder)
         {
-            builder.AddScheme<OAuth2AuthenticationSchemeOptions,OAuth2AuthenticationHandler>(OAuth2AuthenticationSchemeOptions.Name, _ => { });
+            builder.AddScheme<OAuth2AuthenticationSchemeOptions, OAuth2AuthenticationHandler>(OAuth2AuthenticationSchemeOptions.Name, _ => { });
+            return builder;
+        }
+
+        public static AuthenticationBuilder AddCustomRemoteOAuth2AuthenticationScheme<TAuthenticationHandler>(this AuthenticationBuilder builder)
+            where TAuthenticationHandler : OAuth2AuthenticationHandler
+        {
+            builder.AddScheme<OAuth2AuthenticationSchemeOptions, TAuthenticationHandler>(OAuth2AuthenticationSchemeOptions.Name, _ => { });
             return builder;
         }
     }

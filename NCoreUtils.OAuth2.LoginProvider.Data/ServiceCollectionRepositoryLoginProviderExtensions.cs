@@ -14,12 +14,32 @@ namespace NCoreUtils
             public bool UseEmailAsUsername { get; set; } = false;
         }
 
+        public static IServiceCollection AddRepositoryLoginProvider<TProvider, TUser, TId>(this IServiceCollection services, ILoginProviderConfiguration configuration)
+            where TProvider : RepositoryLoginProvider<TUser, TId>
+            where TUser : ILocalUser<TId>
+            where TId : IConvertible
+            => services
+                .AddSingleton(configuration)
+                .AddScoped<ILoginProvider, TProvider>();
+
         public static IServiceCollection AddRepositoryLoginProvider<TUser, TId>(this IServiceCollection services, ILoginProviderConfiguration configuration)
             where TUser : ILocalUser<TId>
             where TId : IConvertible
             => services
                 .AddSingleton(configuration)
                 .AddScoped<ILoginProvider, RepositoryLoginProvider<TUser, TId>>();
+
+        public static IServiceCollection AddRepositoryLoginProvider<TProvider, TUser, TId>(
+            this IServiceCollection services,
+            string issuer,
+            bool useEmailAsUsername = false)
+            where TProvider : RepositoryLoginProvider<TUser, TId>
+            where TUser : ILocalUser<TId>
+            where TId : IConvertible
+            => services.AddRepositoryLoginProvider<TProvider, TUser, TId>(new LoginProviderConfiguration {
+                Issuer = issuer,
+                UseEmailAsUsername = useEmailAsUsername
+            });
 
         public static IServiceCollection AddRepositoryLoginProvider<TUser, TId>(
             this IServiceCollection services,

@@ -31,13 +31,8 @@ namespace NCoreUtils.OAuth2
             Cache = introspectionCache ?? new IntrospectionNoCache();
         }
 
-        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+        protected virtual async Task<AuthenticateResult> ProcessTokenAsync(string token)
         {
-            var token = await TokenHandler.ReadTokenAsync(Context.Request, Context.RequestAborted);
-            if (token is null)
-            {
-                return AuthenticateResult.NoResult();
-            }
             IntrospectionResponse data;
             try
             {
@@ -62,6 +57,16 @@ namespace NCoreUtils.OAuth2
                 },
                 OAuth2AuthenticationSchemeOptions.Name
             ));
+        }
+
+        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+        {
+            var token = await TokenHandler.ReadTokenAsync(Context.Request, Context.RequestAborted);
+            if (token is null)
+            {
+                return AuthenticateResult.NoResult();
+            }
+            return await ProcessTokenAsync(token);
         }
     }
 }

@@ -45,10 +45,19 @@ namespace NCoreUtils.OAuth2
             return e => e.Username == username;
         }
 
-        public ValueTask<LoginIdentity?> ExtensionGrantAsync(string type, string passcode, ScopeCollection scopes, CancellationToken cancellationToken = default)
+        protected virtual LoginIdentity CreateLoginIdentity(TUser user, ScopeCollection scopes)
+            => new LoginIdentity(
+                user.Sub.ToString(CultureInfo.InvariantCulture),
+                Configuration.Issuer,
+                user.Username,
+                user.Email,
+                new ScopeCollection(scopes.HasValue ? user.GetAvailableScopes().Intersect(scopes) : user.GetAvailableScopes())
+            );
+
+        public virtual ValueTask<LoginIdentity?> ExtensionGrantAsync(string type, string passcode, ScopeCollection scopes, CancellationToken cancellationToken = default)
             => default;
 
-        public async ValueTask<LoginIdentity?> PasswordGrantAsync(string username, string password, ScopeCollection scopes, CancellationToken cancellationToken = default)
+        public virtual async ValueTask<LoginIdentity?> PasswordGrantAsync(string username, string password, ScopeCollection scopes, CancellationToken cancellationToken = default)
         {
             var user = await UserRepository.Items.FirstOrDefaultAsync(CreateUsernamePredicate(username), cancellationToken);
             if (user is null)
@@ -70,13 +79,7 @@ namespace NCoreUtils.OAuth2
                 {
                     return null;
                 }
-                return new LoginIdentity(
-                    user.Sub.ToString(CultureInfo.InvariantCulture),
-                    Configuration.Issuer,
-                    user.Username,
-                    user.Email,
-                    new ScopeCollection(scopes.HasValue ? user.GetAvailableScopes().Intersect(scopes) : user.GetAvailableScopes())
-                );
+                return CreateLoginIdentity(user, scopes);
             }
             finally
             {
