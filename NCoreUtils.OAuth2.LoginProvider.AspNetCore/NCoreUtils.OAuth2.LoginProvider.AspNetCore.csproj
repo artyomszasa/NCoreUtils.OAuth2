@@ -4,7 +4,7 @@
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>NCoreUtils.AspNetCore</RootNamespace>
-    <Version>3.1.0-beta00</Version>
+    <Version>3.1.0-beta02</Version>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -13,6 +13,6 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Shared\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.Proto" Version="3.1.0-alpha8" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Proto" Version="3.1.0" />
   </ItemGroup>
 </Project>

@@ -8,7 +8,7 @@ namespace NCoreUtils.OAuth2.Internal
         public static void ApplyDefaultLoginProviderConfiguration(this ServiceDescriptorBuilder builder, string? prefix = default)
         {
             builder.Path = prefix ?? string.Empty;
-            builder.NamingPolicy = NamingPolicy.SnakeCase;
+            builder.NamingPolicy = NamingConvention.SnakeCase;
             builder.DefaultOutput = OutputType.Json(new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
