@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using NCoreUtils.OAuth2.Internal;
 
 namespace NCoreUtils.OAuth2
 {
@@ -16,14 +17,14 @@ namespace NCoreUtils.OAuth2
 
         protected ITokenEncryption TokenEncryption { get; }
 
-        protected ITokenRepository TokenRepository { get; }
+        protected LazyService<ITokenRepository> TokenRepository { get; }
 
         public TokenService(
             ILogger<TokenService> logger,
             ITokenServiceConfiguration configuration,
             ILoginProvider loginProvider,
             ITokenEncryption tokenEncryption,
-            ITokenRepository tokenRepository)
+            LazyService<ITokenRepository> tokenRepository)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -63,7 +64,7 @@ namespace NCoreUtils.OAuth2
             var accessToken = CreateAccessToken(now, identity);
             var accessTokenBase64 = await TokenEncryption.EncryptTokenToBase64StringAsync(accessToken, cancellationToken);
             var refreshTokenBase64 = await TokenEncryption.EncryptTokenToBase64StringAsync(refreshToken, cancellationToken);
-            await TokenRepository.PersistRefreshTokenAsync(refreshToken, cancellationToken);
+            await TokenRepository.Instance.PersistRefreshTokenAsync(refreshToken, cancellationToken);
             return new AccessTokenResponse(
                 accessToken: accessTokenBase64,
                 tokenType: "bearer",
@@ -93,11 +94,17 @@ namespace NCoreUtils.OAuth2
             }
             catch (Exception exn)
             {
+                Logger.LogDebug(exn, "Introspected token is invalid.");
                 throw new AccessDeniedException("Introspected token is invalid.", exn);
             }
             if (tok is null)
             {
+                Logger.LogDebug("Introspected token is invalid.");
                 throw new AccessDeniedException("Introspected token is invalid.");
+            }
+            if (Logger.IsEnabled(LogLevel.Debug))
+            {
+                Logger.Log(LogLevel.Debug, default, new TokenData(tok), default, (data, _) => $"Inspecting: {data}");
             }
             if (tok.ExpiresAt < DateTimeOffset.Now)
             {
@@ -139,7 +146,7 @@ namespace NCoreUtils.OAuth2
             {
                 throw new AccessDeniedException("Refresh token is invalid.", exn);
             }
-            if (tok is null || tok.ExpiresAt < DateTimeOffset.Now || !await TokenRepository.CheckRefreshTokenAsync(tok, cancellationToken))
+            if (tok is null || tok.ExpiresAt < DateTimeOffset.Now || !await TokenRepository.Instance.CheckRefreshTokenAsync(tok, cancellationToken))
             {
                 throw new AccessDeniedException("Refresh token is invalid.");
             }

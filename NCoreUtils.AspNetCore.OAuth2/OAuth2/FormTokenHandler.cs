@@ -11,7 +11,7 @@ namespace NCoreUtils.OAuth2
             => contentType.StartsWith("application/x-www-form-urlencoded", true, CultureInfo.InvariantCulture)
                 || contentType.StartsWith("multipart/form-data", true, CultureInfo.InvariantCulture);
 
-        public string? CurrentToken { get; private set; }
+        public string? CurrentToken { get; set; }
 
         public async ValueTask<string?> ReadTokenAsync(HttpRequest request, CancellationToken cancellationToken = default)
         {

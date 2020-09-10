@@ -6,7 +6,7 @@ namespace NCoreUtils.OAuth2
 {
     public class QueryTokenHandler : ITokenHandler
     {
-        public string? CurrentToken { get; private set; }
+        public string? CurrentToken { get; set; }
 
         public ValueTask<string?> ReadTokenAsync(HttpRequest request, CancellationToken cancellationToken = default)
         {

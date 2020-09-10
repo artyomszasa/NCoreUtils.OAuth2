@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NCoreUtils.OAuth2.Internal;
 
 namespace NCoreUtils.OAuth2
 {
@@ -14,6 +15,7 @@ namespace NCoreUtils.OAuth2
             where TTokenRepository : class, ITokenRepository
         {
             services.AddSingleton(configuration);
+            services.Add(ServiceDescriptor.Describe(typeof(LazyService<ITokenRepository>), typeof(LazyService<ITokenRepository>), tokenRepositoryLifetime));
             services.Add(ServiceDescriptor.Describe(typeof(ITokenEncryption), typeof(TTokenEncryption), tokenEncryptionLifetime));
             services.Add(ServiceDescriptor.Describe(typeof(ITokenRepository), typeof(TTokenRepository), tokenRepositoryLifetime));
             services.Add(ServiceDescriptor.Describe(typeof(ITokenService), typeof(TokenService), serviceLifetime));

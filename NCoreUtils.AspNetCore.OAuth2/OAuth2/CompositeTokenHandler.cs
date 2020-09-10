@@ -10,7 +10,7 @@ namespace NCoreUtils.OAuth2
     {
         public IReadOnlyList<ITokenHandler> Handlers { get; }
 
-        public string? CurrentToken { get; private set; }
+        public string? CurrentToken { get; set; }
 
         public CompositeTokenHandler(IReadOnlyList<ITokenHandler> handlers)
             => Handlers = handlers ?? throw new ArgumentNullException(nameof(handlers));

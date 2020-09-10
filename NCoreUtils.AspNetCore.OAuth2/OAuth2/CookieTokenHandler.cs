@@ -23,7 +23,7 @@ namespace NCoreUtils.OAuth2
         public static CookieTokenHandler WithCustomCookieName(string cookieName)
             => new CustomCookieTokenHandler(cookieName);
 
-        public string? CurrentToken { get; private set; }
+        public string? CurrentToken { get; set; }
 
         protected virtual string CookieName => "access_token";
 

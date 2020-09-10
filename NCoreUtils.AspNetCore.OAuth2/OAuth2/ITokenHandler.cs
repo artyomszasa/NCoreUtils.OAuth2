@@ -6,7 +6,7 @@ namespace NCoreUtils.OAuth2
 {
     public interface ITokenHandler
     {
-        string? CurrentToken { get; }
+        string? CurrentToken { get; set; }
 
         ValueTask<string?> ReadTokenAsync(HttpRequest request, CancellationToken cancellationToken = default);
     }
