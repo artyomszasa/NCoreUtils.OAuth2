@@ -1,7 +1,9 @@
 using System;
 using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -74,6 +76,8 @@ namespace NCoreUtils.AspNetCore.OAuth2
                     }
                     else
                     {
+                        builder.Services.AddOptions<JsonSerializerOptions>()
+                            .Configure(o => o.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
                         builder.AddGoogleFluentdSink(projectId: configuration["Google:ProjectId"]);
                     }
                 })

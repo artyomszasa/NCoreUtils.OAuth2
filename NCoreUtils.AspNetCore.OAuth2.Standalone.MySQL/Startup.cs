@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,20 +9,29 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using NCoreUtils.AspNetCore.Rest;
 using NCoreUtils.OAuth2;
+using NCoreUtils.OAuth2.Data;
 using NCoreUtils.OAuth2.Internal;
 
 namespace NCoreUtils.AspNetCore.OAuth2
 {
     public class Startup
     {
-        static ForwardedHeadersOptions ConfigureForwardedHeaders()
+        private static ForwardedHeadersOptions ConfigureForwardedHeaders()
         {
             var opts = new ForwardedHeadersOptions();
             opts.KnownNetworks.Clear();
             opts.KnownProxies.Clear();
             opts.ForwardedHeaders = ForwardedHeaders.All;
             return opts;
+        }
+
+        private static void ConfigureRest(RestConfigurationBuilder builder)
+        {
+            builder.AddEntity<RefreshToken>();
+            builder.ConfigureAccess(o => o.RestrictAll(user => user.Identity.IsAuthenticated && (user.IsInRole("admin") || user.IsInRole("website"))));
         }
 
         private readonly IWebHostEnvironment _env;
@@ -77,6 +87,12 @@ namespace NCoreUtils.AspNetCore.OAuth2
                     },
                     b => b.ApplyDefaultLoginProviderConfiguration()
                 )
+                // Authorization for REST requests
+                .AddScoped<ITokenHandler, BearerTokenHandler>()
+                .AddAuthentication(OAuth2AuthenticationSchemeOptions.Name)
+                    .AddScheme<OAuth2AuthenticationSchemeOptions, OAuth2AuthenticationHandler>(OAuth2AuthenticationSchemeOptions.Name, _ => { })
+                    .Services
+                .AddAuthorization()
                 // CORS
                 .AddCors(b => b.AddDefaultPolicy(opts => opts
                     .AllowAnyHeader()
@@ -103,9 +119,12 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .UseForwardedHeaders(ConfigureForwardedHeaders())
                 .UseCors()
                 .UseRouting()
+                .UseAuthentication()
+                .UseAuthorization()
                 .UseEndpoints(endpoints =>
                 {
                     endpoints.MapTokenService(string.Empty);
+                    endpoints.MapRest("data", ConfigureRest);
                 });
         }
     }

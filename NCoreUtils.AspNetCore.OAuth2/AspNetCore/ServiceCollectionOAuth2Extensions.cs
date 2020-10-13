@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -40,7 +42,7 @@ namespace NCoreUtils.AspNetCore
         public static IServiceCollection AddRemoteOAuth2Authentication<TTokenHandler>(
             this IServiceCollection services,
             IEndpointConfiguration configuration,
-            ServiceLifetime tokenHandlerLifetime = ServiceLifetime.Singleton)
+            ServiceLifetime tokenHandlerLifetime = ServiceLifetime.Scoped)
             where TTokenHandler : class, ITokenHandler
             => services.AddRemoteOAuth2Authentication(
                 ServiceDescriptor.Describe(typeof(ITokenHandler), typeof(TTokenHandler), tokenHandlerLifetime),
@@ -53,30 +55,36 @@ namespace NCoreUtils.AspNetCore
             TokenHandlers tokenHandlers = TokenHandlers.Bearer | TokenHandlers.Cookie | TokenHandlers.Query,
             IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
         {
-            var handlers = new List<ITokenHandler>(4);
+            var handlers = new List<Func<IServiceProvider, ITokenHandler>>(4);
             if (tokenHandlers.HasFlag(TokenHandlers.Bearer))
             {
-                handlers.Add(new BearerTokenHandler());
+                handlers.Add(serviceProvider => ActivatorUtilities.CreateInstance<BearerTokenHandler>(serviceProvider));
             }
             if (tokenHandlers.HasFlag(TokenHandlers.Cookie))
             {
-                handlers.Add(new CookieTokenHandler());
+                handlers.Add(serviceProvider => ActivatorUtilities.CreateInstance<CookieTokenHandler>(serviceProvider));
             }
             if (tokenHandlers.HasFlag(TokenHandlers.Query))
             {
-                handlers.Add(new QueryTokenHandler());
+                handlers.Add(serviceProvider => ActivatorUtilities.CreateInstance<QueryTokenHandler>(serviceProvider));
             }
             if (tokenHandlers.HasFlag(TokenHandlers.Form))
             {
-                handlers.Add(new FormTokenHandler());
+                handlers.Add(serviceProvider => ActivatorUtilities.CreateInstance<FormTokenHandler>(serviceProvider));
             }
-            var tokenHandler = handlers.Count == 1 ? handlers[0] : new CompositeTokenHandler(handlers);
+            if (cacheOptions == IntrospectionCacheOptions.MemoryCache)
+            {
+                services.TryAddSingleton<IIntrospectionCache, IntrospectionMemoryCache>();
+            }
+            Func<IServiceProvider, ITokenHandler> factory = handlers.Count == 1
+                ? handlers[0]
+                : (serviceProvider => new CompositeTokenHandler(handlers.Select(f => f(serviceProvider)).ToList()));
             if (cacheOptions == IntrospectionCacheOptions.MemoryCache)
             {
                 services.TryAddSingleton<IIntrospectionCache, IntrospectionMemoryCache>();
             }
             return services.AddRemoteOAuth2Authentication(
-                ServiceDescriptor.Singleton<ITokenHandler>(tokenHandler),
+                ServiceDescriptor.Singleton<ITokenHandler>(factory),
                 configuration
             );
         }
@@ -88,30 +96,32 @@ namespace NCoreUtils.AspNetCore
             IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
             where TAuthenticationHandler : OAuth2AuthenticationHandler
         {
-            var handlers = new List<ITokenHandler>(4);
+            var handlers = new List<Func<IServiceProvider, ITokenHandler>>(4);
             if (tokenHandlers.HasFlag(TokenHandlers.Bearer))
             {
-                handlers.Add(new BearerTokenHandler());
+                handlers.Add(serviceProvider => ActivatorUtilities.CreateInstance<BearerTokenHandler>(serviceProvider));
             }
             if (tokenHandlers.HasFlag(TokenHandlers.Cookie))
             {
-                handlers.Add(new CookieTokenHandler());
+                handlers.Add(serviceProvider => ActivatorUtilities.CreateInstance<CookieTokenHandler>(serviceProvider));
             }
             if (tokenHandlers.HasFlag(TokenHandlers.Query))
             {
-                handlers.Add(new QueryTokenHandler());
+                handlers.Add(serviceProvider => ActivatorUtilities.CreateInstance<QueryTokenHandler>(serviceProvider));
             }
             if (tokenHandlers.HasFlag(TokenHandlers.Form))
             {
-                handlers.Add(new FormTokenHandler());
+                handlers.Add(serviceProvider => ActivatorUtilities.CreateInstance<FormTokenHandler>(serviceProvider));
             }
-            var tokenHandler = handlers.Count == 1 ? handlers[0] : new CompositeTokenHandler(handlers);
             if (cacheOptions == IntrospectionCacheOptions.MemoryCache)
             {
                 services.TryAddSingleton<IIntrospectionCache, IntrospectionMemoryCache>();
             }
+            Func<IServiceProvider, ITokenHandler> factory = handlers.Count == 1
+                ? handlers[0]
+                : (serviceProvider => new CompositeTokenHandler(handlers.Select(f => f(serviceProvider)).ToList()));
             return services.AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
-                ServiceDescriptor.Singleton<ITokenHandler>(tokenHandler),
+                ServiceDescriptor.Scoped<ITokenHandler>(factory),
                 configuration
             );
         }
@@ -119,7 +129,7 @@ namespace NCoreUtils.AspNetCore
         public static IServiceCollection AddRemoteOAuth2Authentication<TTokenHandler>(
             this IServiceCollection services,
             IConfiguration configuration,
-            ServiceLifetime tokenHandlerLifetime = ServiceLifetime.Singleton)
+            ServiceLifetime tokenHandlerLifetime = ServiceLifetime.Scoped)
             where TTokenHandler : class, ITokenHandler
         {
             var config = new EndpointConfiguration();
@@ -130,7 +140,7 @@ namespace NCoreUtils.AspNetCore
         public static IServiceCollection AddRemoteOAuth2Authentication<TTokenHandler>(
             this IServiceCollection services,
             string endpoint,
-            ServiceLifetime tokenHandlerLifetime = ServiceLifetime.Singleton)
+            ServiceLifetime tokenHandlerLifetime = ServiceLifetime.Scoped)
             where TTokenHandler : class, ITokenHandler
         {
             var config = new EndpointConfiguration { Endpoint = endpoint };

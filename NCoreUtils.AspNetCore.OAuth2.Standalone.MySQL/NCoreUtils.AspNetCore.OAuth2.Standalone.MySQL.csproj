@@ -17,6 +17,7 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.AspNetCore\NCoreUtils.OAuth2.TokenService.AspNetCore.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Encryption.Rijndael\NCoreUtils.OAuth2.TokenService.Encryption.Rijndael.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.TokenRepositories.EntityFrameworkCore\NCoreUtils.OAuth2.TokenService.TokenRepositories.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\NCoreUtils.AspNetCore.OAuth2\NCoreUtils.AspNetCore.OAuth2.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.6" PrivateAssets="All" />
@@ -24,5 +25,6 @@
     <PackageReference Include="Microsoft.NETCore.Targets" Version="3.1.0" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.21" />
     <PackageReference Include="NCoreUtils.AspNetCore.Logging.GoogleFluentd" Version="3.1.0-alpha0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Rest" Version="3.1.0-beta00" />
   </ItemGroup>
 </Project>
