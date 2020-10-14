@@ -1,4 +1,3 @@
-using System;
 using NCoreUtils.Data;
 
 namespace NCoreUtils.OAuth2.Data

@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NCoreUtils.AspNetCore.Rest;
+using NCoreUtils.Data;
 using NCoreUtils.OAuth2;
 using NCoreUtils.OAuth2.Data;
 using NCoreUtils.OAuth2.Internal;
@@ -87,6 +88,10 @@ namespace NCoreUtils.AspNetCore.OAuth2
                     },
                     b => b.ApplyDefaultLoginProviderConfiguration()
                 )
+                // DATA query for REST
+                .AddDataQueryServices(_ => {})
+                // JSON options for REST requests
+                .AddTransient<JsonSerializerOptions>(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<JsonSerializerOptions>>().CurrentValue)
                 // Authorization for REST requests
                 .AddScoped<ITokenHandler, BearerTokenHandler>()
                 .AddAuthentication(OAuth2AuthenticationSchemeOptions.Name)
