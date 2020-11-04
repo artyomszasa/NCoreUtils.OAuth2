@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Net.Http;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -125,6 +127,7 @@ namespace NCoreUtils.OAuth2.Unit
                 (services as IDisposable)?.Dispose();
             }
         }
+
         [Fact]
         public async Task RijndaelPasswordGrantTest()
         {
@@ -190,6 +193,73 @@ namespace NCoreUtils.OAuth2.Unit
                 (services as IDisposable)?.Dispose();
             }
         }
+
+        [Fact]
+        public async Task CompressedRijndaelPasswordGrantTest()
+        {
+            // server side
+            using var appFactory = new StandaloneWebApplicationFactory<Startup<CompressedRijndaelTokenEncryption>>();
+            // client side
+            var services = new ServiceCollection()
+                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<CompressedRijndaelTokenEncryption>>(appFactory))
+                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .BuildServiceProvider();
+            try
+            {
+                var tokenService = services.GetRequiredService<ITokenService>();
+                var accessTokenResponse = await tokenService.PasswordGrantAsync(Email, Password, TestScopes);
+                Assert.NotNull(accessTokenResponse.AccessToken);
+                Assert.NotNull(accessTokenResponse.RefreshToken);
+                var info = await tokenService.IntrospectAsync(accessTokenResponse.AccessToken);
+                Assert.True(info.Active);
+                Assert.Equal(UserId, info.Sub);
+                var refreshToken = accessTokenResponse.RefreshToken!;
+                accessTokenResponse = await tokenService.RefreshTokenAsync(refreshToken, TestScopes);
+                Assert.NotNull(accessTokenResponse.AccessToken);
+                Assert.Null(accessTokenResponse.RefreshToken);
+                info = await tokenService.IntrospectAsync(accessTokenResponse.AccessToken);
+                Assert.True(info.Active);
+                Assert.Equal(UserId, info.Sub);
+            }
+            finally
+            {
+                (services as IDisposable)?.Dispose();
+            }
+        }
+
+        [Fact]
+        public async Task CompressedRijndaelExtensionGrantTest()
+        {
+            // server side
+            using var appFactory = new StandaloneWebApplicationFactory<Startup<CompressedRijndaelTokenEncryption>>();
+            // client side
+            var services = new ServiceCollection()
+                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<CompressedRijndaelTokenEncryption>>(appFactory))
+                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .BuildServiceProvider();
+            try
+            {
+                var tokenService = services.GetRequiredService<ITokenService>();
+                var accessTokenResponse = await tokenService.ExtensionGrantAsync(ExtensionGrantType, Passcode, TestScopes);
+                Assert.NotNull(accessTokenResponse.AccessToken);
+                Assert.NotNull(accessTokenResponse.RefreshToken);
+                var info = await tokenService.IntrospectAsync(accessTokenResponse.AccessToken);
+                Assert.True(info.Active);
+                Assert.Equal(UserId, info.Sub);
+                var refreshToken = accessTokenResponse.RefreshToken!;
+                accessTokenResponse = await tokenService.RefreshTokenAsync(refreshToken, TestScopes);
+                Assert.NotNull(accessTokenResponse.AccessToken);
+                Assert.Null(accessTokenResponse.RefreshToken);
+                info = await tokenService.IntrospectAsync(accessTokenResponse.AccessToken);
+                Assert.True(info.Active);
+                Assert.Equal(UserId, info.Sub);
+            }
+            finally
+            {
+                (services as IDisposable)?.Dispose();
+            }
+        }
+
         [Fact]
         public async Task InvalidToken()
         {
@@ -231,6 +301,7 @@ namespace NCoreUtils.OAuth2.Unit
                 (services as IDisposable)?.Dispose();
             }
         }
+
         [Fact]
         public async Task InvalidCredentials()
         {
@@ -265,7 +336,7 @@ namespace NCoreUtils.OAuth2.Unit
             try
             {
                 var tokenService = services.GetRequiredService<ITokenService>();
-                await Assert.ThrowsAsync<RemoteInvalidCredentialsException>(async () =>  await tokenService.PasswordGrantAsync("notvalid@domain.tld", "", TestScopes));
+                await Assert.ThrowsAsync<RemoteInvalidCredentialsException>(async () => await tokenService.PasswordGrantAsync("notvalid@domain.tld", "", TestScopes));
             }
             finally
             {
@@ -291,6 +362,56 @@ namespace NCoreUtils.OAuth2.Unit
             finally
             {
                 (services as IDisposable)?.Dispose();
+            }
+        }
+
+        [Fact]
+        public async Task Introspect()
+        {
+            // server side
+            using var appFactory = new StandaloneWebApplicationFactory<Startup<NoopTokenEncryption>>();
+            // client side
+            var services = new ServiceCollection()
+                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<NoopTokenEncryption>>(appFactory))
+                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .BuildServiceProvider();
+            try
+            {
+                var tokenService = services.GetRequiredService<ITokenService>();
+                var accessTokenResponse = await tokenService.PasswordGrantAsync(Email, Password, TestScopes);
+                var info0 = await tokenService.IntrospectAsync(accessTokenResponse.AccessToken);
+                var info1 = await tokenService.IntrospectAsync(accessTokenResponse.AccessToken);
+                var hash0 = info0.GetHashCode();
+                var hash1 = info1.GetHashCode();
+                Assert.Equal(hash0, hash1);
+                Assert.StrictEqual(info0, info1);
+                Assert.StrictEqual(info0, (object)info1);
+                Assert.Equal(info0, info1);
+            }
+            finally
+            {
+                (services as IDisposable)?.Dispose();
+            }
+        }
+
+        [Fact]
+        public void ExceptionTest()
+        {
+            Assert.Throws<ArgumentException>(() => new TokenServiceException(null!, 0, "test"));
+            Assert.Throws<ArgumentException>(() => new TokenServiceException(null!, 0, "test", new Exception()));
+            var ex = new TokenServiceException("0", 0, "test");
+
+            var str = ex.ToString();
+            BinaryFormatter bf = new BinaryFormatter();
+            using (MemoryStream ms = new MemoryStream())
+            {
+                bf.Serialize(ms, ex);
+                ms.Seek(0, 0);
+                var ex1 = (TokenServiceException)bf.Deserialize(ms);
+                Assert.Equal(str, ex1.ToString());
+                Assert.Equal(ex.DesiredStatusCode, ex1.DesiredStatusCode);
+                Assert.Equal(ex.ErrorCode, ex1.ErrorCode);
+                Assert.Equal(ex.Message, ex1.Message);
             }
         }
     }
