@@ -84,7 +84,7 @@ namespace NCoreUtils.AspNetCore
                 services.TryAddSingleton<IIntrospectionCache, IntrospectionMemoryCache>();
             }
             return services.AddRemoteOAuth2Authentication(
-                ServiceDescriptor.Singleton<ITokenHandler>(factory),
+                ServiceDescriptor.Scoped<ITokenHandler>(factory),
                 configuration
             );
         }
@@ -189,77 +189,6 @@ namespace NCoreUtils.AspNetCore
         {
             var config = new EndpointConfiguration { Endpoint = endpoint };
             return services.AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(config, tokenHandlers, cacheOptions);
-        }
-
-        public static IServiceCollection AddRemoteOAuth2Authentication(
-            this IServiceCollection services,
-            IEndpointConfiguration configuration,
-            ITokenHandler tokenHandler,
-            IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
-        {
-            if (cacheOptions == IntrospectionCacheOptions.MemoryCache)
-            {
-                services.TryAddSingleton<IIntrospectionCache, IntrospectionMemoryCache>();
-            }
-            return services.AddRemoteOAuth2Authentication(ServiceDescriptor.Singleton<ITokenHandler>(tokenHandler), configuration);
-        }
-
-        public static IServiceCollection AddRemoteOAuth2Authentication(
-            this IServiceCollection services,
-            IConfiguration configuration,
-            ITokenHandler tokenHandler,
-            IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
-        {
-            var config = new EndpointConfiguration();
-            configuration.Bind(config);
-            return services.AddRemoteOAuth2Authentication(config, tokenHandler, cacheOptions);
-        }
-
-        public static IServiceCollection AddRemoteOAuth2Authentication(
-            this IServiceCollection services,
-            string endpoint,
-            ITokenHandler tokenHandler,
-            IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
-        {
-            var config = new EndpointConfiguration { Endpoint = endpoint };
-            return services.AddRemoteOAuth2Authentication(config, tokenHandler, cacheOptions);
-        }
-
-        public static IServiceCollection AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
-            this IServiceCollection services,
-            IEndpointConfiguration configuration,
-            ITokenHandler tokenHandler,
-            IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
-            where TAuthenticationHandler : OAuth2AuthenticationHandler
-        {
-            if (cacheOptions == IntrospectionCacheOptions.MemoryCache)
-            {
-                services.TryAddSingleton<IIntrospectionCache, IntrospectionMemoryCache>();
-            }
-            return services.AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(ServiceDescriptor.Singleton<ITokenHandler>(tokenHandler), configuration);
-        }
-
-        public static IServiceCollection AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
-            this IServiceCollection services,
-            IConfiguration configuration,
-            ITokenHandler tokenHandler,
-            IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
-            where TAuthenticationHandler : OAuth2AuthenticationHandler
-        {
-            var config = new EndpointConfiguration();
-            configuration.Bind(config);
-            return services.AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(config, tokenHandler, cacheOptions);
-        }
-
-        public static IServiceCollection AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
-            this IServiceCollection services,
-            string endpoint,
-            ITokenHandler tokenHandler,
-            IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
-            where TAuthenticationHandler : OAuth2AuthenticationHandler
-        {
-            var config = new EndpointConfiguration { Endpoint = endpoint };
-            return services.AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(config, tokenHandler, cacheOptions);
         }
     }
 }
