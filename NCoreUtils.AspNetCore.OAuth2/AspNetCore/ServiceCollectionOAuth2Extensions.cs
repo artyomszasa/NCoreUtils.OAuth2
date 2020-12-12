@@ -25,12 +25,49 @@ namespace NCoreUtils.AspNetCore
             return services;
         }
 
+        private static IServiceCollection AddRemoteOAuth2Authentication(
+            this IServiceCollection services,
+            ServiceDescriptor tokenHandler,
+            IEndpointConfiguration configuration,
+            IntrospectionCacheOptions cacheOptions)
+        {
+            if (cacheOptions == IntrospectionCacheOptions.MemoryCache)
+            {
+                services.TryAddSingleton<IIntrospectionCache, IntrospectionMemoryCache>();
+            }
+            services
+                .AddTokenServiceClient(configuration)
+                .Add(tokenHandler);
+            services.AddAuthentication(OAuth2AuthenticationSchemeOptions.Name)
+                .AddRemoteOAuth2AuthenticationScheme();
+            return services;
+        }
+
         private static IServiceCollection AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
             this IServiceCollection services,
             ServiceDescriptor tokenHandler,
             IEndpointConfiguration configuration)
             where TAuthenticationHandler : OAuth2AuthenticationHandler
         {
+            services
+                .AddTokenServiceClient(configuration)
+                .Add(tokenHandler);
+            services.AddAuthentication(OAuth2AuthenticationSchemeOptions.Name)
+                .AddCustomRemoteOAuth2AuthenticationScheme<TAuthenticationHandler>();
+            return services;
+        }
+
+        private static IServiceCollection AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
+            this IServiceCollection services,
+            ServiceDescriptor tokenHandler,
+            IEndpointConfiguration configuration,
+            IntrospectionCacheOptions cacheOptions)
+            where TAuthenticationHandler : OAuth2AuthenticationHandler
+        {
+            if (cacheOptions == IntrospectionCacheOptions.MemoryCache)
+            {
+                services.TryAddSingleton<IIntrospectionCache, IntrospectionMemoryCache>();
+            }
             services
                 .AddTokenServiceClient(configuration)
                 .Add(tokenHandler);
@@ -72,20 +109,13 @@ namespace NCoreUtils.AspNetCore
             {
                 handlers.Add(serviceProvider => ActivatorUtilities.CreateInstance<FormTokenHandler>(serviceProvider));
             }
-            if (cacheOptions == IntrospectionCacheOptions.MemoryCache)
-            {
-                services.TryAddSingleton<IIntrospectionCache, IntrospectionMemoryCache>();
-            }
             Func<IServiceProvider, ITokenHandler> factory = handlers.Count == 1
                 ? handlers[0]
                 : (serviceProvider => new CompositeTokenHandler(handlers.Select(f => f(serviceProvider)).ToList()));
-            if (cacheOptions == IntrospectionCacheOptions.MemoryCache)
-            {
-                services.TryAddSingleton<IIntrospectionCache, IntrospectionMemoryCache>();
-            }
             return services.AddRemoteOAuth2Authentication(
                 ServiceDescriptor.Scoped<ITokenHandler>(factory),
-                configuration
+                configuration,
+                cacheOptions
             );
         }
 
@@ -113,16 +143,13 @@ namespace NCoreUtils.AspNetCore
             {
                 handlers.Add(serviceProvider => ActivatorUtilities.CreateInstance<FormTokenHandler>(serviceProvider));
             }
-            if (cacheOptions == IntrospectionCacheOptions.MemoryCache)
-            {
-                services.TryAddSingleton<IIntrospectionCache, IntrospectionMemoryCache>();
-            }
             Func<IServiceProvider, ITokenHandler> factory = handlers.Count == 1
                 ? handlers[0]
                 : (serviceProvider => new CompositeTokenHandler(handlers.Select(f => f(serviceProvider)).ToList()));
             return services.AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
                 ServiceDescriptor.Scoped<ITokenHandler>(factory),
-                configuration
+                configuration,
+                cacheOptions
             );
         }
 
@@ -189,6 +216,49 @@ namespace NCoreUtils.AspNetCore
         {
             var config = new EndpointConfiguration { Endpoint = endpoint };
             return services.AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(config, tokenHandlers, cacheOptions);
+        }
+
+        public static IServiceCollection AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
+            this IServiceCollection services,
+            IEndpointConfiguration configuration,
+            Func<IServiceProvider, ITokenHandler> tokenHandlerFactory,
+            IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
+            where TAuthenticationHandler : OAuth2AuthenticationHandler
+            => services.AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
+                ServiceDescriptor.Scoped<ITokenHandler>(tokenHandlerFactory),
+                configuration,
+                cacheOptions
+            );
+
+        public static IServiceCollection AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            Func<IServiceProvider, ITokenHandler> tokenHandlerFactory,
+            IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
+            where TAuthenticationHandler : OAuth2AuthenticationHandler
+        {
+            var config = new EndpointConfiguration();
+            configuration.Bind(config);
+            return services.AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
+                ServiceDescriptor.Scoped<ITokenHandler>(tokenHandlerFactory),
+                config,
+                cacheOptions
+            );
+        }
+
+        public static IServiceCollection AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
+            this IServiceCollection services,
+            string endpoint,
+            Func<IServiceProvider, ITokenHandler> tokenHandlerFactory,
+            IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
+            where TAuthenticationHandler : OAuth2AuthenticationHandler
+        {
+            var config = new EndpointConfiguration { Endpoint = endpoint };
+            return services.AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
+                ServiceDescriptor.Scoped<ITokenHandler>(tokenHandlerFactory),
+                config,
+                cacheOptions
+            );
         }
     }
 }
