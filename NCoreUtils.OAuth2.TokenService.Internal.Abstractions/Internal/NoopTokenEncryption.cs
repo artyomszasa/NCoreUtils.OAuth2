@@ -7,9 +7,9 @@ namespace NCoreUtils.OAuth2.Internal
 {
     public class NoopTokenEncryption : ITokenEncryption
     {
-        public ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, CancellationToken cancellationToken = default)
+        public ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, int offset, int count, CancellationToken cancellationToken = default)
         {
-            if (Token.TryReadFrom(encryptedToken.AsSpan(), out var token))
+            if (Token.TryReadFrom(encryptedToken.AsSpan().Slice(offset, count), out var token))
             {
                 return new ValueTask<Token>(token);
             }

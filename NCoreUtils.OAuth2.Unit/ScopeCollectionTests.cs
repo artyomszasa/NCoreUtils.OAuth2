@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using NCoreUtils.OAuth2.Internal;
 using Xunit;
 
 namespace NCoreUtils.OAuth2.Unit
@@ -10,7 +14,7 @@ namespace NCoreUtils.OAuth2.Unit
         public void EqualityTest()
         {
             ScopeCollection def = default;
-            ScopeCollection @null = new ScopeCollection(default);
+            ScopeCollection @null = new ScopeCollection(default(IEnumerable<string>));
             ScopeCollection empty = new ScopeCollection(Enumerable.Empty<string>());
             ScopeCollection nonEmpty0 = new ScopeCollection(new [] { "xxx" });
             ScopeCollection copy = nonEmpty0;
@@ -33,13 +37,14 @@ namespace NCoreUtils.OAuth2.Unit
 
             Assert.True(((object)def).Equals(@null));
             Assert.True(((object)nonEmpty0).Equals(nonEmpty1));
+            Assert.False(((object)nonEmpty0).Equals(2));
         }
 
         [Fact]
         public void EmptynessTest()
         {
             ScopeCollection def = default;
-            ScopeCollection @null = new ScopeCollection(default);
+            ScopeCollection @null = new ScopeCollection(default(IEnumerable<string>));
             ScopeCollection empty = new ScopeCollection(Enumerable.Empty<string>());
             ScopeCollection nonEmpty0 = new ScopeCollection(new [] { "xxx" });
             ScopeCollection copy = nonEmpty0;
@@ -56,7 +61,7 @@ namespace NCoreUtils.OAuth2.Unit
         public void EnumerationTest()
         {
             ScopeCollection def = default;
-            ScopeCollection @null = new ScopeCollection(default);
+            ScopeCollection @null = new ScopeCollection(default(IEnumerable<string>));
             ScopeCollection empty = new ScopeCollection(Enumerable.Empty<string>());
             ScopeCollection nonEmpty = new ScopeCollection(new [] { "xxx" });
             Assert.Equal(0, def.Count());
@@ -68,6 +73,59 @@ namespace NCoreUtils.OAuth2.Unit
             Assert.True(enumerator.MoveNext());
             Assert.Equal((object)"xxx", enumerator.Current);
             Assert.False(enumerator.MoveNext());
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(5)]
+        [InlineData(2 * 1024)]
+        [InlineData(8 * 1024)]
+        public void StringificationTest(int count)
+        {
+            var scopes = count == 0 ? default : new ScopeCollection(Enumerable.Range(0, count).Select(e => $"scope-{e}"));
+            Assert.Equal(string.Join(' ', scopes), scopes.ToString());
+            var buffer = new char[scopes.ComputeRequiredBufferSize()];
+            Assert.Equal(buffer.Length, scopes.Emplace(buffer.AsSpan()));
+            Assert.Equal(string.Join(' ', scopes), new string(buffer.AsSpan()));
+            if (buffer.Length > 0)
+            {
+                Assert.Throws<InsufficientBufferSizeException>(() => scopes.Emplace(buffer.AsSpan().Slice(0, buffer.Length - 1)));
+            }
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(5)]
+        [InlineData(2 * 1024)]
+        [InlineData(8 * 1024)]
+        public void JsonReserializeTests(int count)
+        {
+            var scopes = count == 0 ? default : new ScopeCollection(Enumerable.Range(0, count).Select(e => $"scope-{e}"));
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters = { ScopeCollectionConverter.Instance }
+            };
+            Assert.Equal(scopes, JsonSerializer.Deserialize<ScopeCollection>(JsonSerializer.Serialize(scopes, options), options));
+        }
+
+        [Fact]
+        public void JsonSerializationTests()
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters = { ScopeCollectionConverter.Instance }
+            };
+            Assert.Equal(default(ScopeCollection), JsonSerializer.Deserialize<ScopeCollection>("null", options));
+            Assert.Equal(new ScopeCollection("a", "b"), JsonSerializer.Deserialize<ScopeCollection>("[\"a\",\"b\"]", options));
+            Assert.ThrowsAny<JsonException>(() => JsonSerializer.Deserialize<ScopeCollection>("{}", options));
+            var exn = Assert.ThrowsAny<JsonException>(() => JsonSerializer.Deserialize<ScopeCollection>("[\"a\", 1]", options));
+            Assert.Equal("$", exn.Path);
+            Assert.Equal(0, exn.LineNumber);
+            Assert.Equal(7, exn.BytePositionInLine);
         }
     }
     #pragma warning restore xUnit2013

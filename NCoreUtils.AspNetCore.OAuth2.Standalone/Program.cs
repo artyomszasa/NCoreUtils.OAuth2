@@ -1,9 +1,11 @@
 using System;
 using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NCoreUtils.Logging;
 
 namespace NCoreUtils.AspNetCore.OAuth2
 {
@@ -74,7 +76,10 @@ namespace NCoreUtils.AspNetCore.OAuth2
                     }
                     else
                     {
-                        builder.AddGoogleFluentdSink(projectId: configuration["Google:ProjectId"]);
+                        builder.AddGoogleFluentd<AspNetCoreLoggerProvider>(projectId: configuration["Google:ProjectId"], configureOptions: o =>
+                        {
+                            o.Configuration.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                        });
                     }
                 })
                 .ConfigureWebHost(webBuilder =>

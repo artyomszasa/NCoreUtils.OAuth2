@@ -19,7 +19,7 @@ namespace NCoreUtils.OAuth2.Internal
             }
             if (reader.TokenType != JsonTokenType.StartArray)
             {
-                throw new InvalidOperationException($"Expected {JsonTokenType.StartArray}, got {reader.TokenType}.");
+                throw new JsonDeserializationException($"Expected {JsonTokenType.StartArray}, got {reader.TokenType}.");
             }
             reader.Read();
             var scopes = new List<string>(8);
@@ -33,11 +33,10 @@ namespace NCoreUtils.OAuth2.Internal
                         scopes.Add(reader.GetString());
                         break;
                     default:
-                        throw new InvalidOperationException($"Expected {JsonTokenType.String}, got {reader.TokenType}.");
+                        throw new JsonDeserializationException($"Expected {JsonTokenType.String}, got {reader.TokenType}.");
                 }
                 reader.Read();
             }
-            reader.Read();
             return scopes;
         }
 

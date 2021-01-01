@@ -1,9 +1,16 @@
 using System;
+using System.Buffers;
+using System.Text;
+using NCoreUtils.Memory;
 
 namespace NCoreUtils.OAuth2
 {
-    public class LoginIdentity : IEquatable<LoginIdentity>
+    public class LoginIdentity : IEquatable<LoginIdentity>, IEmplaceable<LoginIdentity>
     {
+        private const int MaxCharBufferStackAllocSize = 8 * 1024;
+
+        private const int MaxCharBufferPoolAllocSize = 32 * 1024;
+
         public string Sub { get; }
 
         public string Issuer { get; }
@@ -22,7 +29,7 @@ namespace NCoreUtils.OAuth2
             }
             if (string.IsNullOrWhiteSpace(issuer))
             {
-                throw new ArgumentException("Issuer must be a non-empty string.", nameof(sub));
+                throw new ArgumentException("Issuer must be a non-empty string.", nameof(issuer));
             }
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -33,6 +40,67 @@ namespace NCoreUtils.OAuth2
             Name = name;
             Email = email;
             Scopes = scopes;
+        }
+
+        private int EmplaceNoCheck(Span<char> buffer)
+        {
+            var builder = new SpanBuilder(buffer);
+            builder.Append(Sub);
+            builder.Append('#');
+            builder.Append(Name);
+            if (null != Email)
+            {
+                builder.Append('<');
+                builder.Append(Email);
+                builder.Append('>');
+            }
+            builder.Append('@');
+            builder.Append(Issuer);
+            builder.Append('[');
+            builder.Append(Scopes);
+            builder.Append(']');
+            return builder.Length;
+        }
+
+        private string ToStringFallback(int requiredSize)
+        {
+            var builder = new StringBuilder(requiredSize);
+            builder.Append(Sub);
+            builder.Append('#');
+            builder.Append(Name);
+            if (null != Email)
+            {
+                builder.Append('<');
+                builder.Append(Email);
+                builder.Append('>');
+            }
+            builder.Append('@');
+            builder.Append(Issuer);
+            builder.Append('[');
+            builder.Append(Scopes);
+            builder.Append(']');
+            return builder.ToString();
+        }
+
+        public int ComputeRequiredBufferSize()
+        {
+            var total = Sub.Length + 1 + Name.Length;
+            if (!string.IsNullOrEmpty(Email))
+            {
+                total += Email.Length + 2;
+            }
+            total += 3 + Issuer.Length + Scopes.ComputeRequiredBufferSize();
+            return total;
+        }
+
+        public int Emplace(Span<char> span)
+        {
+            if (TryEmplace(span, out var size))
+            {
+                return size;
+            }
+            var requiredSize = ComputeRequiredBufferSize();
+            throw new InsufficientBufferSizeException(span, requiredSize);
         }
 
         public bool Equals(LoginIdentity other)
@@ -51,23 +119,32 @@ namespace NCoreUtils.OAuth2
 
         public override string ToString()
         {
-            Span<char> buffer = stackalloc char[8 * 1024];
-            var builder = new SpanBuilder(buffer);
-            builder.Append(Sub);
-            builder.Append('#');
-            builder.Append(Name);
-            if (null != Email)
+            var requiredSize = ComputeRequiredBufferSize();
+            if (requiredSize <= MaxCharBufferStackAllocSize)
             {
-                builder.Append('<');
-                builder.Append(Email);
-                builder.Append('>');
+                Span<char> buffer = stackalloc char[requiredSize];
+                var size = EmplaceNoCheck(buffer);
+                return new string(buffer.Slice(0, size));
             }
-            builder.Append('@');
-            builder.Append(Issuer);
-            builder.Append('[');
-            builder.Append(Scopes);
-            builder.Append(']');
-            return builder.ToString();
+            if (requiredSize <= MaxCharBufferPoolAllocSize)
+            {
+                using var owner = MemoryPool<char>.Shared.Rent(requiredSize);
+                var size = EmplaceNoCheck(owner.Memory.Span);
+                return new string(owner.Memory.Span.Slice(0, size));
+            }
+            return ToStringFallback(requiredSize);
+        }
+
+        public bool TryEmplace(Span<char> span, out int used)
+        {
+            var requiredSize = ComputeRequiredBufferSize();
+            if (requiredSize <= span.Length)
+            {
+                used = EmplaceNoCheck(span);
+                return true;
+            }
+            used = default;
+            return false;
         }
     }
 }

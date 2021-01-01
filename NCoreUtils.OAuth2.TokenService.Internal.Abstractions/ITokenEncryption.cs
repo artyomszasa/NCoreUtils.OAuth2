@@ -8,6 +8,9 @@ namespace NCoreUtils.OAuth2
     {
         ValueTask<byte[]> EncryptTokenAsync(Token token, CancellationToken cancellationToken = default);
 
-        ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, CancellationToken cancellationToken = default);
+        ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, int offset, int count, CancellationToken cancellationToken = default);
+
+        ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, CancellationToken cancellationToken = default)
+            => DecryptTokenAsync(encryptedToken, 0, encryptedToken.Length, cancellationToken);
     }
 }

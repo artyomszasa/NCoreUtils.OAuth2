@@ -6,32 +6,36 @@ using System.Threading.Tasks;
 
 namespace NCoreUtils.OAuth2.Internal
 {
-    #if NETSTANDARD2_1
-
     public class CompressingEncryption : ITokenEncryption
     {
+        private const int MinBufferSize = 8 * 1024;
+
+        private const int MaxBufferSize = 8 * 8 * 1024;
+
         private readonly ITokenEncryption _encryption;
 
         public CompressingEncryption(ITokenEncryption encryption)
             => _encryption = encryption ?? throw new ArgumentNullException(nameof(encryption));
 
-        public ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, CancellationToken cancellationToken = default)
+        public ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, int offset, int count, CancellationToken cancellationToken = default)
         {
-            // FIXME: minimize buffer!!!!
-            var buffer = ArrayPool<byte>.Shared.Rent(16 * 1024);
-            try
+            // FIXME: validate input...
+            for (var bufferSize = MinBufferSize; bufferSize <= MaxBufferSize; bufferSize *= 2)
             {
-                // var input = decoder.Decompress(encryptedToken.AsSpan(), buffer.AsSpan(), )
-                if (!BrotliDecoder.TryDecompress(encryptedToken.AsSpan(), buffer.AsSpan(), out var size))
+                var buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+                try
                 {
-                    throw new InvalidOperationException("CompressionEncryption.DecryptTokenAsync: WIP");
+                    if (BrotliDecoder.TryDecompress(encryptedToken.AsSpan().Slice(offset, count), buffer.AsSpan(), out var size))
+                    {
+                        return _encryption.DecryptTokenAsync(buffer, 0, size, cancellationToken);
+                    }
                 }
-                return _encryption.DecryptTokenAsync(buffer[..size], cancellationToken);
+                finally
+                {
+                    ArrayPool<byte>.Shared.Return(buffer);
+                }
             }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
+            throw new InvalidOperationException($"Decrypting token requires buffer larger than {MaxBufferSize}.");
         }
 
         public async ValueTask<byte[]> EncryptTokenAsync(Token token, CancellationToken cancellationToken = default)
@@ -43,7 +47,7 @@ namespace NCoreUtils.OAuth2.Internal
             {
                 if (!BrotliEncoder.TryCompress(encrypted.AsSpan(), buffer.AsSpan(), out var size))
                 {
-                    throw new InvalidOperationException("Shpuld never happen.");
+                    throw new InvalidOperationException("Should never happen.");
                 }
                 return buffer[..size];
             }
@@ -53,6 +57,4 @@ namespace NCoreUtils.OAuth2.Internal
             }
         }
     }
-
-    #endif
 }

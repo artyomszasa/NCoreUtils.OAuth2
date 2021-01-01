@@ -38,12 +38,12 @@ namespace NCoreUtils.OAuth2
             }
         }
 
-        public ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, CancellationToken cancellationToken = default)
+        public ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, int offset, int count, CancellationToken cancellationToken = default)
         {
             var decryptor = _decryptorPool.Rent();
             try
             {
-                var data = decryptor.TransformFinalBlock(encryptedToken, 0, encryptedToken.Length);
+                var data = decryptor.TransformFinalBlock(encryptedToken, offset, count);
                 if (!Token.TryReadFrom(data, out var token))
                 {
                     throw new InvalidOperationException("Failed to decrypt token: invalid token.");

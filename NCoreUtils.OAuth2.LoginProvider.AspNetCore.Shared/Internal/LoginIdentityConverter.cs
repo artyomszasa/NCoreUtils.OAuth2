@@ -34,7 +34,7 @@ namespace NCoreUtils.OAuth2.Internal
         {
             if (reader.TokenType != JsonTokenType.StartObject)
             {
-                throw new InvalidOperationException($"Expected {JsonTokenType.StartObject}, got {reader.TokenType}.");
+                throw new JsonDeserializationException($"Expected {JsonTokenType.StartObject}, got {reader.TokenType}.");
             }
             string? sub = default;
             string? issuer = default;
@@ -46,48 +46,27 @@ namespace NCoreUtils.OAuth2.Internal
             {
                 if (reader.TokenType != JsonTokenType.PropertyName)
                 {
-                    throw new InvalidOperationException($"Expected {JsonTokenType.PropertyName}, got {reader.TokenType}.");
+                    throw new JsonDeserializationException($"Expected {JsonTokenType.PropertyName}, got {reader.TokenType}.");
                 }
                 if (reader.ValueSpan.IsSame(_binSub))
                 {
                     reader.Read();
-                    if (reader.TokenType != JsonTokenType.String)
-                    {
-                        throw new InvalidOperationException($"Expected {JsonTokenType.String}, got {reader.TokenType}.");
-                    }
                     sub = reader.GetString();
-                    reader.Read();
                 }
                 else if (reader.ValueSpan.IsSame(_binIss))
                 {
                     reader.Read();
-                    if (reader.TokenType != JsonTokenType.String)
-                    {
-                        throw new InvalidOperationException($"Expected {JsonTokenType.String}, got {reader.TokenType}.");
-                    }
                     issuer = reader.GetString();
-                    reader.Read();
                 }
                 else if (reader.ValueSpan.IsSame(_binName))
                 {
                     reader.Read();
-                    if (reader.TokenType != JsonTokenType.String)
-                    {
-                        throw new InvalidOperationException($"Expected {JsonTokenType.String}, got {reader.TokenType}.");
-                    }
                     name = reader.GetString();
-                    reader.Read();
                 }
                 else if (reader.ValueSpan.IsSame(_binEmail))
                 {
                     reader.Read();
-                    email = reader.TokenType switch
-                    {
-                        JsonTokenType.String => reader.GetString(),
-                        JsonTokenType.Null => default,
-                        JsonTokenType jtokenType => throw new InvalidOperationException($"Expected {jtokenType}, got {reader.TokenType}.")
-                    };
-                    reader.Read();
+                    email = reader.GetStringOrNull();
                 }
                 else if (reader.ValueSpan.IsSame(_binScopes))
                 {
@@ -95,26 +74,24 @@ namespace NCoreUtils.OAuth2.Internal
                     reader.Read();
                     if (reader.TokenType != JsonTokenType.StartArray)
                     {
-                        throw new InvalidOperationException($"Expected {JsonTokenType.StartArray}, got {reader.TokenType}.");
+                        throw new JsonDeserializationException($"Expected {JsonTokenType.StartArray}, got {reader.TokenType}.");
                     }
                     for (reader.Read(); reader.TokenType != JsonTokenType.EndArray; reader.Read())
                     {
                         if (reader.TokenType != JsonTokenType.String)
                         {
-                            throw new InvalidOperationException($"Expected {JsonTokenType.String}, got {reader.TokenType}.");
+                            throw new JsonDeserializationException($"Expected {JsonTokenType.String}, got {reader.TokenType}.");
                         }
                         scopes.Add(reader.GetString());
                     }
-                    reader.Read();
                 }
                 else
                 {
                     reader.Read();
                     reader.Skip();
-                    reader.Read();
                 }
+                reader.Read();
             }
-            reader.Read();
             return new LoginIdentity(
                 sub: sub!,
                 issuer: issuer!,
