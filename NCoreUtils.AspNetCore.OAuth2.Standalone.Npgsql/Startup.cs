@@ -71,7 +71,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 // token service
                 .AddSingleton(aesConfiguration)
                 .AddEntityFrameworkCoreTokenRepository(o => o
-                    .UseMySQL(connectionString, b => b.MigrationsAssembly(typeof(Startup).Assembly.GetName().Name))
+                    .UseNpgsql(connectionString, b => b.MigrationsAssembly(typeof(Startup).Assembly.GetName().Name))
                 )
                 .AddTokenService<RijndaelTokenEncryption, EntityFrameworkCoreTokenRepository>(tokenServiceConfiguration)
                 // scoped login provider client
