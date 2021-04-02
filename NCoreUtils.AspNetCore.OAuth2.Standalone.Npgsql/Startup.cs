@@ -40,6 +40,39 @@ namespace NCoreUtils.AspNetCore.OAuth2
 
         private readonly IConfiguration _configuration;
 
+        private void ConfigureDbContext(DbContextOptionsBuilder builder)
+        {
+            string connectionString;
+            switch (Environment.GetEnvironmentVariable("PGSQL_Config"))
+            {
+                case "env":
+                    var pgsqlConfiguration = new ConfigurationBuilder()
+                        .AddEnvironmentVariables(prefix: "PGSQL_")
+                        .Build();
+                    // default values
+                    var connectionStringBuilder = new Npgsql.NpgsqlConnectionStringBuilder
+                    {
+                        Pooling = true,
+                        MinPoolSize = 1,
+                        PersistSecurityInfo = true,
+                        LogParameters = _env.IsDevelopment()
+                    };
+                    // configured values
+                    pgsqlConfiguration.Bind(connectionStringBuilder);
+                    connectionString = connectionStringBuilder.ToString();
+                    break;
+                default:
+                    connectionString = _configuration.GetConnectionString("Default");
+                    break;
+
+            }
+
+            builder
+                    .UseNpgsql(connectionString, b => b.MigrationsAssembly(typeof(Startup).Assembly.GetName().Name))
+                    .EnableDetailedErrors(true)
+                    .EnableSensitiveDataLogging(_env.IsDevelopment());
+        }
+
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
             _env = env ?? throw new ArgumentNullException(nameof(env));
@@ -60,9 +93,6 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .Get<RijndaelTokenEncryptionConfiguration>()
                 ?? throw new InvalidOperationException("No aes configuration present.");
 
-            var connectionString = _configuration.GetConnectionString("Default")
-                ?? throw new InvalidOperationException("No default connection string present.");
-
             services
                 // client pooling
                 .AddHttpClient()
@@ -70,9 +100,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .AddHttpContextAccessor()
                 // token service
                 .AddSingleton(aesConfiguration)
-                .AddEntityFrameworkCoreTokenRepository(o => o
-                    .UseNpgsql(connectionString, b => b.MigrationsAssembly(typeof(Startup).Assembly.GetName().Name))
-                )
+                .AddEntityFrameworkCoreTokenRepository(ConfigureDbContext)
                 .AddTokenService<RijndaelTokenEncryption, EntityFrameworkCoreTokenRepository>(tokenServiceConfiguration)
                 // scoped login provider client
                 .AddScopedProtoClient<ILoginProvider>(
