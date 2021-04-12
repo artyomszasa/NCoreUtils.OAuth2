@@ -43,7 +43,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
         private void ConfigureDbContext(DbContextOptionsBuilder builder)
         {
             string connectionString;
-            switch (Environment.GetEnvironmentVariable("PGSQL_Config"))
+            switch (Environment.GetEnvironmentVariable("NPGSQL_Config"))
             {
                 case "env":
                     var pgsqlConfiguration = new ConfigurationBuilder()
