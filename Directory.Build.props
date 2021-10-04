@@ -3,7 +3,9 @@
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
     <Version>3.1.0</Version>
-    <SystemTextJsonVersion>4.7.2</SystemTextJsonVersion>
+    <GrpcVersion>2.38.1</GrpcVersion>
+    <FxNugetVersion>5.0.0</FxNugetVersion>
+    <SystemTextJsonVersion>5.0.2</SystemTextJsonVersion>
     <SystemNetHttpVersion>4.3.4</SystemNetHttpVersion>
   </PropertyGroup>
 </Project>
