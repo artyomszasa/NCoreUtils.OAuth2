@@ -140,6 +140,7 @@ type Startup (env: IWebHostEnvironment) =
                     b
                       .AllowAnyHeader()
                       .AllowAnyMethod()
+                      .WithOrigins("https://example.com", "http://127.0.0.1:5000")
                       .SetIsOriginAllowed(isOriginAllowed = (fun _ -> true))
                       .AllowCredentials()
                       |> ignore
@@ -170,6 +171,16 @@ type Startup (env: IWebHostEnvironment) =
     app
       .UseCors("AllowAny")
       // .Use(forceGC)
+      .Use(
+        Func<HttpContext, Func<Task>, Task>(
+          fun (context: HttpContext) (next: Func<Task>) ->
+            match context.Request.Path = PathString "/healthz" with
+            | true ->
+              context.Response.StatusCode <- 200
+              Task.CompletedTask
+            | _ -> next.Invoke ()
+        )
+      )
       .UseForwardedHeaders(forwardedHeaderOptions)
       .Use(OAuth2Middleware.run)
       .UseRequestErrorHandler()

@@ -1,6 +1,6 @@
 # **********************************************************************************************************************
 # BUILD IMAGE
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0-alpine AS build-env-oauth2
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build-env-oauth2
 # ADD BASH, see https://github.com/dotnet/dotnet-docker/issues/632
 RUN apk update && apk add --no-cache bash
 # PREFETCH FSharp.Core and System.Net.Http INTO SEPARATE LAYER
@@ -63,7 +63,7 @@ RUN dotnet publish ./NCoreUtils.OAuth2.WebService/NCoreUtils.OAuth2.WebService.f
 
 # **********************************************************************************************************************
 # RUNTIME IMAGE
-FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.0-alpine
+FROM mcr.microsoft.com/dotnet/core/runtime-deps:3.1-alpine
 WORKDIR /app
 # INSTALL GLOBALIZATION and CURL
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT false
