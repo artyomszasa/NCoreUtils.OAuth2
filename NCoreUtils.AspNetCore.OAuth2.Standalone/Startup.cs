@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -102,6 +103,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .UseRouting()
                 .UseEndpoints(endpoints =>
                 {
+                    endpoints.MapGet("healthz", context => { context.Response.StatusCode = 200; return Task.CompletedTask; });
                     endpoints.MapTokenService(string.Empty);
                 });
         }
