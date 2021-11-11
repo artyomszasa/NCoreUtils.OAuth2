@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -45,14 +46,36 @@ namespace NCoreUtils.OAuth2
             return e => e.Username == username;
         }
 
-        protected virtual LoginIdentity CreateLoginIdentity(TUser user, ScopeCollection scopes)
-            => new LoginIdentity(
+        protected virtual IAsyncEnumerable<string> PopulateAvailableScopesAsync(
+            TUser user,
+            CancellationToken cancellationToken)
+            => user.GetAvailableScopes().ToAsyncEnumerable();
+
+        protected virtual async ValueTask<ScopeCollection> PopulateGrantedScopesAsync(
+            TUser user,
+            ScopeCollection requestedScopes,
+            IAsyncEnumerable<string> availableScopes,
+            CancellationToken cancellationToken)
+        {
+            IAsyncEnumerable<string> scopes = requestedScopes.HasValue
+                ? availableScopes.Intersect(requestedScopes.ToAsyncEnumerable())
+                : availableScopes;
+            return new ScopeCollection(await scopes.ToListAsync(cancellationToken));
+        }
+
+
+        protected virtual async ValueTask<LoginIdentity> CreateLoginIdentityAsync(TUser user, ScopeCollection scopes, CancellationToken cancellationToken)
+        {
+            var availableScopes = PopulateAvailableScopesAsync(user, cancellationToken);
+            var grantedScopes = await PopulateGrantedScopesAsync(user, scopes, availableScopes, cancellationToken);
+            return new LoginIdentity(
                 user.Sub.ToString(CultureInfo.InvariantCulture),
                 Configuration.Issuer,
                 user.Username,
                 user.Email,
-                new ScopeCollection(scopes.HasValue ? user.GetAvailableScopes().Intersect(scopes) : user.GetAvailableScopes())
+                grantedScopes
             );
+        }
 
         public virtual ValueTask<LoginIdentity?> ExtensionGrantAsync(string type, string passcode, ScopeCollection scopes, CancellationToken cancellationToken = default)
             => default;
@@ -79,7 +102,7 @@ namespace NCoreUtils.OAuth2
                 {
                     return null;
                 }
-                return CreateLoginIdentity(user, scopes);
+                return await CreateLoginIdentityAsync(user, scopes, cancellationToken);
             }
             finally
             {

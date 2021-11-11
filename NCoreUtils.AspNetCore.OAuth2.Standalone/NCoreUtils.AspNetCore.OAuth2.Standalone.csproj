@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>netcoreapp5.0</TargetFramework>
+    <TargetFramework>net6</TargetFramework>
     <RootNamespace>NCoreUtils.AspNetCore.OAuth2</RootNamespace>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     <ServerGarbageCollection>false</ServerGarbageCollection>
@@ -17,10 +17,9 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.TokenRepositories.GoogleCloudFirestore\NCoreUtils.OAuth2.TokenService.TokenRepositories.GoogleCloudFirestore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="5.0.2" />
-    <PackageReference Include="Microsoft.NETCore.Targets" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NETCore.Platforms" Version="6.0.0" />
     <PackageReference Include="NCoreUtils.AspNetCore.Logging" Version="3.1.0" />
     <PackageReference Include="NCoreUtils.Logging.Google.Fluentd" Version="3.1.0" />
-    <PackageReference Include="System.Text.Encodings.Web" Version="5.0.1" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="6.0.0" />
   </ItemGroup>
 </Project>
