@@ -30,7 +30,7 @@ namespace NCoreUtils.OAuth2.Internal
                     case JsonTokenType.Null:
                         break;
                     case JsonTokenType.String:
-                        scopes.Add(reader.GetString());
+                        scopes.Add(reader.GetString()!);
                         break;
                     default:
                         throw new JsonDeserializationException($"Expected {JsonTokenType.String}, got {reader.TokenType}.");

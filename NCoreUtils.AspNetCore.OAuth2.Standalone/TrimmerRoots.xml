@@ -1,0 +1,11 @@
+<linker>
+  <assembly fullname="NCoreUtils.AspNetCore.OAuth2.Standalone">
+    <type fullname="NCoreUtils.AspNetCore.OAuth2.LoginProviderConfiguration" preserve="all" />
+  </assembly>
+  <assembly fullname="NCoreUtils.OAuth2.TokenService">
+    <type fullname="NCoreUtils.OAuth2.TokenServiceConfiguration" preserve="all" />
+  </assembly>
+  <assembly fullname="NCoreUtils.OAuth2.TokenService.Encryption.Rijndael">
+    <type fillname="NCoreUtils.OAuth2.RijndaelTokenEncryptionConfiguration" preserve="all" />
+  </assembly>
+</linker>

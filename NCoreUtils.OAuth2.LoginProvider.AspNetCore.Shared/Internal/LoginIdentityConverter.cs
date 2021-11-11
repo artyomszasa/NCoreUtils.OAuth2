@@ -82,7 +82,7 @@ namespace NCoreUtils.OAuth2.Internal
                         {
                             throw new JsonDeserializationException($"Expected {JsonTokenType.String}, got {reader.TokenType}.");
                         }
-                        scopes.Add(reader.GetString());
+                        scopes.Add(reader.GetString()!);
                     }
                 }
                 else

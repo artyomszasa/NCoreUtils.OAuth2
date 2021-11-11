@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -33,6 +34,8 @@ namespace NCoreUtils.AspNetCore.OAuth2
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
+        [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026:RequiresUnreferencedCode",
+              Justification = "Configuration types are included in TrimmerRoots.xml")]
         public void ConfigureServices(IServiceCollection services)
         {
             var providers = _configuration.GetSection("LoginProviders")
