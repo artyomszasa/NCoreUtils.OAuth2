@@ -22,9 +22,9 @@
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="3.1.2" />
     <PackageReference Include="Microsoft.NETCore.Targets" Version="3.1.0" />
     <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.21" />
-    <PackageReference Include="NCoreUtils.AspNetCore.Logging" Version="3.1.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Logging" Version="3.1.0.1" />
     <PackageReference Include="NCoreUtils.AspNetCore.Rest" Version="3.1.0-beta00" />
     <PackageReference Include="NCoreUtils.Data.Protocol" Version="3.1.0" />
-    <PackageReference Include="NCoreUtils.Logging.Google.Fluentd" Version="3.1.0" />
+    <PackageReference Include="NCoreUtils.Logging.Google.Fluentd" Version="3.1.0.1" />
   </ItemGroup>
 </Project>
