@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="3.1.0" />
+    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="6.0.0-beta00" />
   </ItemGroup>
 </Project>

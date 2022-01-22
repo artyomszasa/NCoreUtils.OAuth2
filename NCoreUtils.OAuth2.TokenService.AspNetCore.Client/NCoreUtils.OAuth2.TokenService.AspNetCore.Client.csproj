@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
@@ -11,7 +11,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(FxNugetVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(FxNugetVersion)" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="$(FxNugetVersion)" />
-    <PackageReference Include="NCoreUtils.AspNetCore.Proto.Client" Version="3.1.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Proto.Client" Version="6.0.0-beta00" />
     <PackageReference Include="System.Net.Http" Version="$(SystemNetHttpVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
+    <PackageReference Include="NCoreUtils.Extensions.DependencyInjection" Version="6.0.0" />
   </ItemGroup>
 </Project>

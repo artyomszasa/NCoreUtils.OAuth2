@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net6</TargetFrameworks>
+    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>NCoreUtils.AspNetCore</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
@@ -10,6 +10,6 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Shared\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.Proto" Version="3.1.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Proto" Version="6.0.0-beta00" />
   </ItemGroup>
 </Project>

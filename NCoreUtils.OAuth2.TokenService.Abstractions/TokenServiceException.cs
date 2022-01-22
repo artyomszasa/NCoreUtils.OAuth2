@@ -38,7 +38,7 @@ namespace NCoreUtils.OAuth2
         protected TokenServiceException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            ErrorCode = info.GetString(nameof(ErrorCode));
+            ErrorCode = info.GetString(nameof(ErrorCode)) ?? string.Empty;
             DesiredStatusCode = info.GetInt32(nameof(DesiredStatusCode));
         }
 

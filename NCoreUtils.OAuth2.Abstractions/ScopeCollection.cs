@@ -8,255 +8,254 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using NCoreUtils.Memory;
 
-namespace NCoreUtils.OAuth2
+namespace NCoreUtils.OAuth2;
+/// <summary>
+/// Scope collection that distinguishes between no value and empty value.
+/// </summary>
+public struct ScopeCollection : IReadOnlyCollection<string>, IEquatable<ScopeCollection>, IEmplaceable<ScopeCollection>
 {
-    /// <summary>
-    /// Scope collection that distinguishes between no value and empty value.
-    /// </summary>
-    public struct ScopeCollection : IReadOnlyCollection<string>, IEquatable<ScopeCollection>, IEmplaceable<ScopeCollection>
+    [ExcludeFromCodeCoverage]
+    private sealed class EmptyEnumerator : IEnumerator<string>
     {
-        [ExcludeFromCodeCoverage]
-        private sealed class EmptyEnumerator : IEnumerator<string>
+        public static IEnumerator<string> Instance { get; } = new EmptyEnumerator();
+
+        object IEnumerator.Current => default!;
+
+        public string Current => default!;
+
+        private EmptyEnumerator() { }
+
+        public void Dispose() { }
+
+        public bool MoveNext() => false;
+
+        public void Reset() { }
+    }
+
+    private const int MaxCharBufferStackAllocSize = 8 * 1024;
+
+    private const int MaxCharBufferPoolAllocSize = 32 * 1024;
+
+    private static readonly IEqualityComparer<HashSet<string>> _equalityComparer = HashSet<string>.CreateSetComparer();
+
+    private static readonly Regex _regexWs = new("\\s+", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [DebuggerStepThrough]
+    public static bool operator==(ScopeCollection a, ScopeCollection b)
+        => a.Equals(b);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [DebuggerStepThrough]
+    public static bool operator!=(ScopeCollection a, ScopeCollection b)
+        => !a.Equals(b);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [DebuggerStepThrough]
+    public static implicit operator ScopeCollection(List<string>? scopes)
+        => new(scopes);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [DebuggerStepThrough]
+    public static implicit operator ScopeCollection(string[]? scopes)
+        => new(scopes!);
+
+    public static ScopeCollection Parse(string? input)
+    {
+        if (string.IsNullOrEmpty(input))
         {
-            public static IEnumerator<string> Instance { get; } = new EmptyEnumerator();
-
-            object IEnumerator.Current => default!;
-
-            public string Current => default!;
-
-            private EmptyEnumerator() { }
-
-            public void Dispose() { }
-
-            public bool MoveNext() => false;
-
-            public void Reset() { }
+            return default;
         }
+        return new ScopeCollection(_regexWs.Split(input));
+    }
 
-        private const int MaxCharBufferStackAllocSize = 8 * 1024;
+    internal readonly HashSet<string>? _scopes;
 
-        private const int MaxCharBufferPoolAllocSize = 32 * 1024;
-
-        private static readonly IEqualityComparer<HashSet<string>> _equalityComparer = HashSet<string>.CreateSetComparer();
-
-        private static readonly Regex _regexWs = new Regex("\\s+", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-
+    public int Count
+    {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [DebuggerStepThroughAttribute]
-        public static bool operator==(ScopeCollection a, ScopeCollection b)
-            => a.Equals(b);
+        [DebuggerStepThrough]
+        get => _scopes is null ? 0 : _scopes.Count;
+    }
 
+    /// <summary>
+    /// Gets whether collection ha no value set.
+    /// </summary>
+    [MemberNotNullWhen(true, nameof(_scopes))]
+    public bool HasValue
+    {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [DebuggerStepThroughAttribute]
-        public static bool operator!=(ScopeCollection a, ScopeCollection b)
-            => !a.Equals(b);
+        [DebuggerStepThrough]
+        get => _scopes is not null;
+    }
 
+    /// <summary>
+    /// Gets whether collection is empty (either no value or empty value).
+    /// </summary>
+    public bool IsEmpty
+    {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [DebuggerStepThroughAttribute]
-        public static implicit operator ScopeCollection(List<string>? scopes)
-            => new ScopeCollection(scopes);
+        [DebuggerStepThrough]
+        get => Count == 0;
+    }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [DebuggerStepThroughAttribute]
-        public static implicit operator ScopeCollection(string[]? scopes)
-            => new ScopeCollection(scopes!);
-
-        public static ScopeCollection Parse(string? input)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [DebuggerStepThrough]
+    public ScopeCollection(IEnumerable<string>? scopes)
+    {
+        if (scopes is null)
         {
-            if (string.IsNullOrEmpty(input))
+            _scopes = default;
+        }
+        else
+        {
+            // in order to minimize allocations check whether scope set size is known...
+            var initialCapacity = scopes switch
             {
-                return default;
-            }
-            return new ScopeCollection(_regexWs.Split(input));
-        }
-
-        private readonly HashSet<string>? _scopes;
-
-        public int Count
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            [DebuggerStepThroughAttribute]
-            get => _scopes is null ? 0 : _scopes.Count;
-        }
-
-        /// <summary>
-        /// Gets whether collection ha no value set.
-        /// </summary>
-        public bool HasValue
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            [DebuggerStepThroughAttribute]
-            get => !(_scopes is null);
-        }
-
-        /// <summary>
-        /// Gets whether collection is empty (either no value or empty value).
-        /// </summary>
-        public bool IsEmpty
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            [DebuggerStepThroughAttribute]
-            get => Count == 0;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [DebuggerStepThroughAttribute]
-        public ScopeCollection(IEnumerable<string>? scopes)
-        {
-            if (scopes is null)
+                IReadOnlyCollection<string> ro => ro.Count,
+                ICollection<string> rw => rw.Count,
+                _ => 4
+            };
+            var scopeSet = new HashSet<string>(initialCapacity);
+            foreach (var scope in scopes)
             {
-                _scopes = default;
-            }
-            else
-            {
-                // in order to minimize allocations check whether scope set size is known...
-                var desiredCapacity = scopes switch
+                if (!string.IsNullOrEmpty(scope))
                 {
-                    IReadOnlyCollection<string> ro => ro.Count,
-                    ICollection<string> rw => rw.Count,
-                    _ => 4
-                };
-                var scopeSet = new HashSet<string>(desiredCapacity);
-                foreach (var scope in scopes)
-                {
-                    if (!string.IsNullOrEmpty(scope))
-                    {
-                        scopeSet.Add(scope);
-                    }
+                    scopeSet.Add(scope);
                 }
-                _scopes = scopeSet;
             }
+            _scopes = scopeSet;
         }
+    }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [DebuggerStepThroughAttribute]
-        public ScopeCollection(params string[] scopes)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [DebuggerStepThrough]
+    public ScopeCollection(params string[] scopes)
+    {
+        if (scopes is null)
         {
-            if (scopes is null)
+            _scopes = default;
+        }
+        else
+        {
+            var scopeSet = new HashSet<string>(scopes.Length);
+            foreach (var scope in scopes)
             {
-                _scopes = default;
-            }
-            else
-            {
-                var scopeSet = new HashSet<string>(scopes.Length);
-                foreach (var scope in scopes)
+                if (!string.IsNullOrEmpty(scope))
                 {
-                    if (!string.IsNullOrEmpty(scope))
-                    {
-                        scopeSet.Add(scope);
-                    }
+                    scopeSet.Add(scope);
                 }
-                _scopes = scopeSet;
             }
+            _scopes = scopeSet;
         }
+    }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        private int EmplaceNoCheck(Span<char> buffer)
+    private int EmplaceNoCheck(Span<char> buffer)
+    {
+        if (_scopes is null)
         {
-            if (_scopes is null)
+            return 0;
+        }
+        var builder = new SpanBuilder(buffer);
+        var enumerator = _scopes.GetEnumerator();
+        if (enumerator.MoveNext())
+        {
+            // first
+            builder.Append(enumerator.Current);
+            while (enumerator.MoveNext())
             {
-                return 0;
-            }
-            var builder = new SpanBuilder(buffer);
-            var enumerator = _scopes.GetEnumerator();
-            if (enumerator.MoveNext())
-            {
-                // first
+                builder.Append(' ');
                 builder.Append(enumerator.Current);
-                while (enumerator.MoveNext())
-                {
-                    builder.Append(' ');
-                    builder.Append(enumerator.Current);
-                }
             }
-            return builder.Length;
         }
+        return builder.Length;
+    }
 
-        public int ComputeRequiredBufferSize()
+    public int ComputeRequiredBufferSize()
+    {
+        if (_scopes is null || _scopes.Count == 0)
         {
-            if (_scopes is null || _scopes.Count == 0)
-            {
-                return 0;
-            }
-            var size = _scopes.Count - 1; // spaces
-            foreach (var scope in _scopes)
-            {
-                size += scope.Length;
-            }
-            return size;
+            return 0;
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(ScopeCollection other)
+        var size = _scopes.Count - 1; // spaces
+        foreach (var scope in _scopes)
         {
-            if (_scopes is null)
-            {
-                return other._scopes is null;
-            }
-            if (other._scopes is null)
-            {
-                return false;
-            }
-            return ReferenceEquals(_scopes, other._scopes) || _equalityComparer.Equals(_scopes, other._scopes);
+            size += scope.Length;
         }
+        return size;
+    }
 
-        public override bool Equals(object? obj)
-            => obj is ScopeCollection other && Equals(other);
-
-        public IEnumerator<string> GetEnumerator()
-            => _scopes is null ? EmptyEnumerator.Instance : _scopes.GetEnumerator();
-
-        public override int GetHashCode()
-            => _scopes is null ? 0 : _equalityComparer.GetHashCode(_scopes);
-
-        public override string ToString()
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Equals(ScopeCollection other)
+    {
+        if (_scopes is null)
         {
-            if (IsEmpty)
-            {
-                return string.Empty;
-            }
-            var requiredSize = ComputeRequiredBufferSize();
-            if (requiredSize <= MaxCharBufferStackAllocSize)
-            {
-                Span<char> buffer = stackalloc char[requiredSize];
-                var size = EmplaceNoCheck(buffer);
-                return new string(buffer.Slice(0, size));
-            }
-            if (requiredSize <= MaxCharBufferPoolAllocSize)
-            {
-                using var owner = MemoryPool<char>.Shared.Rent(requiredSize);
-                var size = EmplaceNoCheck(owner.Memory.Span);
-                return new string(owner.Memory.Span.Slice(0, size));
-            }
-            return string.Join(' ', _scopes!);
+            return other._scopes is null;
         }
-
-        public int Emplace(Span<char> span)
+        if (other._scopes is null)
         {
-            if (TryEmplace(span, out var size))
-            {
-                return size;
-            }
-            var requiredSize = ComputeRequiredBufferSize();
-            throw new InsufficientBufferSizeException(span, requiredSize);
-        }
-
-        public bool TryEmplace(Span<char> span, out int used)
-        {
-            if (_scopes is null || _scopes.Count == 0)
-            {
-                used = 0;
-                return true;
-            }
-            var requiredSize = ComputeRequiredBufferSize();
-            if (requiredSize <= span.Length)
-            {
-                used = EmplaceNoCheck(span);
-                return true;
-            }
-            used = default;
             return false;
         }
+        return ReferenceEquals(_scopes, other._scopes) || _equalityComparer.Equals(_scopes, other._scopes);
+    }
+
+    public override bool Equals(object? obj)
+        => obj is ScopeCollection other && Equals(other);
+
+    public IEnumerator<string> GetEnumerator()
+        => _scopes is null ? EmptyEnumerator.Instance : _scopes.GetEnumerator();
+
+    public override int GetHashCode()
+        => _scopes is null ? 0 : _equalityComparer.GetHashCode(_scopes);
+
+    public override string ToString()
+    {
+        if (IsEmpty)
+        {
+            return string.Empty;
+        }
+        var requiredSize = ComputeRequiredBufferSize();
+        if (requiredSize <= MaxCharBufferStackAllocSize)
+        {
+            Span<char> buffer = stackalloc char[requiredSize];
+            var size = EmplaceNoCheck(buffer);
+            return new string(buffer[..size]);
+        }
+        if (requiredSize <= MaxCharBufferPoolAllocSize)
+        {
+            using var owner = MemoryPool<char>.Shared.Rent(requiredSize);
+            var size = EmplaceNoCheck(owner.Memory.Span);
+            return new string(owner.Memory.Span[..size]);
+        }
+        return string.Join(' ', _scopes!);
+    }
+
+    public int Emplace(Span<char> span)
+    {
+        if (TryEmplace(span, out var size))
+        {
+            return size;
+        }
+        var requiredSize = ComputeRequiredBufferSize();
+        throw new InsufficientBufferSizeException(span, requiredSize);
+    }
+
+    public bool TryEmplace(Span<char> span, out int used)
+    {
+        if (_scopes is null || _scopes.Count == 0)
+        {
+            used = 0;
+            return true;
+        }
+        var requiredSize = ComputeRequiredBufferSize();
+        if (requiredSize <= span.Length)
+        {
+            used = EmplaceNoCheck(span);
+            return true;
+        }
+        used = default;
+        return false;
     }
 }

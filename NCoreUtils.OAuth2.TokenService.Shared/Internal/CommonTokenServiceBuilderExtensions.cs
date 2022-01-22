@@ -1,4 +1,3 @@
-using System.Text.Json;
 using NCoreUtils.AspNetCore.Proto;
 
 namespace NCoreUtils.OAuth2.Internal
@@ -9,11 +8,8 @@ namespace NCoreUtils.OAuth2.Internal
         {
             builder.Path = prefix ?? string.Empty;
             builder.NamingPolicy = NamingConvention.SnakeCase;
-            builder.DefaultOutput = OutputType.Json(new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                Converters = { AccessTokenResponseConverter.Instance, IntrospectionResponseConverter.Instance }
-            });
+            builder.DefaultOutput = OutputType.Json(TokenServiceJsonSerializerContext.Default);
+            builder.DefaultError = ErrorType.Json(TokenServiceJsonSerializerContext.Default);
             builder.DefaultInput = InputType.UrlEncodedForm(default);
         }
     }

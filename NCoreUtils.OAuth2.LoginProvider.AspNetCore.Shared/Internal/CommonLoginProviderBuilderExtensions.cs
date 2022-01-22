@@ -9,16 +9,8 @@ namespace NCoreUtils.OAuth2.Internal
         {
             builder.Path = prefix ?? string.Empty;
             builder.NamingPolicy = NamingConvention.SnakeCase;
-            builder.DefaultOutput = OutputType.Json(new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                Converters = { LoginIdentityConverter.Instance }
-            });
-            builder.DefaultInput = InputType.Json(new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                Converters = { ScopeCollectionConverter.Instance }
-            });
+            builder.DefaultOutput = OutputType.Json(LoginProviderSerializationContext.Default);
+            builder.DefaultInput = InputType.Json(LoginProviderSerializationContext.Default);
         }
     }
 }

@@ -1,12 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.Abstractions\NCoreUtils.OAuth2.Abstractions.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.ResponseErrors.Abstractions" Version="3.1.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.ResponseErrors.Abstractions" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net6.0' ">
+    <PackageReference Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
   </ItemGroup>
 </Project>

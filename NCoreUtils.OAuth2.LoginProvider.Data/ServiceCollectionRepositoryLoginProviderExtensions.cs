@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using NCoreUtils.OAuth2;
 using NCoreUtils.OAuth2.Data;
@@ -14,7 +15,9 @@ namespace NCoreUtils
             public bool UseEmailAsUsername { get; set; } = false;
         }
 
-        public static IServiceCollection AddRepositoryLoginProvider<TProvider, TUser, TId>(this IServiceCollection services, ILoginProviderConfiguration configuration)
+        public static IServiceCollection AddRepositoryLoginProvider<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TProvider, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TUser, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TId>(
+            this IServiceCollection services,
+            ILoginProviderConfiguration configuration)
             where TProvider : RepositoryLoginProvider<TUser, TId>
             where TUser : ILocalUser<TId>
             where TId : IConvertible
@@ -22,14 +25,14 @@ namespace NCoreUtils
                 .AddSingleton(configuration)
                 .AddScoped<ILoginProvider, TProvider>();
 
-        public static IServiceCollection AddRepositoryLoginProvider<TUser, TId>(this IServiceCollection services, ILoginProviderConfiguration configuration)
+        public static IServiceCollection AddRepositoryLoginProvider<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TUser, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TId>(this IServiceCollection services, ILoginProviderConfiguration configuration)
             where TUser : ILocalUser<TId>
             where TId : IConvertible
             => services
                 .AddSingleton(configuration)
                 .AddScoped<ILoginProvider, RepositoryLoginProvider<TUser, TId>>();
 
-        public static IServiceCollection AddRepositoryLoginProvider<TProvider, TUser, TId>(
+        public static IServiceCollection AddRepositoryLoginProvider<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TProvider, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TUser, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TId>(
             this IServiceCollection services,
             string issuer,
             bool useEmailAsUsername = false)
@@ -41,7 +44,7 @@ namespace NCoreUtils
                 UseEmailAsUsername = useEmailAsUsername
             });
 
-        public static IServiceCollection AddRepositoryLoginProvider<TUser, TId>(
+        public static IServiceCollection AddRepositoryLoginProvider<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TUser, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TId>(
             this IServiceCollection services,
             string issuer,
             bool useEmailAsUsername = false)

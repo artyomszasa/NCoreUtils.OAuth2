@@ -4,7 +4,7 @@ using NCoreUtils.OAuth2.Data;
 
 namespace NCoreUtils.OAuth2.Logging
 {
-    public sealed class PaswordGrantUserFoundEntry<TId>
+    public sealed class PaswordGrantUserFoundEntry<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TId>
         where TId : IConvertible
     {
         private string? _cachedString;
@@ -22,19 +22,11 @@ namespace NCoreUtils.OAuth2.Logging
             User = user ?? throw new ArgumentNullException(nameof(user));
         }
 
-        #if NETSTANDARD2_1
         private bool TryToStringNoAlloc([NotNullWhen(true)] out string? result)
-        #else
-        private bool TryToStringNoAlloc(out string result)
-        #endif
         {
             Span<char> buffer = stackalloc char[4 * 1024];
             var builder = new SpanBuilder(buffer);
-            #if NETSTANDARD2_1
             result = default;
-            #else
-            result = default!;
-            #endif
             if (!builder.TryAppend("Found user ")) { return false; }
             if (!builder.TryAppend(User.Sub)) { return false; }
             if (!builder.TryAppend(" with available scopes [")) { return false; }

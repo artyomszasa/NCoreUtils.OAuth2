@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -15,12 +16,11 @@ using NCoreUtils.OAuth2.Logging;
 
 namespace NCoreUtils.OAuth2
 {
-    public class RepositoryLoginProvider<TUser, TId> : ILoginProvider
+    public class RepositoryLoginProvider<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TUser, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TId>
+        : ILoginProvider
         where TUser : ILocalUser<TId>
         where TId : IConvertible
     {
-        private static readonly UTF8Encoding _utf8 = new UTF8Encoding(false);
-
         protected ILoginProviderConfiguration Configuration { get; }
 
         protected IDataRepository<TUser> UserRepository { get; }

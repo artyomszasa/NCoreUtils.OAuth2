@@ -1,23 +1,45 @@
 using System;
+using System.Text.Json.Serialization;
 using NCoreUtils.AspNetCore.Proto;
 
 namespace NCoreUtils.OAuth2.Internal
 {
     public class ErrorResponse : IEquatable<ErrorResponse>, IErrorDescription
     {
+        public static bool operator==(ErrorResponse? a, ErrorResponse? b)
+        {
+            if (a is null)
+            {
+                return b is null;
+            }
+            return a.Equals(b);
+        }
+
+        public static bool operator!=(ErrorResponse? a, ErrorResponse? b)
+        {
+            if (a is null)
+            {
+                return b is not null;
+            }
+            return !a.Equals(b);
+        }
+
         string? IErrorDescription.ErrorMessage => ErrorDescription;
 
+        [JsonPropertyName("error")]
         public string ErrorCode { get; }
 
+        [JsonPropertyName("error_description")]
         public string? ErrorDescription { get; }
 
+        [JsonConstructor]
         public ErrorResponse(string errorCode, string? errorDescription)
         {
             ErrorCode = errorCode;
             ErrorDescription = errorDescription;
         }
 
-        public bool Equals(ErrorResponse other)
+        public bool Equals(ErrorResponse? other)
             => other != null
                 && ErrorCode == other.ErrorCode
                 && ErrorDescription == other.ErrorDescription;

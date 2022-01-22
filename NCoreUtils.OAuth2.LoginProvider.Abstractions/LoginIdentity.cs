@@ -1,7 +1,9 @@
 using System;
 using System.Buffers;
 using System.Text;
+using System.Text.Json.Serialization;
 using NCoreUtils.Memory;
+using NCoreUtils.OAuth2.Internal;
 
 namespace NCoreUtils.OAuth2
 {
@@ -19,8 +21,10 @@ namespace NCoreUtils.OAuth2
 
         public string? Email { get; }
 
+        [JsonConverter(typeof(ScopeCollectionConverter))]
         public ScopeCollection Scopes { get; }
 
+        [JsonConstructor]
         public LoginIdentity(string sub, string issuer, string name, string? email, ScopeCollection scopes)
         {
             if (string.IsNullOrWhiteSpace(sub))
@@ -103,8 +107,8 @@ namespace NCoreUtils.OAuth2
             throw new InsufficientBufferSizeException(span, requiredSize);
         }
 
-        public bool Equals(LoginIdentity other)
-            => other != null
+        public bool Equals(LoginIdentity? other)
+            => other is not null
                 && Sub == other.Sub
                 && Issuer == other.Issuer
                 && Name == other.Name
@@ -124,13 +128,13 @@ namespace NCoreUtils.OAuth2
             {
                 Span<char> buffer = stackalloc char[requiredSize];
                 var size = EmplaceNoCheck(buffer);
-                return new string(buffer.Slice(0, size));
+                return new string(buffer[..size]);
             }
             if (requiredSize <= MaxCharBufferPoolAllocSize)
             {
                 using var owner = MemoryPool<char>.Shared.Rent(requiredSize);
                 var size = EmplaceNoCheck(owner.Memory.Span);
-                return new string(owner.Memory.Span.Slice(0, size));
+                return new string(owner.Memory.Span[..size]);
             }
             return ToStringFallback(requiredSize);
         }

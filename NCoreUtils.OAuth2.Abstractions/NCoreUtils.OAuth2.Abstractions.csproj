@@ -1,9 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Extensions.Memory" Version="2.0.0" />
+    <PackageReference Include="NCoreUtils.Extensions.Memory" Version="3.0.0" />
+    <PackageReference Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
+    <Compile Remove="CodeAnalysis\**" />
   </ItemGroup>
 </Project>

@@ -30,7 +30,7 @@ namespace NCoreUtils.OAuth2
 
         protected RemoteTokenServiceException(SerializationInfo info, StreamingContext context)
             : base(info, context)
-            => Endpoint = info.GetString(nameof(Endpoint));
+            => Endpoint = info.GetString(nameof(Endpoint)) ?? string.Empty;
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {

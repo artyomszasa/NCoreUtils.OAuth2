@@ -12,7 +12,7 @@ namespace NCoreUtils.OAuth2.Internal
             => _endpoints = endpoints ?? throw new ArgumentNullException(nameof(endpoints));
 
         public ValueTask<AccessTokenResponse> ExtensionGrantAsync(string type, string passcode, ScopeCollection scopes, CancellationToken cancellationToken = default)
-            => new ValueTask<AccessTokenResponse>(_endpoints.TokenAsync(
+            => new(_endpoints.TokenAsync(
                 grantType: type,
                 passcode: passcode,
                 username: default,
@@ -31,7 +31,7 @@ namespace NCoreUtils.OAuth2.Internal
             );
 
         public ValueTask<AccessTokenResponse> PasswordGrantAsync(string username, string password, ScopeCollection scopes, CancellationToken cancellationToken = default)
-            => new ValueTask<AccessTokenResponse>(_endpoints.TokenAsync(
+            => new(_endpoints.TokenAsync(
                 grantType: "password",
                 passcode: default,
                 username: username,
@@ -42,7 +42,7 @@ namespace NCoreUtils.OAuth2.Internal
             ));
 
         public ValueTask<AccessTokenResponse> RefreshTokenAsync(string refreshToken, ScopeCollection scopes, CancellationToken cancellationToken = default)
-            => new ValueTask<AccessTokenResponse>(_endpoints.TokenAsync(
+            => new(_endpoints.TokenAsync(
                 grantType: "refresh_token",
                 passcode: default,
                 username: default,

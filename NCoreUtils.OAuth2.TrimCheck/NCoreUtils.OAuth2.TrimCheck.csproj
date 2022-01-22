@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.AspNetCore.Client\NCoreUtils.OAuth2.TokenService.AspNetCore.Client.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.AspNetCore\NCoreUtils.OAuth2.LoginProvider.AspNetCore.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.Data\NCoreUtils.OAuth2.LoginProvider.Data.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client.csproj" />
+    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.Abstractions" />
+    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.LoginProvider.Abstractions" />
+    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.LoginProvider.AspNetCore" />
+    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client" />
+    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.LoginProvider.AspNetCore.Shared" />
+    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.LoginProvider.Data" />
+    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.LoginProvider.Data.Abstractions" />
+    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.TokenService.AspNetCore.Client" />
+    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.TokenService.Shared" />
+    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.TokenService.Abstractions" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- Use a RID of your choice. -->
+    <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <PublishTrimmed>true</PublishTrimmed>
+    <!-- Prevent warnings from unused code in dependencies -->
+    <TrimmerDefaultAction>link</TrimmerDefaultAction>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+</Project>

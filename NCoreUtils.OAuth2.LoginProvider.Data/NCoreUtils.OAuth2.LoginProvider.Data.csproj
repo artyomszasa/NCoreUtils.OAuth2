@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
     <RootNamespace>NCoreUtils</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
@@ -8,9 +8,9 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.Abstractions\NCoreUtils.OAuth2.LoginProvider.Abstractions.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0" />
-    <PackageReference Include="NCoreUtils.Linq.Abstractions" Version="3.1.0" />
-    <PackageReference Include="System.Linq.Async" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(FxNugetVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(FxNugetVersion)" />
+    <PackageReference Include="NCoreUtils.Linq.Abstractions" Version="6.0.0" />
+    <PackageReference Include="System.Linq.Async" Version="5.1.0" />
   </ItemGroup>
 </Project>

@@ -1,15 +1,12 @@
 using System;
 using System.Text;
 using NCoreUtils.OAuth2.Internal;
-#if !NETSTANDARD2_1
-using Convert = NCoreUtils.PolyfillConvert;
-#endif
 
 namespace NCoreUtils.OAuth2
 {
     public static class PasswordHelpers
     {
-        private static UTF8Encoding _utf8 = new UTF8Encoding(false);
+        private static UTF8Encoding Utf8 { get; } = new(false);
 
         /// <summary>
         /// Computes sha512 hash as base64 string for plain-text password using the specified salt.
@@ -30,15 +27,15 @@ namespace NCoreUtils.OAuth2
                 if (input.Length <= 2048)
                 {
                     Span<byte> inputBuffer = stackalloc byte[input.Length * 4];
-                    var inputSize = _utf8.GetBytes(input.AsSpan(), inputBuffer);
+                    var inputSize = Utf8.GetBytes(input.AsSpan(), inputBuffer);
                     Span<byte> buffer = stackalloc byte[8192];
-                    if (sha512.TryComputeHash(inputBuffer.Slice(0, inputSize), buffer, out var size))
+                    if (sha512.TryComputeHash(inputBuffer[..inputSize], buffer, out var size))
                     {
-                        return Convert.ToBase64String(buffer.Slice(0, size), Base64FormattingOptions.None);
+                        return Convert.ToBase64String(buffer[..size], Base64FormattingOptions.None);
                     }
                 }
                 // fallback to heap allocation
-                return Convert.ToBase64String(sha512.ComputeHash(_utf8.GetBytes($"{password}:{salt}")));
+                return Convert.ToBase64String(sha512.ComputeHash(Utf8.GetBytes($"{password}:{salt}")));
             }
             finally
             {
@@ -79,7 +76,7 @@ namespace NCoreUtils.OAuth2
                     Span<byte> buffer = stackalloc byte[8192];
                     if (sha512.TryComputeHash(source, buffer, out var size))
                     {
-                        return Convert.ToBase64String(buffer.Slice(0, size), Base64FormattingOptions.None);
+                        return Convert.ToBase64String(buffer[..size], Base64FormattingOptions.None);
                     }
                 }
                 // fallback to heap allocation

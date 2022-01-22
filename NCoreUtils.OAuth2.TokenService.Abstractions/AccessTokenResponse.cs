@@ -1,19 +1,48 @@
 using System;
+using System.Text.Json.Serialization;
+using NCoreUtils.OAuth2.Internal;
 
 namespace NCoreUtils.OAuth2
 {
+    // TODO: use record once STJ bug is resolved.
     public class AccessTokenResponse : IEquatable<AccessTokenResponse>
     {
+        public static bool operator==(AccessTokenResponse? a, AccessTokenResponse? b)
+        {
+            if (a is null)
+            {
+                return b is null;
+            }
+            return a.Equals(b);
+        }
+
+        public static bool operator!=(AccessTokenResponse? a, AccessTokenResponse? b)
+        {
+            if (a is null)
+            {
+                return b is not null;
+            }
+            return !a.Equals(b);
+        }
+
+        [JsonPropertyName("access_token")]
         public string AccessToken { get; }
 
+        [JsonPropertyName("token_type")]
         public string? TokenType { get; }
 
+        [JsonPropertyName("expires_in")]
+        [JsonConverter(typeof(TimeSpanSecondsConverter))]
         public TimeSpan ExpiresIn { get; }
 
+        [JsonPropertyName("refresh_token")]
         public string? RefreshToken { get; }
 
+        [JsonPropertyName("scope")]
+        [JsonConverter(typeof(ScopeCollectionConverter))]
         public ScopeCollection Scope { get; }
 
+        [JsonConstructor]
         public AccessTokenResponse(string accessToken, string? tokenType, TimeSpan expiresIn, string? refreshToken, ScopeCollection scope)
         {
             AccessToken = accessToken;
@@ -23,7 +52,7 @@ namespace NCoreUtils.OAuth2
             Scope = scope;
         }
 
-        public bool Equals(AccessTokenResponse other)
+        public bool Equals(AccessTokenResponse? other)
             => other != null
                 && AccessToken == other.AccessToken
                 && TokenType == other.TokenType

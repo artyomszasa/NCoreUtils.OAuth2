@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,13 +14,16 @@ namespace NCoreUtils.OAuth2
             this IServiceCollection services,
             IEndpointConfiguration configuration)
             => services
+#if NET6_0_OR_GREATER
+                .AddSingletonUntrimmed<ITokenService, TokenServiceEndpointsWrapper>()
+#else
                 .AddSingleton<ITokenService, TokenServiceEndpointsWrapper>()
+#endif
                 .AddProtoClient<ITokenServiceEndpoints>(
                     configuration,
                     builder =>
                     {
                         builder.ApplyDefaultTokenServiceConfiguration();
-                        builder.DefaultError = new OAuth2ClientError();
                         var introspect = builder.Methods.First(m => m.Method.Name == nameof(ITokenServiceEndpoints.IntrospectAsync));
                         introspect.Input = new IntrospectionClientInput();
                     }
@@ -31,6 +35,8 @@ namespace NCoreUtils.OAuth2
             return services.AddTokenServiceClient(configuration);
         }
 
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(AspNetCore.Proto.EndpointConfiguration))]
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Dynamic dependency.")]
         public static IServiceCollection AddTokenServiceClient(this IServiceCollection services, IConfiguration configuration)
         {
             var config = configuration.Get<AspNetCore.Proto.EndpointConfiguration>()
