@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using NCoreUtils.OAuth2.Internal;
 
@@ -5,7 +6,7 @@ namespace NCoreUtils.OAuth2
 {
     public static class ServiceCollectionTokenServiceExtensions
     {
-        public static IServiceCollection AddTokenService<TTokenEncryption, TTokenRepository>(
+        public static IServiceCollection AddTokenService<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TTokenEncryption, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TTokenRepository>(
             this IServiceCollection services,
             ITokenServiceConfiguration configuration,
             ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,

@@ -6,7 +6,7 @@ namespace NCoreUtils.OAuth2
 {
     public static class ServiceCollectionLoginProviderClientExtensions
     {
-        public static IServiceCollection AddTokenServiceClient(
+        public static IServiceCollection AddLoginProviderClient(
             this IServiceCollection services,
             IEndpointConfiguration configuration)
             => services.AddProtoClient<ILoginProvider>(configuration, b => b.ApplyDefaultLoginProviderConfiguration());

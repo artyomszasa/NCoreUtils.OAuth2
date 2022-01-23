@@ -25,7 +25,9 @@ namespace NCoreUtils.AspNetCore.OAuth2
             return opts;
         }
 
+#pragma warning disable IDE0052
         private readonly IWebHostEnvironment _env;
+#pragma warning restore IDE0052
 
         private readonly IConfiguration _configuration;
 
@@ -36,7 +38,10 @@ namespace NCoreUtils.AspNetCore.OAuth2
         }
 
         [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026:RequiresUnreferencedCode",
-              Justification = "Configuration types are included in TrimmerRoots.xml")]
+              Justification = "Configuration types are preserved through dynamic dependency.")]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(LoginProviderConfiguration))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(TokenServiceConfiguration))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(AesTokenEncryptionConfiguration))]
         public void ConfigureServices(IServiceCollection services)
         {
             var providers = _configuration.GetSection("LoginProviders")
@@ -48,7 +53,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 ?? throw new InvalidOperationException("No token service configuration present.");
 
             var aesConfiguration = _configuration.GetSection("Aes")
-                .Get<RijndaelTokenEncryptionConfiguration>()
+                .Get<AesTokenEncryptionConfiguration>()
                 ?? throw new InvalidOperationException("No aes configuration present.");
 
             services
@@ -59,7 +64,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 // token service
                 .AddSingleton(aesConfiguration)
                 .AddFirestoreTokenRepository(_configuration["Google:ProjectId"])
-                .AddTokenService<RijndaelTokenEncryption, FirestoreTokenRepository>(tokenServiceConfiguration)
+                .AddTokenService<AesTokenEncryption, FirestoreTokenRepository>(tokenServiceConfiguration)
                 // scoped login provider client
                 .AddScopedProtoClient<ILoginProvider>(
                     serviceProvider =>

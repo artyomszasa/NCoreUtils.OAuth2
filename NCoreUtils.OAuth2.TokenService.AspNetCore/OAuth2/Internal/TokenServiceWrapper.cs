@@ -26,11 +26,11 @@ namespace NCoreUtils.OAuth2.Internal
             string? refreshToken,
             ScopeCollection scope,
             CancellationToken cancellationToken)
-            => (grantType switch
+            => grantType switch
             {
-                "password" => _tokenService.PasswordGrantAsync(username!, password!, scope, cancellationToken),
-                "refresh_token" => _tokenService.RefreshTokenAsync(refreshToken!, scope, cancellationToken),
-                _ => _tokenService.ExtensionGrantAsync(grantType, passcode!, scope, cancellationToken)
-            }).AsTask();
+                "password" => _tokenService.PasswordGrantAsync(username!, password!, scope, cancellationToken).AsTask(),
+                "refresh_token" => _tokenService.RefreshTokenAsync(refreshToken!, scope, cancellationToken).AsTask(),
+                _ => _tokenService.ExtensionGrantAsync(grantType, passcode!, scope, cancellationToken).AsTask()
+            };
     }
 }

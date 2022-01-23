@@ -24,6 +24,7 @@ namespace NCoreUtils.OAuth2
                     builder =>
                     {
                         builder.ApplyDefaultTokenServiceConfiguration();
+                        builder.DefaultError = new OAuth2ServiceError();
                         var introspect = builder.Methods.First(m => m.Method.Name == nameof(ITokenServiceEndpoints.IntrospectAsync));
                         introspect.Input = new IntrospectionClientInput();
                     }

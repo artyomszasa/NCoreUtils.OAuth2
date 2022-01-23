@@ -3,4 +3,7 @@
     <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Internal.Abstractions\NCoreUtils.OAuth2.TokenService.Internal.Abstractions.csproj" />
+  </ItemGroup>
 </Project>

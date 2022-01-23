@@ -7,9 +7,10 @@ namespace NCoreUtils.OAuth2
 {
     public class FormTokenHandler : ITokenHandler
     {
-        private static bool IsFormCompatibleContentType(string contentType)
-            => contentType.StartsWith("application/x-www-form-urlencoded", true, CultureInfo.InvariantCulture)
-                || contentType.StartsWith("multipart/form-data", true, CultureInfo.InvariantCulture);
+        private static bool IsFormCompatibleContentType(string? contentType)
+            =>  contentType is not null
+                && (contentType.StartsWith("application/x-www-form-urlencoded", true, CultureInfo.InvariantCulture)
+                || contentType.StartsWith("multipart/form-data", true, CultureInfo.InvariantCulture));
 
         public string? CurrentToken { get; set; }
 

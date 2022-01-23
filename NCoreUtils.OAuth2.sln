@@ -37,8 +37,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.AspNetCore.OAuth
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.AspNetCore.OAuth2.Standalone", "NCoreUtils.AspNetCore.OAuth2.Standalone\NCoreUtils.AspNetCore.OAuth2.Standalone.csproj", "{A3C56E16-CD01-4D25-AF42-70F2FC19BA36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.OAuth2.TokenService.Encryption.Rijndael", "NCoreUtils.OAuth2.TokenService.Encryption.Rijndael\NCoreUtils.OAuth2.TokenService.Encryption.Rijndael.csproj", "{39D8A568-6A9B-4859-8D5D-9E82FBB171E7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.OAuth2.TokenService.TokenRepositories.GoogleCloudFirestore", "NCoreUtils.OAuth2.TokenService.TokenRepositories.GoogleCloudFirestore\NCoreUtils.OAuth2.TokenService.TokenRepositories.GoogleCloudFirestore.csproj", "{098EBFA6-25E7-4D0E-88BF-C6D2152E1284}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.OAuth2.TokenService.TokenRepositories.EntityFrameworkCore", "NCoreUtils.OAuth2.TokenService.TokenRepositories.EntityFrameworkCore\NCoreUtils.OAuth2.TokenService.TokenRepositories.EntityFrameworkCore.csproj", "{FC2A41CE-B96D-429E-B74B-9E07DBD5F7E5}"
@@ -46,6 +44,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.AspNetCore.OAuth2.Standalone.MySQL", "NCoreUtils.AspNetCore.OAuth2.Standalone.MySQL\NCoreUtils.AspNetCore.OAuth2.Standalone.MySQL.csproj", "{D9A3876D-26A5-4C56-A126-D4B5ED575C1B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.AspNetCore.OAuth2.Standalone.Npgsql", "NCoreUtils.AspNetCore.OAuth2.Standalone.Npgsql\NCoreUtils.AspNetCore.OAuth2.Standalone.Npgsql.csproj", "{5BC1E1F1-C3C0-486A-B390-E6F55E8F2632}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.OAuth2.TokenService.Encryption.Aes", "NCoreUtils.OAuth2.TokenService.Encryption.Aes\NCoreUtils.OAuth2.TokenService.Encryption.Aes.csproj", "{683A8D1E-8099-417D-A645-D05C2390EB75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -264,18 +264,6 @@ Global
 		{A3C56E16-CD01-4D25-AF42-70F2FC19BA36}.Release|x64.Build.0 = Release|Any CPU
 		{A3C56E16-CD01-4D25-AF42-70F2FC19BA36}.Release|x86.ActiveCfg = Release|Any CPU
 		{A3C56E16-CD01-4D25-AF42-70F2FC19BA36}.Release|x86.Build.0 = Release|Any CPU
-		{39D8A568-6A9B-4859-8D5D-9E82FBB171E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{39D8A568-6A9B-4859-8D5D-9E82FBB171E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{39D8A568-6A9B-4859-8D5D-9E82FBB171E7}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{39D8A568-6A9B-4859-8D5D-9E82FBB171E7}.Debug|x64.Build.0 = Debug|Any CPU
-		{39D8A568-6A9B-4859-8D5D-9E82FBB171E7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{39D8A568-6A9B-4859-8D5D-9E82FBB171E7}.Debug|x86.Build.0 = Debug|Any CPU
-		{39D8A568-6A9B-4859-8D5D-9E82FBB171E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{39D8A568-6A9B-4859-8D5D-9E82FBB171E7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{39D8A568-6A9B-4859-8D5D-9E82FBB171E7}.Release|x64.ActiveCfg = Release|Any CPU
-		{39D8A568-6A9B-4859-8D5D-9E82FBB171E7}.Release|x64.Build.0 = Release|Any CPU
-		{39D8A568-6A9B-4859-8D5D-9E82FBB171E7}.Release|x86.ActiveCfg = Release|Any CPU
-		{39D8A568-6A9B-4859-8D5D-9E82FBB171E7}.Release|x86.Build.0 = Release|Any CPU
 		{098EBFA6-25E7-4D0E-88BF-C6D2152E1284}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{098EBFA6-25E7-4D0E-88BF-C6D2152E1284}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{098EBFA6-25E7-4D0E-88BF-C6D2152E1284}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -324,5 +312,17 @@ Global
 		{5BC1E1F1-C3C0-486A-B390-E6F55E8F2632}.Release|x64.Build.0 = Release|Any CPU
 		{5BC1E1F1-C3C0-486A-B390-E6F55E8F2632}.Release|x86.ActiveCfg = Release|Any CPU
 		{5BC1E1F1-C3C0-486A-B390-E6F55E8F2632}.Release|x86.Build.0 = Release|Any CPU
+		{683A8D1E-8099-417D-A645-D05C2390EB75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{683A8D1E-8099-417D-A645-D05C2390EB75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{683A8D1E-8099-417D-A645-D05C2390EB75}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{683A8D1E-8099-417D-A645-D05C2390EB75}.Debug|x64.Build.0 = Debug|Any CPU
+		{683A8D1E-8099-417D-A645-D05C2390EB75}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{683A8D1E-8099-417D-A645-D05C2390EB75}.Debug|x86.Build.0 = Debug|Any CPU
+		{683A8D1E-8099-417D-A645-D05C2390EB75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{683A8D1E-8099-417D-A645-D05C2390EB75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{683A8D1E-8099-417D-A645-D05C2390EB75}.Release|x64.ActiveCfg = Release|Any CPU
+		{683A8D1E-8099-417D-A645-D05C2390EB75}.Release|x64.Build.0 = Release|Any CPU
+		{683A8D1E-8099-417D-A645-D05C2390EB75}.Release|x86.ActiveCfg = Release|Any CPU
+		{683A8D1E-8099-417D-A645-D05C2390EB75}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

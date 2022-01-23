@@ -34,7 +34,7 @@ namespace NCoreUtils.OAuth2
         }
 
         protected virtual Token CreateAccessToken(DateTimeOffset now, LoginIdentity identity)
-            => new Token(
+            => new(
                 tokenType: TokenTypes.AccessToken,
                 sub: identity.Sub,
                 issuer: identity.Issuer,
@@ -46,7 +46,7 @@ namespace NCoreUtils.OAuth2
             );
 
         protected virtual Token CreateRefreshToken(DateTimeOffset now, LoginIdentity identity)
-            => new Token(
+            => new(
                 tokenType: TokenTypes.RefreshToken,
                 sub: identity.Sub,
                 issuer: identity.Issuer,

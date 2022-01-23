@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 using NCoreUtils.OAuth2.Internal;
@@ -14,11 +15,11 @@ namespace NCoreUtils.OAuth2.Unit
         public void EqualityTest()
         {
             ScopeCollection def = default;
-            ScopeCollection @null = new ScopeCollection(default(IEnumerable<string>));
-            ScopeCollection empty = new ScopeCollection(Enumerable.Empty<string>());
-            ScopeCollection nonEmpty0 = new ScopeCollection(new [] { "xxx" });
+            ScopeCollection @null = new(default(IEnumerable<string>));
+            ScopeCollection empty = new(Enumerable.Empty<string>());
+            ScopeCollection nonEmpty0 = new(new [] { "xxx" });
             ScopeCollection copy = nonEmpty0;
-            ScopeCollection nonEmpty1 = new ScopeCollection(new [] { "xxx" });
+            ScopeCollection nonEmpty1 = new(new [] { "xxx" });
             #pragma warning disable xUnit2000
             Assert.Equal(def, default);
             #pragma warning restore xUnit2000
@@ -44,11 +45,11 @@ namespace NCoreUtils.OAuth2.Unit
         public void EmptynessTest()
         {
             ScopeCollection def = default;
-            ScopeCollection @null = new ScopeCollection(default(IEnumerable<string>));
-            ScopeCollection empty = new ScopeCollection(Enumerable.Empty<string>());
-            ScopeCollection nonEmpty0 = new ScopeCollection(new [] { "xxx" });
+            ScopeCollection @null = new(default(IEnumerable<string>));
+            ScopeCollection empty = new(Enumerable.Empty<string>());
+            ScopeCollection nonEmpty0 = new(new [] { "xxx" });
             ScopeCollection copy = nonEmpty0;
-            ScopeCollection nonEmpty1 = new ScopeCollection(new [] { "xxx" });
+            ScopeCollection nonEmpty1 = new(new [] { "xxx" });
             Assert.True(def.IsEmpty);
             Assert.True(@null.IsEmpty);
             Assert.True(empty.IsEmpty);
@@ -58,12 +59,13 @@ namespace NCoreUtils.OAuth2.Unit
         }
 
         [Fact]
+        [SuppressMessage("Performance", "CA1829")]
         public void EnumerationTest()
         {
             ScopeCollection def = default;
-            ScopeCollection @null = new ScopeCollection(default(IEnumerable<string>));
-            ScopeCollection empty = new ScopeCollection(Enumerable.Empty<string>());
-            ScopeCollection nonEmpty = new ScopeCollection(new [] { "xxx" });
+            ScopeCollection @null = new(default(IEnumerable<string>));
+            ScopeCollection empty = new(Enumerable.Empty<string>());
+            ScopeCollection nonEmpty = new(new [] { "xxx" });
             Assert.Equal(0, def.Count());
             Assert.Equal(0, @null.Count());
             Assert.Equal(0, empty.Count());
@@ -90,39 +92,32 @@ namespace NCoreUtils.OAuth2.Unit
             Assert.Equal(string.Join(' ', scopes), new string(buffer.AsSpan()));
             if (buffer.Length > 0)
             {
-                Assert.Throws<InsufficientBufferSizeException>(() => scopes.Emplace(buffer.AsSpan().Slice(0, buffer.Length - 1)));
+                Assert.Throws<InsufficientBufferSizeException>(() => scopes.Emplace(buffer.AsSpan()[..(buffer.Length - 1)]));
             }
         }
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(1)]
-        [InlineData(5)]
-        [InlineData(2 * 1024)]
-        [InlineData(8 * 1024)]
-        public void JsonReserializeTests(int count)
-        {
-            var scopes = count == 0 ? default : new ScopeCollection(Enumerable.Range(0, count).Select(e => $"scope-{e}"));
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                Converters = { ScopeCollectionConverter.Instance }
-            };
-            Assert.Equal(scopes, JsonSerializer.Deserialize<ScopeCollection>(JsonSerializer.Serialize(scopes, options), options));
-        }
+        // [Theory]
+        // [InlineData(0)]
+        // [InlineData(1)]
+        // [InlineData(5)]
+        // [InlineData(2 * 1024)]
+        // [InlineData(8 * 1024)]
+        // public void JsonReserializeTests(int count)
+        // {
+        //     var scopes = count == 0 ? default : new ScopeCollection(Enumerable.Range(0, count).Select(e => $"scope-{e}"));
+        //     Assert.Equal(scopes, JsonSerializer.Deserialize(JsonSerializer.Serialize(scopes, typeInfo), typeInfo));
+        // }
 
         [Fact]
         public void JsonSerializationTests()
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                Converters = { ScopeCollectionConverter.Instance }
-            };
-            Assert.Equal(default(ScopeCollection), JsonSerializer.Deserialize<ScopeCollection>("null", options));
-            Assert.Equal(new ScopeCollection("a", "b"), JsonSerializer.Deserialize<ScopeCollection>("[\"a\",\"b\"]", options));
-            Assert.ThrowsAny<JsonException>(() => JsonSerializer.Deserialize<ScopeCollection>("{}", options));
-            var exn = Assert.ThrowsAny<JsonException>(() => JsonSerializer.Deserialize<ScopeCollection>("[\"a\", 1]", options));
+            var typeInfo = LoginProviderSerializationContext.Default.ScopeCollection;
+            Assert.Equal(default, JsonSerializer.Deserialize("null", typeInfo));
+            Assert.Equal(new ScopeCollection("a", "b"), JsonSerializer.Deserialize("\"a b\"", typeInfo));
+            // NOTE: for compatibility reasons and should be removed in future (!)
+            Assert.Equal(new ScopeCollection("a", "b"), JsonSerializer.Deserialize("[\"a\",\"b\"]", typeInfo));
+            Assert.ThrowsAny<JsonException>(() => JsonSerializer.Deserialize("{}", typeInfo));
+            var exn = Assert.ThrowsAny<JsonException>(() => JsonSerializer.Deserialize("[\"a\", 1]", typeInfo));
             Assert.Equal("$", exn.Path);
             Assert.Equal(0, exn.LineNumber);
             Assert.Equal(7, exn.BytePositionInLine);

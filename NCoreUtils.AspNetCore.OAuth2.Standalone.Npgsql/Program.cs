@@ -22,7 +22,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
             }
             else
             {
-                return new IPEndPoint(IPAddress.Parse(input.Substring(0, portIndex)), int.Parse(input.Substring(portIndex + 1)));
+                return new IPEndPoint(IPAddress.Parse(input.AsSpan(0, portIndex)), int.Parse(input.AsSpan()[(portIndex + 1)..]));
             }
         }
 
@@ -58,7 +58,9 @@ namespace NCoreUtils.AspNetCore.OAuth2
             CreateHostBuilder(args).Build().Run();
         }
 
+#pragma warning disable IDE0060
         public static IHostBuilder CreateHostBuilder(string[] args)
+#pragma warning restore IDE0060
         {
             var configuration = CreateConfiguration();
             return new HostBuilder()

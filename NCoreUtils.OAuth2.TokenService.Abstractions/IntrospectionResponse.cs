@@ -43,7 +43,6 @@ namespace NCoreUtils.OAuth2
         public bool Active { get; }
 
         [JsonPropertyName("scope")]
-        [JsonConverter(typeof(ScopeCollectionConverter))]
         public ScopeCollection Scope { get; }
 
         [JsonPropertyName("client_id")]

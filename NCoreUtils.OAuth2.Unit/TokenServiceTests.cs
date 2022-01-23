@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -17,6 +18,7 @@ namespace NCoreUtils.OAuth2.Unit
     {
         private sealed class Startup<TTokenEncryption> where TTokenEncryption : class, ITokenEncryption
         {
+            [SuppressMessage("Performance", "CA1822")]
             public void ConfigureServices(IServiceCollection services)
             {
                 var loginProvider = new LoginProvider(new[]
@@ -26,7 +28,7 @@ namespace NCoreUtils.OAuth2.Unit
                 services
                     .AddLogging(l => l.AddConsole().SetMinimumLevel(LogLevel.Trace))
                     .AddSingleton<ILoginProvider>(loginProvider)
-                    .AddSingleton<RijndaelTokenEncryptionConfiguration>(new RijndaelTokenEncryptionConfiguration { IV = "fRhAu1dtoC9cIQf4+kF68A==", Key = "c0eLpWb+GZAb0lf3chxWsU16pK4r4a5gZEWxpIdqDHg=" })
+                    .AddSingleton(new AesTokenEncryptionConfiguration { IV = "fRhAu1dtoC9cIQf4+kF68A==", Key = "c0eLpWb+GZAb0lf3chxWsU16pK4r4a5gZEWxpIdqDHg=" })
                     .AddTokenService<TTokenEncryption, TokenRepository>(new TokenServiceConfiguration
                     {
                         RefreshTokenExpiry = TimeSpan.FromHours(240),
@@ -35,6 +37,7 @@ namespace NCoreUtils.OAuth2.Unit
                     .AddRouting();
             }
 
+            [SuppressMessage("Performance", "CA1822")]
             public void Configure(IApplicationBuilder app)
             {
                 app
@@ -60,7 +63,7 @@ namespace NCoreUtils.OAuth2.Unit
 
         private const string Email = "test@example.com";
 
-        private static readonly ScopeCollection TestScopes = new ScopeCollection(new[] { "test" });
+        private static readonly ScopeCollection TestScopes = new(new[] { "test" });
 
         [Fact]
         public async Task NoopPasswordGrantTest()
@@ -129,13 +132,13 @@ namespace NCoreUtils.OAuth2.Unit
         }
 
         [Fact]
-        public async Task RijndaelPasswordGrantTest()
+        public async Task AesPasswordGrantTest()
         {
             // server side
-            using var appFactory = new StandaloneWebApplicationFactory<Startup<RijndaelTokenEncryption>>();
+            using var appFactory = new StandaloneWebApplicationFactory<Startup<AesTokenEncryption>>();
             // client side
             var services = new ServiceCollection()
-                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<RijndaelTokenEncryption>>(appFactory))
+                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<AesTokenEncryption>>(appFactory))
                 .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
                 .BuildServiceProvider();
             try
@@ -162,13 +165,13 @@ namespace NCoreUtils.OAuth2.Unit
         }
 
         [Fact]
-        public async Task RijndaelExtensionGrantTest()
+        public async Task AesExtensionGrantTest()
         {
             // server side
-            using var appFactory = new StandaloneWebApplicationFactory<Startup<RijndaelTokenEncryption>>();
+            using var appFactory = new StandaloneWebApplicationFactory<Startup<AesTokenEncryption>>();
             // client side
             var services = new ServiceCollection()
-                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<RijndaelTokenEncryption>>(appFactory))
+                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<AesTokenEncryption>>(appFactory))
                 .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
                 .BuildServiceProvider();
             try
@@ -195,13 +198,13 @@ namespace NCoreUtils.OAuth2.Unit
         }
 
         [Fact]
-        public async Task CompressedRijndaelPasswordGrantTest()
+        public async Task CompressedAesPasswordGrantTest()
         {
             // server side
-            using var appFactory = new StandaloneWebApplicationFactory<Startup<CompressedRijndaelTokenEncryption>>();
+            using var appFactory = new StandaloneWebApplicationFactory<Startup<CompressedAesTokenEncryption>>();
             // client side
             var services = new ServiceCollection()
-                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<CompressedRijndaelTokenEncryption>>(appFactory))
+                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<CompressedAesTokenEncryption>>(appFactory))
                 .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
                 .BuildServiceProvider();
             try
@@ -228,13 +231,13 @@ namespace NCoreUtils.OAuth2.Unit
         }
 
         [Fact]
-        public async Task CompressedRijndaelExtensionGrantTest()
+        public async Task CompressedAesExtensionGrantTest()
         {
             // server side
-            using var appFactory = new StandaloneWebApplicationFactory<Startup<CompressedRijndaelTokenEncryption>>();
+            using var appFactory = new StandaloneWebApplicationFactory<Startup<CompressedAesTokenEncryption>>();
             // client side
             var services = new ServiceCollection()
-                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<CompressedRijndaelTokenEncryption>>(appFactory))
+                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<CompressedAesTokenEncryption>>(appFactory))
                 .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
                 .BuildServiceProvider();
             try
@@ -264,10 +267,10 @@ namespace NCoreUtils.OAuth2.Unit
         public async Task InvalidToken()
         {
             // server side
-            using var appFactory = new StandaloneWebApplicationFactory<Startup<RijndaelTokenEncryption>>();
+            using var appFactory = new StandaloneWebApplicationFactory<Startup<AesTokenEncryption>>();
             // client side
             var services = new ServiceCollection()
-                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<RijndaelTokenEncryption>>(appFactory))
+                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<AesTokenEncryption>>(appFactory))
                 .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
                 .BuildServiceProvider();
             try
@@ -285,10 +288,10 @@ namespace NCoreUtils.OAuth2.Unit
         public async Task ExpiredAccessToken()
         {
             // server side
-            using var appFactory = new StandaloneWebApplicationFactory<Startup<RijndaelTokenEncryption>>();
+            using var appFactory = new StandaloneWebApplicationFactory<Startup<AesTokenEncryption>>();
             // client side
             var services = new ServiceCollection()
-                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<RijndaelTokenEncryption>>(appFactory))
+                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<AesTokenEncryption>>(appFactory))
                 .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
                 .BuildServiceProvider();
             try
@@ -306,10 +309,10 @@ namespace NCoreUtils.OAuth2.Unit
         public async Task InvalidCredentials()
         {
             // server side
-            using var appFactory = new StandaloneWebApplicationFactory<Startup<RijndaelTokenEncryption>>();
+            using var appFactory = new StandaloneWebApplicationFactory<Startup<AesTokenEncryption>>();
             // client side
             var services = new ServiceCollection()
-                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<RijndaelTokenEncryption>>(appFactory))
+                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<AesTokenEncryption>>(appFactory))
                 .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
                 .BuildServiceProvider();
             try
@@ -327,10 +330,10 @@ namespace NCoreUtils.OAuth2.Unit
         public async Task InvalidUsernameOrPassword()
         {
             // server side
-            using var appFactory = new StandaloneWebApplicationFactory<Startup<RijndaelTokenEncryption>>();
+            using var appFactory = new StandaloneWebApplicationFactory<Startup<AesTokenEncryption>>();
             // client side
             var services = new ServiceCollection()
-                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<RijndaelTokenEncryption>>(appFactory))
+                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<AesTokenEncryption>>(appFactory))
                 .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
                 .BuildServiceProvider();
             try
@@ -348,10 +351,10 @@ namespace NCoreUtils.OAuth2.Unit
         public async Task InvalidRefreshToken()
         {
             // server side
-            using var appFactory = new StandaloneWebApplicationFactory<Startup<RijndaelTokenEncryption>>();
+            using var appFactory = new StandaloneWebApplicationFactory<Startup<AesTokenEncryption>>();
             // client side
             var services = new ServiceCollection()
-                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<RijndaelTokenEncryption>>(appFactory))
+                .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<AesTokenEncryption>>(appFactory))
                 .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
                 .BuildServiceProvider();
             try
@@ -394,6 +397,7 @@ namespace NCoreUtils.OAuth2.Unit
             }
         }
 
+#pragma warning disable SYSLIB0011, IL2026
         [Fact]
         public void ExceptionTest()
         {
@@ -402,17 +406,16 @@ namespace NCoreUtils.OAuth2.Unit
             var ex = new TokenServiceException("0", 0, "test");
 
             var str = ex.ToString();
-            BinaryFormatter bf = new BinaryFormatter();
-            using (MemoryStream ms = new MemoryStream())
-            {
-                bf.Serialize(ms, ex);
-                ms.Seek(0, 0);
-                var ex1 = (TokenServiceException)bf.Deserialize(ms);
-                Assert.Equal(str, ex1.ToString());
-                Assert.Equal(ex.DesiredStatusCode, ex1.DesiredStatusCode);
-                Assert.Equal(ex.ErrorCode, ex1.ErrorCode);
-                Assert.Equal(ex.Message, ex1.Message);
-            }
+            BinaryFormatter bf = new();
+            using MemoryStream ms = new();
+            bf.Serialize(ms, ex);
+            ms.Seek(0, 0);
+            var ex1 = (TokenServiceException)bf.Deserialize(ms);
+            Assert.Equal(str, ex1.ToString());
+            Assert.Equal(ex.DesiredStatusCode, ex1.DesiredStatusCode);
+            Assert.Equal(ex.ErrorCode, ex1.ErrorCode);
+            Assert.Equal(ex.Message, ex1.Message);
         }
+#pragma warning restore SYSLIB0011, IL2026
     }
 }

@@ -2,16 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
-#if !NETSTANDARD2_1
-using BitConverter = NCoreUtils.PolyfillBitConverter;
-#endif
 
 
 namespace NCoreUtils.OAuth2.Internal
 {
     public ref struct SpanWriter
     {
-        private static readonly UTF8Encoding _utf8 = new UTF8Encoding(false);
+        private static UTF8Encoding Utf8 { get; } = new(false);
 
         private readonly Span<byte> _buffer;
 
@@ -26,7 +23,7 @@ namespace NCoreUtils.OAuth2.Internal
         private Span<byte> Remaining
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _buffer.Slice(_position);
+            get => _buffer[_position..];
         }
 
         public int Written
@@ -73,14 +70,14 @@ namespace NCoreUtils.OAuth2.Internal
             {
                 return TryWriteInt32(0);
             }
-            Span<byte> buffer = stackalloc byte[_utf8.GetMaxByteCount(value.Length)];
-            var size = _utf8.GetBytes(value.AsSpan(), buffer);
+            Span<byte> buffer = stackalloc byte[Utf8.GetMaxByteCount(value.Length)];
+            var size = Utf8.GetBytes(value.AsSpan(), buffer);
             if (Available < size + sizeof(int))
             {
                 return false;
             }
             TryWriteInt32(size);
-            buffer.Slice(0, size).CopyTo(Remaining);
+            buffer[..size].CopyTo(Remaining);
             _position += size;
             return true;
         }

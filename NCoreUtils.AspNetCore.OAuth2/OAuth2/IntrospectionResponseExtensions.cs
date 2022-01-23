@@ -7,7 +7,10 @@ namespace NCoreUtils.OAuth2
     {
         public static IEnumerable<Claim> ReadClaims(this IntrospectionResponse data)
         {
-            yield return new Claim(ClaimTypes.Sid, data.Sub, ClaimValueTypes.String, data.Issuer);
+            if (data.Sub is not null)
+            {
+                yield return new Claim(ClaimTypes.Sid, data.Sub, ClaimValueTypes.String, data.Issuer);
+            }
             if (null != data.Username)
             {
                 yield return new Claim(ClaimTypes.Name, data.Username, ClaimValueTypes.String, data.Issuer);

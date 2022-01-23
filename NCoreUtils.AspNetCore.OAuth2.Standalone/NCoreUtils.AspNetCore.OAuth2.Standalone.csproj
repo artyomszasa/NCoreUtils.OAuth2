@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net6</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>NCoreUtils.AspNetCore.OAuth2</RootNamespace>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     <ServerGarbageCollection>false</ServerGarbageCollection>
@@ -10,20 +10,16 @@
     <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>link</TrimMode>
+    <NoWarn>IL2104</NoWarn>
   </PropertyGroup>
-  <ItemGroup>
-    <TrimmerRootDescriptor Include="TrimmerRoots.xml" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.AspNetCore\NCoreUtils.OAuth2.TokenService.AspNetCore.csproj" />
-    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Encryption.Rijndael\NCoreUtils.OAuth2.TokenService.Encryption.Rijndael.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Encryption.Aes\NCoreUtils.OAuth2.TokenService.Encryption.Aes.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.TokenRepositories.GoogleCloudFirestore\NCoreUtils.OAuth2.TokenService.TokenRepositories.GoogleCloudFirestore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="6.0.0" />
-    <PackageReference Include="NCoreUtils.AspNetCore.Logging" Version="3.1.0.1" />
-    <PackageReference Include="NCoreUtils.Logging.Google.Fluentd" Version="3.1.0.1" />
-    <PackageReference Include="System.Text.Encodings.Web" Version="6.0.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Logging" Version="6.0.0-alpha03" />
+    <PackageReference Include="NCoreUtils.Logging.Google.Fluentd" Version="6.0.0-alpha03" />
   </ItemGroup>
 </Project>

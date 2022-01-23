@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace NCoreUtils.OAuth2.Internal
 {
-    public class LazyService<T>
+    public class LazyService<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>
+        where T : notnull
     {
         private readonly Lazy<T> _instance;
 

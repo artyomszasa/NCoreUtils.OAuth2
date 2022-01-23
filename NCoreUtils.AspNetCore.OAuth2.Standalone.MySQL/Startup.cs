@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,10 +34,12 @@ namespace NCoreUtils.AspNetCore.OAuth2
         private static void ConfigureRest(RestConfigurationBuilder builder)
         {
             builder.AddEntity<RefreshToken>();
-            builder.ConfigureAccess(o => o.RestrictAll(user => user.Identity.IsAuthenticated && (user.IsInRole("admin") || user.IsInRole("website"))));
+            builder.ConfigureAccess(o => o.RestrictAll(user => user.Identity is not null && user.Identity.IsAuthenticated && (user.IsInRole("admin") || user.IsInRole("website"))));
         }
 
+#pragma warning disable IDE0052
         private readonly IWebHostEnvironment _env;
+#pragma warning restore IDE0052
 
         private readonly IConfiguration _configuration;
 
@@ -46,6 +49,11 @@ namespace NCoreUtils.AspNetCore.OAuth2
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
+        [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026:RequiresUnreferencedCode",
+              Justification = "Configuration types are preserved through dynamic dependency.")]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(LoginProviderConfiguration))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(TokenServiceConfiguration))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(AesTokenEncryptionConfiguration))]
         public void ConfigureServices(IServiceCollection services)
         {
             var providers = _configuration.GetSection("LoginProviders")
@@ -57,7 +65,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 ?? throw new InvalidOperationException("No token service configuration present.");
 
             var aesConfiguration = _configuration.GetSection("Aes")
-                .Get<RijndaelTokenEncryptionConfiguration>()
+                .Get<AesTokenEncryptionConfiguration>()
                 ?? throw new InvalidOperationException("No aes configuration present.");
 
             var connectionString = _configuration.GetConnectionString("Default")
@@ -73,7 +81,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .AddEntityFrameworkCoreTokenRepository(o => o
                     .UseMySQL(connectionString, b => b.MigrationsAssembly(typeof(Startup).Assembly.GetName().Name))
                 )
-                .AddTokenService<RijndaelTokenEncryption, EntityFrameworkCoreTokenRepository>(tokenServiceConfiguration)
+                .AddTokenService<AesTokenEncryption, EntityFrameworkCoreTokenRepository>(tokenServiceConfiguration)
                 // scoped login provider client
                 .AddScopedProtoClient<ILoginProvider>(
                     serviceProvider =>
@@ -92,7 +100,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 // DATA query for REST
                 .AddDataQueryServices(_ => {})
                 // JSON options for REST requests
-                .AddTransient<JsonSerializerOptions>(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<JsonSerializerOptions>>().CurrentValue)
+                .AddTransient(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<JsonSerializerOptions>>().CurrentValue)
                 // Authorization for REST requests
                 .AddScoped<ITokenHandler, BearerTokenHandler>()
                 .AddAuthentication(OAuth2AuthenticationSchemeOptions.Name)

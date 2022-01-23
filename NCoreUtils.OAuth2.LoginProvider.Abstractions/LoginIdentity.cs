@@ -21,7 +21,6 @@ namespace NCoreUtils.OAuth2
 
         public string? Email { get; }
 
-        [JsonConverter(typeof(ScopeCollectionConverter))]
         public ScopeCollection Scopes { get; }
 
         [JsonConstructor]

@@ -22,7 +22,7 @@ namespace NCoreUtils.OAuth2
         }
 
         public ValueTask PersistRefreshTokenAsync(Token token, CancellationToken cancellationToken = default)
-            => new ValueTask(Repository.PersistAsync(new RefreshToken(
+            => new(Repository.PersistAsync(new RefreshToken(
                 default!,
                 token.Sub,
                 token.Issuer,

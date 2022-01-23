@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Authentication;
 using NCoreUtils.OAuth2;
 
@@ -11,7 +12,8 @@ namespace NCoreUtils.AspNetCore
             return builder;
         }
 
-        public static AuthenticationBuilder AddCustomRemoteOAuth2AuthenticationScheme<TAuthenticationHandler>(this AuthenticationBuilder builder)
+        public static AuthenticationBuilder AddCustomRemoteOAuth2AuthenticationScheme<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TAuthenticationHandler>(
+            this AuthenticationBuilder builder)
             where TAuthenticationHandler : OAuth2AuthenticationHandler
         {
             builder.AddScheme<OAuth2AuthenticationSchemeOptions, TAuthenticationHandler>(OAuth2AuthenticationSchemeOptions.Name, _ => { });

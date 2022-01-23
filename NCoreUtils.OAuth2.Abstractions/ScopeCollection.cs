@@ -5,13 +5,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using NCoreUtils.Memory;
+using NCoreUtils.OAuth2.Internal;
 
 namespace NCoreUtils.OAuth2;
 /// <summary>
 /// Scope collection that distinguishes between no value and empty value.
 /// </summary>
+[JsonConverter(typeof(ScopeCollectionConverter))]
 public struct ScopeCollection : IReadOnlyCollection<string>, IEquatable<ScopeCollection>, IEmplaceable<ScopeCollection>
 {
     [ExcludeFromCodeCoverage]

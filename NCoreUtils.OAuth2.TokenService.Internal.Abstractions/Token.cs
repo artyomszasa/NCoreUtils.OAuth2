@@ -9,11 +9,7 @@ namespace NCoreUtils.OAuth2
 {
     public class Token : IEquatable<Token>
     {
-        #if NETSTANDARD2_1
         public static bool TryReadFrom(ReadOnlySpan<byte> buffer, [NotNullWhen(true)] out Token? token)
-        #else
-        public static bool TryReadFrom(ReadOnlySpan<byte> buffer, out Token token)
-        #endif
         {
             var reader = new SpanReader(buffer);
             if (reader.TryReadUtf8String(out var tokenType)
@@ -36,11 +32,7 @@ namespace NCoreUtils.OAuth2
                     new DateTimeOffset(expiresAtTicks, TimeSpan.Zero));
                 return true;
             }
-            #if NETSTANDARD2_1
             token = default;
-            #else
-            token = default!;
-            #endif
             return false;
         }
 
@@ -127,8 +119,8 @@ namespace NCoreUtils.OAuth2
             writer.Write(ExpiresAt.UtcTicks);
         }
 
-        public bool Equals(Token other)
-            => null != other
+        public bool Equals(Token? other)
+            => other is not null
                 && TokenType == other.TokenType
                 && Sub == other.Sub
                 && Issuer == other.Issuer
