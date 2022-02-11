@@ -33,7 +33,7 @@
     <PackageReference Include="Google.Apis" Version="1.41.1" />
     <PackageReference Include="Google.Apis.Auth" Version="1.41.1" />
     <PackageReference Include="Google.Apis.Core" Version="1.41.1" />
-    <PackageReference Include="Google.Protobuf" Version="3.9.2" />
+    <PackageReference Include="Google.Protobuf" Version="3.15.0" />
     <PackageReference Include="Grpc.Auth" Version="1.22.0" />
     <PackageReference Include="Grpc.Core" Version="1.22.0" />
     <PackageReference Update="FSharp.Core" Version="4.7.0" />
