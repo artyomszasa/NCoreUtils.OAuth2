@@ -10,6 +10,6 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Shared\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.Proto" Version="6.0.0-beta00" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Proto" Version="6.0.0-beta01" />
   </ItemGroup>
 </Project>

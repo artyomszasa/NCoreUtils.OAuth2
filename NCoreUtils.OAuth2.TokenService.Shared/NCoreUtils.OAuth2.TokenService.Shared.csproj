@@ -4,7 +4,7 @@
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.Proto.Abstractions" Version="6.0.0-beta00" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Proto.Abstractions" Version="6.0.0-beta01" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Abstractions\NCoreUtils.OAuth2.TokenService.Abstractions.csproj" />

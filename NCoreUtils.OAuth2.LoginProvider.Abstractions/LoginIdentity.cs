@@ -13,14 +13,19 @@ namespace NCoreUtils.OAuth2
 
         private const int MaxCharBufferPoolAllocSize = 32 * 1024;
 
+        [JsonPropertyName("sub")]
         public string Sub { get; }
 
+        [JsonPropertyName("issuer")]
         public string Issuer { get; }
 
+        [JsonPropertyName("name")]
         public string Name { get; }
 
+        [JsonPropertyName("email")]
         public string? Email { get; }
 
+        [JsonPropertyName("scopes")]
         public ScopeCollection Scopes { get; }
 
         [JsonConstructor]

@@ -8,8 +8,8 @@ namespace NCoreUtils.OAuth2.Internal
         {
             builder.Path = prefix ?? string.Empty;
             builder.NamingPolicy = NamingConvention.SnakeCase;
-            builder.DefaultOutput = OutputType.Json(TokenServiceJsonSerializerContext.Default);
-            builder.DefaultError = ErrorType.Json(TokenServiceJsonSerializerContext.Default);
+            builder.DefaultOutput = OutputType.Json<TokenServiceJsonSerializerContext>();
+            builder.DefaultError = ErrorType.Json<TokenServiceJsonSerializerContext>();
             builder.DefaultInput = InputType.UrlEncodedForm(default);
         }
     }
