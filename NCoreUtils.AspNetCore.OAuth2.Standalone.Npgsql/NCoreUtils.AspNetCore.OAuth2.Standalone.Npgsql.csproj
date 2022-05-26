@@ -12,7 +12,8 @@
     <FxNugetVersion>$(Fx6NugetVersion)</FxNugetVersion>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.Client\NCoreUtils.OAuth2.LoginProvider.Client.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService\NCoreUtils.OAuth2.TokenService.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.AspNetCore\NCoreUtils.OAuth2.TokenService.AspNetCore.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Encryption.Aes\NCoreUtils.OAuth2.TokenService.Encryption.Aes.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.TokenRepositories.EntityFrameworkCore\NCoreUtils.OAuth2.TokenService.TokenRepositories.EntityFrameworkCore.csproj" />

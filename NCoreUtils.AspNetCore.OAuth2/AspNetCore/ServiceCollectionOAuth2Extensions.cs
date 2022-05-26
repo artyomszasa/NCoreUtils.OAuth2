@@ -5,8 +5,9 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using NCoreUtils.AspNetCore.Proto;
+using NCoreUtils.Proto;
 using NCoreUtils.OAuth2;
+using NCoreUtils.OAuth2.Internal;
 using ServiceDescriptor = Microsoft.Extensions.DependencyInjection.ServiceDescriptor;
 
 namespace NCoreUtils.AspNetCore
@@ -16,7 +17,7 @@ namespace NCoreUtils.AspNetCore
         private static IServiceCollection AddRemoteOAuth2Authentication(
             this IServiceCollection services,
             ServiceDescriptor tokenHandler,
-            IEndpointConfiguration configuration)
+            TokenServiceEndpointsClientConfiguration configuration)
         {
             services
                 .AddTokenServiceClient(configuration)
@@ -29,7 +30,7 @@ namespace NCoreUtils.AspNetCore
         private static IServiceCollection AddRemoteOAuth2Authentication(
             this IServiceCollection services,
             ServiceDescriptor tokenHandler,
-            IEndpointConfiguration configuration,
+            TokenServiceEndpointsClientConfiguration configuration,
             IntrospectionCacheOptions cacheOptions)
         {
             if (cacheOptions == IntrospectionCacheOptions.MemoryCache)
@@ -61,7 +62,7 @@ namespace NCoreUtils.AspNetCore
         private static IServiceCollection AddCustomRemoteOAuth2Authentication<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TAuthenticationHandler>(
             this IServiceCollection services,
             ServiceDescriptor tokenHandler,
-            IEndpointConfiguration configuration,
+            TokenServiceEndpointsClientConfiguration configuration,
             IntrospectionCacheOptions cacheOptions)
             where TAuthenticationHandler : OAuth2AuthenticationHandler
         {
@@ -79,7 +80,7 @@ namespace NCoreUtils.AspNetCore
 
         public static IServiceCollection AddRemoteOAuth2Authentication<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TTokenHandler>(
             this IServiceCollection services,
-            IEndpointConfiguration configuration,
+            TokenServiceEndpointsClientConfiguration configuration,
             ServiceLifetime tokenHandlerLifetime = ServiceLifetime.Scoped)
             where TTokenHandler : class, ITokenHandler
             => services.AddRemoteOAuth2Authentication(
@@ -89,7 +90,7 @@ namespace NCoreUtils.AspNetCore
 
         public static IServiceCollection AddRemoteOAuth2Authentication(
             this IServiceCollection services,
-            IEndpointConfiguration configuration,
+            TokenServiceEndpointsClientConfiguration configuration,
             TokenHandlers tokenHandlers = TokenHandlers.Bearer | TokenHandlers.Cookie | TokenHandlers.Query,
             IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
         {
@@ -122,7 +123,7 @@ namespace NCoreUtils.AspNetCore
 
         public static IServiceCollection AddCustomRemoteOAuth2Authentication<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TAuthenticationHandler>(
             this IServiceCollection services,
-            IEndpointConfiguration configuration,
+            TokenServiceEndpointsClientConfiguration configuration,
             TokenHandlers tokenHandlers = TokenHandlers.Bearer | TokenHandlers.Cookie | TokenHandlers.Query,
             IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
             where TAuthenticationHandler : OAuth2AuthenticationHandler
@@ -154,16 +155,18 @@ namespace NCoreUtils.AspNetCore
             );
         }
 
-        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(EndpointConfiguration))]
-        [UnconditionalSuppressMessage("Trimming", "IL2026")]
         public static IServiceCollection AddRemoteOAuth2Authentication<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TTokenHandler>(
             this IServiceCollection services,
             IConfiguration configuration,
             ServiceLifetime tokenHandlerLifetime = ServiceLifetime.Scoped)
             where TTokenHandler : class, ITokenHandler
         {
-            var config = new EndpointConfiguration();
-            configuration.Bind(config);
+            var config = new TokenServiceEndpointsClientConfiguration
+            {
+                Endpoint = configuration["Endpoint"],
+                HttpClient = configuration["HttpClient"],
+                Path = configuration["Path"]
+            };
             return services.AddRemoteOAuth2Authentication<TTokenHandler>(config, tokenHandlerLifetime);
         }
 
@@ -173,20 +176,22 @@ namespace NCoreUtils.AspNetCore
             ServiceLifetime tokenHandlerLifetime = ServiceLifetime.Scoped)
             where TTokenHandler : class, ITokenHandler
         {
-            var config = new EndpointConfiguration { Endpoint = endpoint };
+            var config = new TokenServiceEndpointsClientConfiguration { Endpoint = endpoint };
             return services.AddRemoteOAuth2Authentication<TTokenHandler>(config, tokenHandlerLifetime);
         }
 
-        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(EndpointConfiguration))]
-        [UnconditionalSuppressMessage("Trimming", "IL2026")]
         public static IServiceCollection AddRemoteOAuth2Authentication(
             this IServiceCollection services,
             IConfiguration configuration,
             TokenHandlers tokenHandlers = TokenHandlers.Bearer | TokenHandlers.Cookie | TokenHandlers.Query,
             IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
         {
-            var config = new EndpointConfiguration();
-            configuration.Bind(config);
+            var config = new TokenServiceEndpointsClientConfiguration
+            {
+                Endpoint = configuration["Endpoint"],
+                HttpClient = configuration["HttpClient"],
+                Path = configuration["Path"]
+            };
             return services.AddRemoteOAuth2Authentication(config, tokenHandlers, cacheOptions);
         }
 
@@ -196,12 +201,10 @@ namespace NCoreUtils.AspNetCore
             TokenHandlers tokenHandlers = TokenHandlers.Bearer | TokenHandlers.Cookie | TokenHandlers.Query,
             IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
         {
-            var config = new EndpointConfiguration { Endpoint = endpoint };
+            var config = new TokenServiceEndpointsClientConfiguration { Endpoint = endpoint };
             return services.AddRemoteOAuth2Authentication(config, tokenHandlers, cacheOptions);
         }
 
-        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(EndpointConfiguration))]
-        [UnconditionalSuppressMessage("Trimming", "IL2026")]
         public static IServiceCollection AddCustomRemoteOAuth2Authentication<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TAuthenticationHandler>(
             this IServiceCollection services,
             IConfiguration configuration,
@@ -209,8 +212,12 @@ namespace NCoreUtils.AspNetCore
             IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
             where TAuthenticationHandler : OAuth2AuthenticationHandler
         {
-            var config = new EndpointConfiguration();
-            configuration.Bind(config);
+            var config = new TokenServiceEndpointsClientConfiguration
+            {
+                Endpoint = configuration["Endpoint"],
+                HttpClient = configuration["HttpClient"],
+                Path = configuration["Path"]
+            };
             return services.AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(config, tokenHandlers, cacheOptions);
         }
 
@@ -221,13 +228,13 @@ namespace NCoreUtils.AspNetCore
             IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
             where TAuthenticationHandler : OAuth2AuthenticationHandler
         {
-            var config = new EndpointConfiguration { Endpoint = endpoint };
+            var config = new TokenServiceEndpointsClientConfiguration { Endpoint = endpoint };
             return services.AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(config, tokenHandlers, cacheOptions);
         }
 
         public static IServiceCollection AddCustomRemoteOAuth2Authentication<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TAuthenticationHandler>(
             this IServiceCollection services,
-            IEndpointConfiguration configuration,
+            TokenServiceEndpointsClientConfiguration configuration,
             Func<IServiceProvider, ITokenHandler> tokenHandlerFactory,
             IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
             where TAuthenticationHandler : OAuth2AuthenticationHandler
@@ -237,8 +244,6 @@ namespace NCoreUtils.AspNetCore
                 cacheOptions
             );
 
-        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(EndpointConfiguration))]
-        [UnconditionalSuppressMessage("Trimming", "IL2026")]
         public static IServiceCollection AddCustomRemoteOAuth2Authentication<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TAuthenticationHandler>(
             this IServiceCollection services,
             IConfiguration configuration,
@@ -246,8 +251,12 @@ namespace NCoreUtils.AspNetCore
             IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
             where TAuthenticationHandler : OAuth2AuthenticationHandler
         {
-            var config = new EndpointConfiguration();
-            configuration.Bind(config);
+            var config = new TokenServiceEndpointsClientConfiguration
+            {
+                Endpoint = configuration["Endpoint"],
+                HttpClient = configuration["HttpClient"],
+                Path = configuration["Path"]
+            };
             return services.AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
                 ServiceDescriptor.Scoped<ITokenHandler>(tokenHandlerFactory),
                 config,
@@ -262,7 +271,7 @@ namespace NCoreUtils.AspNetCore
             IntrospectionCacheOptions cacheOptions = IntrospectionCacheOptions.MemoryCache)
             where TAuthenticationHandler : OAuth2AuthenticationHandler
         {
-            var config = new EndpointConfiguration { Endpoint = endpoint };
+            var config = new TokenServiceEndpointsClientConfiguration { Endpoint = endpoint };
             return services.AddCustomRemoteOAuth2Authentication<TAuthenticationHandler>(
                 ServiceDescriptor.Scoped(tokenHandlerFactory),
                 config,

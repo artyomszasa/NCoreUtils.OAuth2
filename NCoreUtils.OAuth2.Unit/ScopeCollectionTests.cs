@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 using NCoreUtils.OAuth2.Internal;
+using NCoreUtils.OAuth2.LoginProvider;
 using Xunit;
 
 namespace NCoreUtils.OAuth2.Unit
@@ -111,7 +112,7 @@ namespace NCoreUtils.OAuth2.Unit
         [Fact]
         public void JsonSerializationTests()
         {
-            var typeInfo = LoginProviderSerializationContext.Default.ScopeCollection;
+            var typeInfo = LoginProviderSerializerContext.Default.ScopeCollection;
             Assert.Equal(default, JsonSerializer.Deserialize("null", typeInfo));
             Assert.Equal(new ScopeCollection("a", "b"), JsonSerializer.Deserialize("\"a b\"", typeInfo));
             // NOTE: for compatibility reasons and should be removed in future (!)

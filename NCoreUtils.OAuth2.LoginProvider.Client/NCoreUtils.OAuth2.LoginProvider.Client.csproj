@@ -1,16 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
-    <RootNamespace>NCoreUtils.AspNetCore</RootNamespace>
+    <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
+    <EmitCompilerGeneratedFiles Condition=" '$(Configuration)' == 'Debug' ">true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.Shared\NCoreUtils.OAuth2.LoginProvider.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.Proto" Version="6.0.0-rc00" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
+    <PackageReference Include="NCoreUtils.Proto.Client" Version="6.0.0-rc00" />
     <PackageReference Include="NCoreUtils.Proto.Generator" Version="6.0.0-rc00" PrivateAssets="all" />
   </ItemGroup>
 </Project>

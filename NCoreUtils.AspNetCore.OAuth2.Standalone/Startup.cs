@@ -26,15 +26,15 @@ namespace NCoreUtils.AspNetCore.OAuth2
         }
 
 #pragma warning disable IDE0052
-        private readonly IWebHostEnvironment _env;
+        private IWebHostEnvironment Env { get; }
 #pragma warning restore IDE0052
 
-        private readonly IConfiguration _configuration;
+        private IConfiguration Configuration { get; }
 
         public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
-            _env = env ?? throw new ArgumentNullException(nameof(env));
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            Env = env ?? throw new ArgumentNullException(nameof(env));
+            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026:RequiresUnreferencedCode",
@@ -44,15 +44,15 @@ namespace NCoreUtils.AspNetCore.OAuth2
         [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(AesTokenEncryptionConfiguration))]
         public void ConfigureServices(IServiceCollection services)
         {
-            var providers = _configuration.GetSection("LoginProviders")
+            var providers = Configuration.GetSection("LoginProviders")
                 .Get<List<LoginProviderConfiguration>>()
                 ?? throw new InvalidOperationException("No login provider configuration present.");
 
-            var tokenServiceConfiguration = _configuration.GetSection("TokenService")
+            var tokenServiceConfiguration = Configuration.GetSection("TokenService")
                 .Get<TokenServiceConfiguration>()
                 ?? throw new InvalidOperationException("No token service configuration present.");
 
-            var aesConfiguration = _configuration.GetSection("Aes")
+            var aesConfiguration = Configuration.GetSection("Aes")
                 .Get<AesTokenEncryptionConfiguration>()
                 ?? throw new InvalidOperationException("No aes configuration present.");
 
@@ -63,7 +63,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .AddHttpContextAccessor()
                 // token service
                 .AddSingleton(aesConfiguration)
-                .AddFirestoreTokenRepository(_configuration["Google:ProjectId"])
+                .AddFirestoreTokenRepository(Configuration["Google:ProjectId"])
                 .AddTokenService<AesTokenEncryption, FirestoreTokenRepository>(tokenServiceConfiguration)
                 // scoped login provider client
                 .AddScopedProtoClient<ILoginProvider>(

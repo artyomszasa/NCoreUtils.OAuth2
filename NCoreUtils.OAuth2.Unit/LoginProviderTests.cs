@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NCoreUtils.AspNetCore;
-using NCoreUtils.AspNetCore.Proto;
 using NCoreUtils.OAuth2.Internal;
 using Xunit;
 
@@ -58,7 +57,7 @@ public partial class LoginProviderTests
                 .UseRouting()
                 .UseEndpoints(endpoints =>
                 {
-                    endpoints.MapLoginProvider();
+                    endpoints.MapLoginProviderService();
                 });
         }
     }
@@ -71,7 +70,7 @@ public partial class LoginProviderTests
         // client side
         var services = new ServiceCollection()
             .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup>(appFactory))
-            .AddLoginProviderClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+            .AddLoginProviderClient("http://localhost")
             .BuildServiceProvider();
         try
         {
@@ -118,7 +117,7 @@ public partial class LoginProviderTests
         // client side
         var services = new ServiceCollection()
             .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup>(appFactory))
-            .AddLoginProviderClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+            .AddLoginProviderClient("http://localhost")
             .BuildServiceProvider();
         try
         {

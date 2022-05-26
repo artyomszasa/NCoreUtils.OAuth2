@@ -1,6 +1,7 @@
 using System;
 using System.Text.Json;
 using NCoreUtils.OAuth2.Internal;
+using NCoreUtils.OAuth2.LoginProvider;
 using Xunit;
 
 namespace NCoreUtils.OAuth2.Unit
@@ -23,7 +24,7 @@ namespace NCoreUtils.OAuth2.Unit
         public void LoginIdentityJsonSerialization()
         {
             var id0 = new LoginIdentity(Sub, Issuer, Username, Email, TestScopes);
-            var typeInfo = LoginProviderSerializationContext.Default.LoginIdentity;
+            var typeInfo = LoginProviderSerializerContext.Default.LoginIdentity;
             var json = JsonSerializer.Serialize(id0, typeInfo);
             var id1 = JsonSerializer.Deserialize(json, typeInfo);
             Assert.Equal(id0, id1);
@@ -33,7 +34,7 @@ namespace NCoreUtils.OAuth2.Unit
         public void AccessTokenResponseJsonSerialization()
         {
             var resp0 = new AccessTokenResponse(Token, "bearer", TimeSpan.FromMinutes(15), Token, TestScopes);
-            var typeInfo = TokenServiceJsonSerializerContext.Default.AccessTokenResponse;
+            var typeInfo = TokenServiceSerializerContext.Default.AccessTokenResponse;
             var json = JsonSerializer.Serialize(resp0, typeInfo);
             var resp1 = JsonSerializer.Deserialize(json, typeInfo);
             Assert.Equal(resp0, resp1);
@@ -43,7 +44,7 @@ namespace NCoreUtils.OAuth2.Unit
         public void IntrospectionResponseJsonSerialization()
         {
             var resp0 = new IntrospectionResponse(true, TestScopes, "1", Email, Username, "bearer", DateTimeOffset.Now.Normalize(), DateTimeOffset.Now.Normalize(), DateTimeOffset.Now.Normalize(), Sub, Issuer);
-            var typeInfo = TokenServiceJsonSerializerContext.Default.IntrospectionResponse;
+            var typeInfo = TokenServiceSerializerContext.Default.IntrospectionResponse;
             var json = JsonSerializer.Serialize(resp0, typeInfo);
             var resp1 = JsonSerializer.Deserialize(json, typeInfo);
             Assert.Equal(resp0, resp1);
@@ -53,7 +54,7 @@ namespace NCoreUtils.OAuth2.Unit
         public void ErrorResponseJsonSerialization()
         {
             var resp0 = new ErrorResponse("error_code", "error_description");
-            var typeInfo = TokenServiceJsonSerializerContext.Default.ErrorResponse;
+            var typeInfo = NCoreUtils.OAuth2.Internal.ErrorResponseSerializerContext.Default.ErrorResponse;
             var json = JsonSerializer.Serialize(resp0, typeInfo);
             var resp1 = JsonSerializer.Deserialize(json, typeInfo);
             Assert.Equal(resp0, resp1);
@@ -64,19 +65,19 @@ namespace NCoreUtils.OAuth2.Unit
         {
             {
                 var obj = new AccessTokenResponse(Token, "bearer", TimeSpan.FromMinutes(15), default, default);
-                var typeInfo = TokenServiceJsonSerializerContext.Default.AccessTokenResponse;
+                var typeInfo = TokenServiceSerializerContext.Default.AccessTokenResponse;
                 var json = JsonSerializer.Serialize(obj, typeInfo);
                 Assert.DoesNotContain("scope", json);
             }
             {
                 var obj = new IntrospectionResponse(true, default, "1", Email, Username, "bearer", DateTimeOffset.Now.Normalize(), DateTimeOffset.Now.Normalize(), DateTimeOffset.Now.Normalize(), Sub, Issuer);
-                var typeInfo = TokenServiceJsonSerializerContext.Default.IntrospectionResponse;
+                var typeInfo = TokenServiceSerializerContext.Default.IntrospectionResponse;
                 var json = JsonSerializer.Serialize(obj, typeInfo);
                 Assert.DoesNotContain("scope", json);
             }
             {
                 var obj = new LoginIdentity(Sub, Issuer, Username, Email, default);
-                var typeInfo = LoginProviderSerializationContext.Default.LoginIdentity;
+                var typeInfo = LoginProviderSerializerContext.Default.LoginIdentity;
                 var json = JsonSerializer.Serialize(obj, typeInfo);
                 Assert.DoesNotContain("scope", json);
             }

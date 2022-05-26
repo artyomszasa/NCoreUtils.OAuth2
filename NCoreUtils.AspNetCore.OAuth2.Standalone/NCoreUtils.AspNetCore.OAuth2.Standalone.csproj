@@ -13,13 +13,14 @@
     <NoWarn>IL2104</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.Client\NCoreUtils.OAuth2.LoginProvider.Client.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService\NCoreUtils.OAuth2.TokenService.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.AspNetCore\NCoreUtils.OAuth2.TokenService.AspNetCore.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Encryption.Aes\NCoreUtils.OAuth2.TokenService.Encryption.Aes.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.TokenRepositories.GoogleCloudFirestore\NCoreUtils.OAuth2.TokenService.TokenRepositories.GoogleCloudFirestore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.Logging" Version="6.0.0-alpha03" />
-    <PackageReference Include="NCoreUtils.Logging.Google.Fluentd" Version="6.0.0-alpha03" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Logging" Version="6.0.0-alpha05" />
+    <PackageReference Include="NCoreUtils.Logging.Google.Fluentd" Version="6.0.0-alpha05" />
   </ItemGroup>
 </Project>

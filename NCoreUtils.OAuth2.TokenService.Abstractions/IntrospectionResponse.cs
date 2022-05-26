@@ -43,18 +43,23 @@ namespace NCoreUtils.OAuth2
         public bool Active { get; }
 
         [JsonPropertyName("scope")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public ScopeCollection Scope { get; }
 
         [JsonPropertyName("client_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? ClientId { get; }
 
         [JsonPropertyName("email")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Email { get; }
 
         [JsonPropertyName("username")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Username { get; }
 
         [JsonPropertyName("token_type")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? TokenType { get; }
 
         /// <summary>
@@ -62,6 +67,7 @@ namespace NCoreUtils.OAuth2
         /// </summary>
         [JsonPropertyName("exp")]
         [JsonConverter(typeof(DateTimeOffsetUnixTimeSecondsConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public DateTimeOffset? ExpiresAt { get; }
 
         /// <summary>
@@ -69,6 +75,7 @@ namespace NCoreUtils.OAuth2
         /// </summary>
         [JsonPropertyName("iat")]
         [JsonConverter(typeof(DateTimeOffsetUnixTimeSecondsConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public DateTimeOffset? IssuedAt { get; }
 
         /// <summary>
@@ -76,12 +83,15 @@ namespace NCoreUtils.OAuth2
         /// </summary>
         [JsonPropertyName("nbf")]
         [JsonConverter(typeof(DateTimeOffsetUnixTimeSecondsConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public DateTimeOffset? NotBefore { get; }
 
         [JsonPropertyName("sub")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Sub { get; }
 
         [JsonPropertyName("iss")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Issuer { get; }
 
         [JsonConstructor]

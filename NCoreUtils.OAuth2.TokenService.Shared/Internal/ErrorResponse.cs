@@ -1,10 +1,9 @@
 using System;
 using System.Text.Json.Serialization;
-using NCoreUtils.AspNetCore.Proto;
 
 namespace NCoreUtils.OAuth2.Internal
 {
-    public class ErrorResponse : IEquatable<ErrorResponse>, IErrorDescription
+    public class ErrorResponse : IEquatable<ErrorResponse>
     {
         public static bool operator==(ErrorResponse? a, ErrorResponse? b)
         {
@@ -23,8 +22,6 @@ namespace NCoreUtils.OAuth2.Internal
             }
             return !a.Equals(b);
         }
-
-        string? IErrorDescription.ErrorMessage => ErrorDescription;
 
         [JsonPropertyName("error")]
         public string ErrorCode { get; }
@@ -58,9 +55,9 @@ namespace NCoreUtils.OAuth2.Internal
             }
             if (ErrorCode == TokenServiceErrorCodes.InvalidCredentials)
             {
-                throw new RemoteInvalidCredentialsException(endpoint, ErrorDescription ?? "Invalid credentials.");
+                return new RemoteInvalidCredentialsException(endpoint, ErrorDescription ?? "Invalid credentials.");
             }
-            throw new RemoteTokenServiceException(endpoint, ErrorCode, ErrorCode == TokenServiceErrorCodes.InternalError ? 500 : 400, ErrorDescription!);
+            return new RemoteTokenServiceException(endpoint, ErrorCode, ErrorCode == TokenServiceErrorCodes.InternalError ? 500 : 400, ErrorDescription!);
         }
     }
 }

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NCoreUtils.AspNetCore;
-using NCoreUtils.AspNetCore.Proto;
 using NCoreUtils.OAuth2.Internal;
 using Xunit;
 
@@ -73,7 +72,7 @@ namespace NCoreUtils.OAuth2.Unit
             // client side
             var services = new ServiceCollection()
                 .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<NoopTokenEncryption>>(appFactory))
-                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .AddTokenServiceClient("http://localhost")
                 .BuildServiceProvider();
             try
             {
@@ -106,7 +105,7 @@ namespace NCoreUtils.OAuth2.Unit
             // client side
             var services = new ServiceCollection()
                 .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<NoopTokenEncryption>>(appFactory))
-                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .AddTokenServiceClient("http://localhost")
                 .BuildServiceProvider();
             try
             {
@@ -139,7 +138,7 @@ namespace NCoreUtils.OAuth2.Unit
             // client side
             var services = new ServiceCollection()
                 .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<AesTokenEncryption>>(appFactory))
-                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .AddTokenServiceClient("http://localhost")
                 .BuildServiceProvider();
             try
             {
@@ -172,7 +171,7 @@ namespace NCoreUtils.OAuth2.Unit
             // client side
             var services = new ServiceCollection()
                 .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<AesTokenEncryption>>(appFactory))
-                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .AddTokenServiceClient("http://localhost")
                 .BuildServiceProvider();
             try
             {
@@ -205,7 +204,7 @@ namespace NCoreUtils.OAuth2.Unit
             // client side
             var services = new ServiceCollection()
                 .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<CompressedAesTokenEncryption>>(appFactory))
-                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .AddTokenServiceClient("http://localhost")
                 .BuildServiceProvider();
             try
             {
@@ -238,7 +237,7 @@ namespace NCoreUtils.OAuth2.Unit
             // client side
             var services = new ServiceCollection()
                 .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<CompressedAesTokenEncryption>>(appFactory))
-                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .AddTokenServiceClient("http://localhost")
                 .BuildServiceProvider();
             try
             {
@@ -271,7 +270,7 @@ namespace NCoreUtils.OAuth2.Unit
             // client side
             var services = new ServiceCollection()
                 .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<AesTokenEncryption>>(appFactory))
-                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .AddTokenServiceClient("http://localhost")
                 .BuildServiceProvider();
             try
             {
@@ -292,7 +291,7 @@ namespace NCoreUtils.OAuth2.Unit
             // client side
             var services = new ServiceCollection()
                 .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<AesTokenEncryption>>(appFactory))
-                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .AddTokenServiceClient("http://localhost")
                 .BuildServiceProvider();
             try
             {
@@ -313,7 +312,7 @@ namespace NCoreUtils.OAuth2.Unit
             // client side
             var services = new ServiceCollection()
                 .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<AesTokenEncryption>>(appFactory))
-                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .AddTokenServiceClient("http://localhost")
                 .BuildServiceProvider();
             try
             {
@@ -334,7 +333,7 @@ namespace NCoreUtils.OAuth2.Unit
             // client side
             var services = new ServiceCollection()
                 .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<AesTokenEncryption>>(appFactory))
-                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .AddTokenServiceClient("http://localhost")
                 .BuildServiceProvider();
             try
             {
@@ -355,7 +354,7 @@ namespace NCoreUtils.OAuth2.Unit
             // client side
             var services = new ServiceCollection()
                 .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<AesTokenEncryption>>(appFactory))
-                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .AddTokenServiceClient("http://localhost")
                 .BuildServiceProvider();
             try
             {
@@ -376,7 +375,7 @@ namespace NCoreUtils.OAuth2.Unit
             // client side
             var services = new ServiceCollection()
                 .AddSingleton<IHttpClientFactory>(new TestHttpClientFactory<Startup<NoopTokenEncryption>>(appFactory))
-                .AddTokenServiceClient(new EndpointConfiguration { Endpoint = "http://localhost" })
+                .AddTokenServiceClient("http://localhost")
                 .BuildServiceProvider();
             try
             {

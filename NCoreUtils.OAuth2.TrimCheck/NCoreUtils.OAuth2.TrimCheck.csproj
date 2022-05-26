@@ -2,20 +2,20 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.AspNetCore.OAuth2\NCoreUtils.AspNetCore.OAuth2.csproj" />
-    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.AspNetCore.Client\NCoreUtils.OAuth2.TokenService.AspNetCore.Client.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Client\NCoreUtils.OAuth2.TokenService.Client.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.AspNetCore\NCoreUtils.OAuth2.LoginProvider.AspNetCore.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.Data\NCoreUtils.OAuth2.LoginProvider.Data.csproj" />
-    <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client\NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.Client\NCoreUtils.OAuth2.LoginProvider.Client.csproj" />
     <TrimmerRootAssembly Include="NCoreUtils.AspNetCore.OAuth2" />
     <TrimmerRootAssembly Include="NCoreUtils.AspNetCore.OAuth2.Abstractions" />
     <TrimmerRootAssembly Include="NCoreUtils.OAuth2.Abstractions" />
     <TrimmerRootAssembly Include="NCoreUtils.OAuth2.LoginProvider.Abstractions" />
     <TrimmerRootAssembly Include="NCoreUtils.OAuth2.LoginProvider.AspNetCore" />
-    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.LoginProvider.AspNetCore.Client" />
-    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.LoginProvider.AspNetCore.Shared" />
+    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.LoginProvider.Client" />
+    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.LoginProvider.Shared" />
     <TrimmerRootAssembly Include="NCoreUtils.OAuth2.LoginProvider.Data" />
     <TrimmerRootAssembly Include="NCoreUtils.OAuth2.LoginProvider.Data.Abstractions" />
-    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.TokenService.AspNetCore.Client" />
+    <TrimmerRootAssembly Include="NCoreUtils.OAuth2.TokenService.Client" />
     <TrimmerRootAssembly Include="NCoreUtils.OAuth2.TokenService.Shared" />
     <TrimmerRootAssembly Include="NCoreUtils.OAuth2.TokenService.Abstractions" />
   </ItemGroup>

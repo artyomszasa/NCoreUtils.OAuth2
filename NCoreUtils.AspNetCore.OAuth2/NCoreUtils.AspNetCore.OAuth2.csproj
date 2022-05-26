@@ -8,6 +8,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.AspNetCore.OAuth2.Abstractions\NCoreUtils.AspNetCore.OAuth2.Abstractions.csproj" />
-    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.AspNetCore.Client\NCoreUtils.OAuth2.TokenService.AspNetCore.Client.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Client\NCoreUtils.OAuth2.TokenService.Client.csproj" />
   </ItemGroup>
 </Project>

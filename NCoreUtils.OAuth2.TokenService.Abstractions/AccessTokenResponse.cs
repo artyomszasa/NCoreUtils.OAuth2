@@ -36,10 +36,12 @@ namespace NCoreUtils.OAuth2
         public TimeSpan ExpiresIn { get; }
 
         [JsonPropertyName("refresh_token")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? RefreshToken { get; }
 
         [JsonPropertyName("scope")]
         [JsonConverter(typeof(ScopeCollectionConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public ScopeCollection Scope { get; }
 
         [JsonConstructor]

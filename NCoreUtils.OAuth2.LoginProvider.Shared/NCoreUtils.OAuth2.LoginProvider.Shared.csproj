@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
-    <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
     <EmitCompilerGeneratedFiles Condition=" '$(Configuration)' == 'Debug' ">true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   <ItemGroup>
@@ -9,6 +8,6 @@
     <PackageReference Include="NCoreUtils.Proto.Generator" Version="6.0.0-rc00" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Abstractions\NCoreUtils.OAuth2.TokenService.Abstractions.csproj" />
+    <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.Abstractions\NCoreUtils.OAuth2.LoginProvider.Abstractions.csproj" />
   </ItemGroup>
 </Project>

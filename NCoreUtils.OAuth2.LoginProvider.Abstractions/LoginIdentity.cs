@@ -26,6 +26,7 @@ namespace NCoreUtils.OAuth2
         public string? Email { get; }
 
         [JsonPropertyName("scopes")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public ScopeCollection Scopes { get; }
 
         [JsonConstructor]
