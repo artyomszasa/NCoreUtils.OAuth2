@@ -51,7 +51,7 @@
     <PackageReference Include="NCoreUtils.Storage.Abstractions" Version="3.0.0" />
     <PackageReference Include="NCoreUtils.Storage.GoogleCloudStorage" Version="3.0.0" />
     <PackageReference Include="NCoreUtils.Text" Version="1.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Collections.Immutable" Version="1.6.0" />
     <PackageReference Include="System.Net.Requests" Version="4.3.0" />
     <PackageReference Include="System.Net.WebHeaderCollection" Version="4.3.0" />
