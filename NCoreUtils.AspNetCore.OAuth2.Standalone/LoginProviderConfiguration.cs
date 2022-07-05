@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace NCoreUtils.AspNetCore.OAuth2
 {
-    public class LoginProviderConfiguration : IEndpointConfiguration
+    public class LoginProviderConfiguration
     {
         public string? Host { get; set; }
 

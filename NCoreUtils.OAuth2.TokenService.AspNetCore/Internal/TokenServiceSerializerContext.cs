@@ -3,5 +3,5 @@ using NCoreUtils.OAuth2.Internal;
 
 namespace NCoreUtils.AspNetCore.Internal;
 
-[JsonSerializable(typeof(JsonRootITokenServiceEndpoints))]
+[JsonSerializable(typeof(JsonRootTokenServiceEndpointsInfo))]
 public partial class TokenServiceSerializerContext : JsonSerializerContext { }

@@ -31,10 +31,10 @@ public partial class ProtoTokenServiceWrapperImplementation
         return default;
     }
 
-    private async ValueTask<DtoITokenServiceEndpointsIntrospectArgs> ReadIntrospectRequestAsync(HttpRequest request, CancellationToken cancellationToken)
+    private async ValueTask<DtoTokenServiceEndpointsInfoIntrospectArgs> ReadIntrospectRequestAsync(HttpRequest request, CancellationToken cancellationToken)
     {
         var data = await request.ReadFormAsync(cancellationToken);
-        return new DtoITokenServiceEndpointsIntrospectArgs(
+        return new DtoTokenServiceEndpointsInfoIntrospectArgs(
             token: ReadArgument<string>(data["token"]),
             tokenTypeHint: ReadArgument<string?>(data["token_type_hint"]),
 #if NET6_0_OR_GREATER
@@ -44,6 +44,9 @@ public partial class ProtoTokenServiceWrapperImplementation
 #endif
         );
     }
+
+    private ScopeCollection ReadArgumentOfScopeCollection(string input)
+        => string.IsNullOrEmpty(input) ? default : ScopeCollection.Parse(input);
 
     protected override Task WriteErrorAsync(
         ILogger logger,

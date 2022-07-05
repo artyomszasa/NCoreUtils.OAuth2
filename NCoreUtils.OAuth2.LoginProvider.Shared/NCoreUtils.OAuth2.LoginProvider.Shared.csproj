@@ -4,8 +4,8 @@
     <EmitCompilerGeneratedFiles Condition=" '$(Configuration)' == 'Debug' ">true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Proto.Abstractions" Version="6.0.0-rc00" />
-    <PackageReference Include="NCoreUtils.Proto.Generator" Version="6.0.0-rc00" PrivateAssets="all" />
+    <PackageReference Include="NCoreUtils.Proto.Abstractions" Version="$(ProtoVersion)" />
+    <PackageReference Include="NCoreUtils.Proto.Generator" Version="$(ProtoVersion)" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.Abstractions\NCoreUtils.OAuth2.LoginProvider.Abstractions.csproj" />

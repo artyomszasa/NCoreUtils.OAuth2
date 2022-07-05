@@ -11,7 +11,7 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Shared\NCoreUtils.OAuth2.TokenService.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.AspNetCore.Proto" Version="6.0.0-rc00" />
-    <PackageReference Include="NCoreUtils.Proto.Generator" Version="6.0.0-rc00" PrivateAssets="all" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Proto" Version="$(ProtoVersion)" />
+    <PackageReference Include="NCoreUtils.Proto.Generator" Version="$(ProtoVersion)" PrivateAssets="All" />
   </ItemGroup>
 </Project>
