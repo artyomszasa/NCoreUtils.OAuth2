@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,10 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NCoreUtils.AspNetCore.Rest;
-using NCoreUtils.Data;
 using NCoreUtils.OAuth2;
 using NCoreUtils.OAuth2.Data;
-using NCoreUtils.OAuth2.Internal;
 
 namespace NCoreUtils.AspNetCore.OAuth2
 {
@@ -83,20 +80,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 )
                 .AddTokenService<AesTokenEncryption, EntityFrameworkCoreTokenRepository>(tokenServiceConfiguration)
                 // scoped login provider client
-                .AddScopedProtoClient<ILoginProvider>(
-                    serviceProvider =>
-                    {
-                        var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>()
-                            .HttpContext
-                            ?? throw new InvalidOperationException("Unable to get http context.");
-                        if (providers.TryChoose(httpContext, out var provider))
-                        {
-                            return provider;
-                        }
-                        throw new InvalidOperationException($"No configuration found for host {httpContext.Request.Host}.");
-                    },
-                    b => b.ApplyDefaultLoginProviderConfiguration()
-                )
+                .AddDynamicLoginProvider(providers)
                 // DATA query for REST
                 .AddDataQueryServices(_ => {})
                 // JSON options for REST requests

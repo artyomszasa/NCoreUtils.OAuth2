@@ -4,13 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NCoreUtils.OAuth2;
-using NCoreUtils.OAuth2.Internal;
 
 namespace NCoreUtils.AspNetCore.OAuth2
 {
@@ -66,20 +64,6 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .AddFirestoreTokenRepository(Configuration["Google:ProjectId"])
                 .AddTokenService<AesTokenEncryption, FirestoreTokenRepository>(tokenServiceConfiguration)
                 // scoped login provider client
-                // .AddScopedProtoClient<ILoginProvider>(
-                //     serviceProvider =>
-                //     {
-                //         var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>()
-                //             .HttpContext
-                //             ?? throw new InvalidOperationException("Unable to get http context.");
-                //         if (providers.TryChoose(httpContext, out var provider))
-                //         {
-                //             return provider;
-                //         }
-                //         throw new InvalidOperationException($"No configuration found for host {httpContext.Request.Host}.");
-                //     },
-                //     b => b.ApplyDefaultLoginProviderConfiguration()
-                // )
                 .AddDynamicLoginProvider(providers)
                 // CORS
                 .AddCors(b => b.AddDefaultPolicy(opts => opts

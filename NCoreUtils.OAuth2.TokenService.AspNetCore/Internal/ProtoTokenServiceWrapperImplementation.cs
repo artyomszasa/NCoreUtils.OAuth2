@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using NCoreUtils.OAuth2;
@@ -29,6 +30,26 @@ public partial class ProtoTokenServiceWrapperImplementation
             }
         }
         return default;
+    }
+
+    private static bool ShouldPassException(HttpContext context, Exception exn)
+    {
+        if (!context.RequestAborted.IsCancellationRequested)
+        {
+            return false;
+        }
+        if (exn is OperationCanceledException)
+        {
+            return true;
+        }
+        foreach (var handler in context.RequestServices.GetServices<ITokenServiceExceptionHandler>())
+        {
+            if (handler.ShouldPassException(context, exn))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private async ValueTask<DtoTokenServiceEndpointsInfoIntrospectArgs> ReadIntrospectRequestAsync(HttpRequest request, CancellationToken cancellationToken)

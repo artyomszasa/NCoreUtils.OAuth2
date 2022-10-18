@@ -112,20 +112,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .AddEntityFrameworkCoreTokenRepository(ConfigureDbContext)
                 .AddTokenService<AesTokenEncryption, EntityFrameworkCoreTokenRepository>(tokenServiceConfiguration)
                 // scoped login provider client
-                .AddScopedProtoClient<ILoginProvider>(
-                    serviceProvider =>
-                    {
-                        var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>()
-                            .HttpContext
-                            ?? throw new InvalidOperationException("Unable to get http context.");
-                        if (providers.TryChoose(httpContext, out var provider))
-                        {
-                            return provider;
-                        }
-                        throw new InvalidOperationException($"No configuration found for host {httpContext.Request.Host}.");
-                    },
-                    b => b.ApplyDefaultLoginProviderConfiguration()
-                )
+                .AddDynamicLoginProvider(providers)
                 // DATA query for REST
                 .AddDataQueryServices(_ => {})
                 // JSON options for REST requests
