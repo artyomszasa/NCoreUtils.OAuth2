@@ -120,6 +120,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 // DATA query for REST
                 .AddDataQueryServices(_ => {})
                 // JSON options for REST requests
+                .Configure<JsonSerializerOptions>(o => o.PropertyNamingPolicy = JsonNamingPolicy.CamelCase)
                 .AddTransient<JsonSerializerOptions>(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<JsonSerializerOptions>>().CurrentValue)
                 // Authorization for REST requests
                 .AddScoped<ITokenHandler, BearerTokenHandler>()
