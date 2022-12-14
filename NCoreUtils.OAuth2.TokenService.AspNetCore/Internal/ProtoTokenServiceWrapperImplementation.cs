@@ -56,7 +56,7 @@ public partial class ProtoTokenServiceWrapperImplementation
     {
         var data = await request.ReadFormAsync(cancellationToken);
         return new DtoTokenServiceEndpointsInfoIntrospectArgs(
-            token: ReadArgument<string>(data["token"]),
+            token: ReadArgument<string>((string?)data["token"] ?? string.Empty),
             tokenTypeHint: ReadArgument<string?>(data["token_type_hint"]),
 #if NET6_0_OR_GREATER
             bearerToken: GetBearerToken(request.Headers.Authorization)
@@ -66,7 +66,7 @@ public partial class ProtoTokenServiceWrapperImplementation
         );
     }
 
-    private ScopeCollection ReadArgumentOfScopeCollection(string input)
+    private ScopeCollection ReadArgumentOfScopeCollection(string? input)
         => string.IsNullOrEmpty(input) ? default : ScopeCollection.Parse(input);
 
     protected override Task WriteErrorAsync(

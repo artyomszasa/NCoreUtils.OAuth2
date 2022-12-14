@@ -163,7 +163,7 @@ namespace NCoreUtils.AspNetCore
         {
             var config = new TokenServiceEndpointsClientConfiguration
             {
-                Endpoint = configuration["Endpoint"],
+                Endpoint = configuration["Endpoint"] ?? throw new InvalidOperationException("No endpoint for TokenService"),
                 HttpClient = configuration["HttpClient"],
                 Path = configuration["Path"]
             };
@@ -188,7 +188,7 @@ namespace NCoreUtils.AspNetCore
         {
             var config = new TokenServiceEndpointsClientConfiguration
             {
-                Endpoint = configuration["Endpoint"],
+                Endpoint = configuration["Endpoint"] ?? throw new InvalidOperationException("No endpoint for TokenService"),
                 HttpClient = configuration["HttpClient"],
                 Path = configuration["Path"]
             };
@@ -214,7 +214,7 @@ namespace NCoreUtils.AspNetCore
         {
             var config = new TokenServiceEndpointsClientConfiguration
             {
-                Endpoint = configuration["Endpoint"],
+                Endpoint = configuration["Endpoint"] ?? throw new InvalidOperationException("No endpoint for TokenService"),
                 HttpClient = configuration["HttpClient"],
                 Path = configuration["Path"]
             };
@@ -253,7 +253,7 @@ namespace NCoreUtils.AspNetCore
         {
             var config = new TokenServiceEndpointsClientConfiguration
             {
-                Endpoint = configuration["Endpoint"],
+                Endpoint = configuration["Endpoint"] ?? throw new InvalidOperationException("No endpoint for TokenService"),
                 HttpClient = configuration["HttpClient"],
                 Path = configuration["Path"]
             };

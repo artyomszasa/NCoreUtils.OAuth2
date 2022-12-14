@@ -1,36 +1,20 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NCoreUtils.AspNetCore.Rest;
-using NCoreUtils.Data;
 using NCoreUtils.OAuth2;
 using NCoreUtils.OAuth2.Data;
-using NCoreUtils.OAuth2.Internal;
 
 namespace NCoreUtils.AspNetCore.OAuth2
 {
     public class Startup
     {
-        private static ForwardedHeadersOptions ConfigureForwardedHeaders()
-        {
-            var opts = new ForwardedHeadersOptions();
-            opts.KnownNetworks.Clear();
-            opts.KnownProxies.Clear();
-            opts.ForwardedHeaders = ForwardedHeaders.All;
-            opts.ForwardLimit = 8;
-            return opts;
-        }
-
         private static void ConfigureRest(RestConfigurationBuilder builder)
         {
             builder.AddEntity<RefreshToken>();
@@ -41,9 +25,6 @@ namespace NCoreUtils.AspNetCore.OAuth2
 
         private readonly IConfiguration _configuration;
 
-        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Npgsql.NpgsqlConnectionStringBuilder))]
-        [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026:RequiresUnreferencedCode",
-              Justification = "Configuration types are preserved through dynamic dependency.")]
         private void ConfigureDbContext(DbContextOptionsBuilder builder)
         {
             string connectionString;
@@ -59,14 +40,15 @@ namespace NCoreUtils.AspNetCore.OAuth2
                         Pooling = true,
                         MinPoolSize = 1,
                         PersistSecurityInfo = true,
-                        LogParameters = _env.IsDevelopment()
+                        LogParameters = _env.IsDevelopment(),
+                        IncludeErrorDetail = _env.IsDevelopment()
                     };
                     // configured values
-                    pgsqlConfiguration.Bind(connectionStringBuilder);
+                    pgsqlConfiguration.BindNpgsqlConnectionStringBuilder(connectionStringBuilder);
                     connectionString = connectionStringBuilder.ToString();
                     break;
                 default:
-                    connectionString = _configuration.GetConnectionString("Default");
+                    connectionString = _configuration.GetConnectionString("Default") ?? throw new InvalidOperationException("No default connection string found.");
                     break;
 
             }
@@ -83,25 +65,10 @@ namespace NCoreUtils.AspNetCore.OAuth2
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026:RequiresUnreferencedCode",
-              Justification = "Configuration types are preserved through dynamic dependency.")]
-        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(LoginProviderConfiguration))]
-        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(TokenServiceConfiguration))]
-        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(AesTokenEncryptionConfiguration))]
         public void ConfigureServices(IServiceCollection services)
         {
-            var providers = _configuration.GetSection("LoginProviders")
-                .Get<List<LoginProviderConfiguration>>()
-                ?? throw new InvalidOperationException("No login provider configuration present.");
-
-            var tokenServiceConfiguration = _configuration.GetSection("TokenService")
-                .Get<TokenServiceConfiguration>()
-                ?? throw new InvalidOperationException("No token service configuration present.");
-
-            var aesConfiguration = _configuration.GetSection("Aes")
-                .Get<AesTokenEncryptionConfiguration>()
-                ?? throw new InvalidOperationException("No aes configuration present.");
-
+            var tokenServiceConfiguration = _configuration.GetSection("TokenService").GetTokenServiceConfiguration();
+            var aesConfiguration = _configuration.GetSection("Aes").GetAesTokenEncryptionConfiguration();
             services
                 // client pooling
                 .AddHttpClient()
@@ -112,7 +79,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .AddEntityFrameworkCoreTokenRepository(ConfigureDbContext)
                 .AddTokenService<AesTokenEncryption, EntityFrameworkCoreTokenRepository>(tokenServiceConfiguration)
                 // scoped login provider client
-                .AddDynamicLoginProvider(providers)
+                .AddDynamicLoginProvider(_configuration.GetSection("LoginProviders"))
                 // DATA query for REST
                 .AddDataQueryServices(_ => {})
                 // JSON options for REST requests
@@ -146,8 +113,19 @@ namespace NCoreUtils.AspNetCore.OAuth2
             #endif
 
             app
-                .UseForwardedHeaders(ConfigureForwardedHeaders())
+                .UseForwardedHeaders(_configuration.GetSection("ForwardedHeaders"))
                 .UseCors()
+                .Use(async (context, next) =>
+                {
+                    try
+                    {
+                        await next().ConfigureAwait(false);
+                    }
+                    catch (NoConfigurationForHostException)
+                    {
+                        context.Response.StatusCode = 404;
+                    }
+                })
                 .UseRouting()
                 .UseAuthentication()
                 .UseAuthorization()

@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+#if GOOGLE_FLUENTD_LOGGING
+using NCoreUtils.Logging;
+#endif
 
 namespace NCoreUtils.AspNetCore.OAuth2
 {
@@ -70,13 +73,21 @@ namespace NCoreUtils.AspNetCore.OAuth2
                     builder
                         .ClearProviders()
                         .AddConfiguration(configuration.GetSection("Logging"));
+#if GOOGLE_FLUENTD_LOGGING
+                    builder.Services.AddDefaultTraceIdProvider();
+#endif
                     if (context.HostingEnvironment.IsDevelopment())
                     {
                         builder.AddConsole().AddDebug();
                     }
                     else
                     {
-                        builder.AddConsole();
+#if GOOGLE_FLUENTD_LOGGING
+                        builder.Services.AddLoggingContext();
+                        builder.AddGoogleFluentd<AspNetCoreLoggerProvider>(projectId: configuration["Google:ProjectId"]);
+#else
+                        builder.AddSimpleConsole(o => o.SingleLine = true);
+#endif
                     }
                 })
                 .ConfigureWebHost(webBuilder =>

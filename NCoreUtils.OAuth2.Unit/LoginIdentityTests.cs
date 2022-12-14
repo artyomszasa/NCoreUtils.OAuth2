@@ -29,7 +29,7 @@ namespace NCoreUtils.OAuth2.Unit
             var identity = new LoginIdentity("sub", "issuer", "name", default, scopes);
             var expected = $"sub#name@issuer[{scopes}]";
             Assert.Equal(expected, identity.ToString());
-            var buffer = new char[identity.ComputeRequiredBufferSize()];
+            var buffer = new char[identity.GetEmplaceBufferSize()];
             Assert.Equal(buffer.Length, identity.Emplace(buffer.AsSpan()));
             Assert.Equal(expected, new string(buffer.AsSpan()));
             Assert.Throws<InsufficientBufferSizeException>(() => identity.Emplace(buffer.AsSpan().Slice(0, buffer.Length - 1)));
@@ -47,7 +47,7 @@ namespace NCoreUtils.OAuth2.Unit
             var identity = new LoginIdentity("sub", "issuer", "name", "email", scopes);
             var expected = $"sub#name<email>@issuer[{scopes}]";
             Assert.Equal(expected, identity.ToString());
-            var buffer = new char[identity.ComputeRequiredBufferSize()];
+            var buffer = new char[identity.GetEmplaceBufferSize()];
             Assert.Equal(buffer.Length, identity.Emplace(buffer.AsSpan()));
             Assert.Equal(expected, new string(buffer.AsSpan()));
             Assert.Throws<InsufficientBufferSizeException>(() => identity.Emplace(buffer.AsSpan().Slice(0, buffer.Length - 1)));

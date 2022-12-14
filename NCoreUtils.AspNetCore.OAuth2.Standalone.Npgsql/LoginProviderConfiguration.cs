@@ -7,13 +7,27 @@ namespace NCoreUtils.AspNetCore.OAuth2
 {
     public class LoginProviderConfiguration : IEndpointConfiguration
     {
-        public string? Host { get; set; }
+        public const string DefaultHttpClientConfigurationName = "LoginProvider";
 
-        public List<string> Hosts { get; set; } = new List<string>();
+        public string? Host { get; }
 
-        public string HttpClient { get; set; } = "LoginProvider";
+        public IReadOnlyList<string>? Hosts { get; }
 
-        public string Endpoint { get; set; } = string.Empty;
+        public string HttpClient { get; }
+
+        public string Endpoint { get; }
+
+        public LoginProviderConfiguration(string? host, IReadOnlyList<string>? hosts, string? httpClient, string endpoint)
+        {
+            if (string.IsNullOrWhiteSpace(endpoint))
+            {
+                throw new System.ArgumentException($"'{nameof(endpoint)}' cannot be null or whitespace.", nameof(endpoint));
+            }
+            Host = host;
+            Hosts = hosts;
+            HttpClient = httpClient ?? DefaultHttpClientConfigurationName;
+            Endpoint = endpoint;
+        }
 
         public IEnumerable<string> GetAllHosts()
         {
@@ -21,9 +35,12 @@ namespace NCoreUtils.AspNetCore.OAuth2
             {
                 yield return Host;
             }
-            foreach (var host in Hosts)
+            if (Hosts is not null)
             {
-                yield return host;
+                foreach (var host in Hosts)
+                {
+                    yield return host;
+                }
             }
         }
 

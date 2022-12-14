@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net7.0;net6.0;netstandard2.1</TargetFrameworks>
     <EmitCompilerGeneratedFiles Condition=" '$(Configuration)' == 'Debug' ">true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Shared\NCoreUtils.OAuth2.TokenService.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(FxNugetVersion)" />
     <PackageReference Include="NCoreUtils.Proto.Client" Version="$(ProtoVersion)" />
     <PackageReference Include="NCoreUtils.Proto.Generator" Version="$(ProtoVersion)" PrivateAssets="All" />
   </ItemGroup>

@@ -1,16 +1,19 @@
 <Project>
   <PropertyGroup>
-    <LangVersion>10.0</LangVersion>
+    <LangVersion>11.0</LangVersion>
     <Nullable>enable</Nullable>
-    <Version>6.0.0-rc03</Version>
+    <Version>6.0.0-rc04</Version>
     <GrpcVersion>2.41.1</GrpcVersion>
+    <Fx7NugetVersion>7.0.0</Fx7NugetVersion>
     <Fx6NugetVersion>6.0.0</Fx6NugetVersion>
     <Fx3NugetVersion>3.1.16</Fx3NugetVersion>
+    <FxNugetVersion Condition=" '$(TargetFramework)' == 'net7.0' ">$(Fx7NugetVersion)</FxNugetVersion>
     <FxNugetVersion Condition=" '$(TargetFramework)' == 'net6.0' ">$(Fx6NugetVersion)</FxNugetVersion>
-    <FxNugetVersion Condition=" '$(TargetFramework)' != 'net6.0' ">$(Fx3NugetVersion)</FxNugetVersion>
-    <SystemTextJsonVersion>6.0.0</SystemTextJsonVersion>
+    <FxNugetVersion Condition=" '$(TargetFramework)' != 'net6.0' And '$(TargetFramework)' != 'net7.0' ">$(Fx3NugetVersion)</FxNugetVersion>
+    <SystemTextJsonVersion Condition=" '$(TargetFramework)' != 'net7.0' ">6.0.0</SystemTextJsonVersion>
+    <SystemTextJsonVersion Condition=" '$(TargetFramework)' == 'net7.0' ">7.0.0</SystemTextJsonVersion>
     <SystemNetHttpVersion>4.3.4</SystemNetHttpVersion>
-    <ProtoVersion>6.0.0-rc07</ProtoVersion>
+    <ProtoVersion>6.0.0-rc08</ProtoVersion>
     <IsTrimmable>true</IsTrimmable>
     <EmitCompilerGeneratedFiles Condition=" '$(Configuration)' == 'Debug' ">true</EmitCompilerGeneratedFiles>
   </PropertyGroup>

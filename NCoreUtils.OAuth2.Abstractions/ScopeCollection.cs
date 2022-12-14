@@ -15,7 +15,19 @@ namespace NCoreUtils.OAuth2;
 /// Scope collection that distinguishes between no value and empty value.
 /// </summary>
 [JsonConverter(typeof(ScopeCollectionConverter))]
-public struct ScopeCollection : IReadOnlyCollection<string>, IEquatable<ScopeCollection>, IEmplaceable<ScopeCollection>
+public partial struct ScopeCollection
+    : IReadOnlyCollection<string>
+    , IEquatable<ScopeCollection>
+    , ISpanExactEmplaceable
+// NOTE: compatibility / should be removed in uture releases
+#pragma warning disable CS0618
+    , IEmplaceable<ScopeCollection>
+#pragma warning restore CS0618
+#if NET7_0_OR_GREATER
+    , IParsable<ScopeCollection>
+#else
+    , IFormattable
+#endif
 {
     [ExcludeFromCodeCoverage]
     private sealed class EmptyEnumerator : IEnumerator<string>
@@ -63,6 +75,25 @@ public struct ScopeCollection : IReadOnlyCollection<string>, IEquatable<ScopeCol
     public static implicit operator ScopeCollection(string[]? scopes)
         => new(scopes!);
 
+    private static int GetEmplaceBufferSize(HashSet<string> scopes)
+    {
+        var first = true;
+        var result = 0;
+        foreach (var scope in scopes)
+        {
+            result += scope.Length;
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                ++result;
+            }
+        }
+        return result;
+    }
+
     public static ScopeCollection Parse(string? input)
     {
         if (string.IsNullOrEmpty(input))
@@ -70,6 +101,15 @@ public struct ScopeCollection : IReadOnlyCollection<string>, IEquatable<ScopeCol
             return default;
         }
         return new ScopeCollection(_regexWs.Split(input));
+    }
+
+    public static ScopeCollection Parse(string? input, IFormatProvider? formatProvider)
+        => Parse(input);
+
+    public static bool TryParse(string? input, IFormatProvider? formatProvider, out ScopeCollection result)
+    {
+        result = Parse(input);
+        return true;
     }
 
     internal readonly HashSet<string>? _scopes;
@@ -133,7 +173,7 @@ public struct ScopeCollection : IReadOnlyCollection<string>, IEquatable<ScopeCol
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [DebuggerStepThrough]
-    public ScopeCollection(params string[] scopes)
+    public ScopeCollection(params string[]? scopes)
     {
         if (scopes is null)
         {
@@ -155,26 +195,19 @@ public struct ScopeCollection : IReadOnlyCollection<string>, IEquatable<ScopeCol
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    private int EmplaceNoCheck(Span<char> buffer)
+    int ISpanExactEmplaceable.GetEmplaceBufferSize() => GetEmplaceBufferSize();
+
+    private int GetEmplaceBufferSize()
     {
-        if (_scopes is null)
+        if (_scopes is null || _scopes.Count == 0)
         {
-            return 0;
+            return 1;
         }
-        var builder = new SpanBuilder(buffer);
-        var enumerator = _scopes.GetEnumerator();
-        if (enumerator.MoveNext())
-        {
-            // first
-            builder.Append(enumerator.Current);
-            while (enumerator.MoveNext())
-            {
-                builder.Append(' ');
-                builder.Append(enumerator.Current);
-            }
-        }
-        return builder.Length;
+        return GetEmplaceBufferSize(_scopes);
     }
+
+    string IFormattable.ToString(string? format, System.IFormatProvider? formatProvider)
+        => ToString();
 
     public int ComputeRequiredBufferSize()
     {
@@ -182,12 +215,16 @@ public struct ScopeCollection : IReadOnlyCollection<string>, IEquatable<ScopeCol
         {
             return 0;
         }
-        var size = _scopes.Count - 1; // spaces
-        foreach (var scope in _scopes)
+        return GetEmplaceBufferSize(_scopes);
+    }
+
+    public int Emplace(System.Span<char> span)
+    {
+        if (TryEmplace(span, out var used))
         {
-            size += scope.Length;
+            return used;
         }
-        return size;
+        throw new InsufficientBufferSizeException(span, ComputeRequiredBufferSize());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -219,30 +256,7 @@ public struct ScopeCollection : IReadOnlyCollection<string>, IEquatable<ScopeCol
         {
             return string.Empty;
         }
-        var requiredSize = ComputeRequiredBufferSize();
-        if (requiredSize <= MaxCharBufferStackAllocSize)
-        {
-            Span<char> buffer = stackalloc char[requiredSize];
-            var size = EmplaceNoCheck(buffer);
-            return new string(buffer[..size]);
-        }
-        if (requiredSize <= MaxCharBufferPoolAllocSize)
-        {
-            using var owner = MemoryPool<char>.Shared.Rent(requiredSize);
-            var size = EmplaceNoCheck(owner.Memory.Span);
-            return new string(owner.Memory.Span[..size]);
-        }
-        return string.Join(' ', _scopes!);
-    }
-
-    public int Emplace(Span<char> span)
-    {
-        if (TryEmplace(span, out var size))
-        {
-            return size;
-        }
-        var requiredSize = ComputeRequiredBufferSize();
-        throw new InsufficientBufferSizeException(span, requiredSize);
+        return this.ToStringUsingArrayPool();
     }
 
     public bool TryEmplace(Span<char> span, out int used)
@@ -252,13 +266,21 @@ public struct ScopeCollection : IReadOnlyCollection<string>, IEquatable<ScopeCol
             used = 0;
             return true;
         }
-        var requiredSize = ComputeRequiredBufferSize();
-        if (requiredSize <= span.Length)
+        var builder = new SpanBuilder(span);
+        var first = true;
+        foreach (var scope in _scopes)
         {
-            used = EmplaceNoCheck(span);
-            return true;
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                if (!builder.TryAppend(' ')) { used = 0; return false; }
+            }
+            if (!builder.TryAppend(scope)) { used = 0; return false; }
         }
-        used = default;
-        return false;
+        used = builder.Length;
+        return true;
     }
 }

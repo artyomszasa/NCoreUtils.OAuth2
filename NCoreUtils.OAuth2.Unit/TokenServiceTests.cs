@@ -28,11 +28,10 @@ namespace NCoreUtils.OAuth2.Unit
                     .AddLogging(l => l.AddConsole().SetMinimumLevel(LogLevel.Trace))
                     .AddSingleton<ILoginProvider>(loginProvider)
                     .AddSingleton(new AesTokenEncryptionConfiguration { IV = "fRhAu1dtoC9cIQf4+kF68A==", Key = "c0eLpWb+GZAb0lf3chxWsU16pK4r4a5gZEWxpIdqDHg=" })
-                    .AddTokenService<TTokenEncryption, TokenRepository>(new TokenServiceConfiguration
-                    {
-                        RefreshTokenExpiry = TimeSpan.FromHours(240),
-                        AccessTokenExpiry = TimeSpan.FromMinutes(15),
-                    }, tokenRepositoryLifetime: ServiceLifetime.Singleton)
+                    .AddTokenService<TTokenEncryption, TokenRepository>(new TokenServiceConfiguration(
+                        refreshTokenExpiry: TimeSpan.FromHours(240),
+                        accessTokenExpiry: TimeSpan.FromMinutes(15)
+                    ), tokenRepositoryLifetime: ServiceLifetime.Singleton)
                     .AddRouting();
             }
 

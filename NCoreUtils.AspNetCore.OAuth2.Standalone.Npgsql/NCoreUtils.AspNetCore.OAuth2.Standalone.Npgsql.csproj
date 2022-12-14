@@ -1,15 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net7.0;net6.0</TargetFrameworks>
     <RootNamespace>NCoreUtils.AspNetCore.OAuth2</RootNamespace>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     <ServerGarbageCollection>false</ServerGarbageCollection>
     <RetainVMGarbageCollection>false</RetainVMGarbageCollection>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+    <!--
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
+    -->
     <PublishTrimmed>true</PublishTrimmed>
-    <FxNugetVersion>$(Fx6NugetVersion)</FxNugetVersion>
+    <EFCoreVersion>6.0.7</EFCoreVersion>
+    <DefineConstants Condition=" '$(GoogleFluentdLogging)' == 'true' ">$(DefineConstants);GOOGLE_FLUENTD_LOGGING</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.Client\NCoreUtils.OAuth2.LoginProvider.Client.csproj" />
@@ -20,13 +23,18 @@
     <ProjectReference Include="..\NCoreUtils.AspNetCore.OAuth2\NCoreUtils.AspNetCore.OAuth2.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(FxNugetVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="$(FxNugetVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="$(FxNugetVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(FxNugetVersion)" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(FxNugetVersion)" />
-    <PackageReference Include="NCoreUtils.AspNetCore.Rest" Version="6.0.0-beta00" />
-    <PackageReference Include="NCoreUtils.Data.Protocol" Version="6.0.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(EFCoreVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="$(EFCoreVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="$(EFCoreVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(EFCoreVersion)" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EFCoreVersion)" />
+    <PackageReference Include="NCoreUtils.AspNetCore.ForwardedHeaders" Version="7.0.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Rest" Version="6.0.0-rc06" />
+    <PackageReference Include="NCoreUtils.Data.Protocol" Version="6.0.0.4" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(EFCoreVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(GoogleFluentdLogging)' == 'true' ">
+    <PackageReference Include="NCoreUtils.AspNetCore.Logging" Version="6.0.0-alpha09" />
+    <PackageReference Include="NCoreUtils.Logging.Google.Fluentd" Version="6.0.0-alpha09" />
   </ItemGroup>
 </Project>

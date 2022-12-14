@@ -1,9 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net7.0;net6.0;netstandard2.1</TargetFrameworks>
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.Abstractions\NCoreUtils.OAuth2.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.1' ">
+    <Compile Remove="LoginIdentity.Compat.cs" />
   </ItemGroup>
 </Project>

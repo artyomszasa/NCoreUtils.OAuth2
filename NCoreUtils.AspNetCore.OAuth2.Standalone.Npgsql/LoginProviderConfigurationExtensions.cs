@@ -7,7 +7,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
     internal static class LoginProviderConfigurationExtensions
     {
         internal static bool TryChoose(
-            this List<LoginProviderConfiguration> configurations,
+            this IReadOnlyList<LoginProviderConfiguration> configurations,
             HttpContext context,
             [NotNullWhen(true)] out LoginProviderConfiguration? match)
         {
