@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -131,6 +132,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .UseAuthorization()
                 .UseEndpoints(endpoints =>
                 {
+                    endpoints.MapGet("/healthz", context => { context.Response.StatusCode = 200; return Task.CompletedTask; });
                     endpoints.MapTokenService(string.Empty);
                     endpoints.MapRest("data", ConfigureRest);
                 });
