@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -116,6 +117,18 @@ namespace NCoreUtils.AspNetCore.OAuth2
             app
                 .UseForwardedHeaders(_configuration.GetSection("ForwardedHeaders"))
                 .UseCors()
+                .Use((context, next) =>
+                {
+                    if (context.Request.Path == "/healthz")
+                    {
+                        context.Response.StatusCode = StatusCodes.Status200OK;
+                        return Task.CompletedTask;
+                    }
+                    else
+                    {
+                        return next();
+                    }
+                })
                 .Use(async (context, next) =>
                 {
                     try
@@ -132,7 +145,6 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .UseAuthorization()
                 .UseEndpoints(endpoints =>
                 {
-                    endpoints.MapGet("/healthz", context => { context.Response.StatusCode = 200; return Task.CompletedTask; });
                     endpoints.MapTokenService(string.Empty);
                     endpoints.MapRest("data", ConfigureRest);
                 });
