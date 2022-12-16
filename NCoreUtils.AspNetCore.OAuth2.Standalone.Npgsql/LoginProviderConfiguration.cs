@@ -17,7 +17,9 @@ namespace NCoreUtils.AspNetCore.OAuth2
 
         public string Endpoint { get; }
 
-        public LoginProviderConfiguration(string? host, IReadOnlyList<string>? hosts, string? httpClient, string endpoint)
+        public string? Path { get; }
+
+        public LoginProviderConfiguration(string? host, IReadOnlyList<string>? hosts, string? httpClient, string endpoint, string? path)
         {
             if (string.IsNullOrWhiteSpace(endpoint))
             {
@@ -27,6 +29,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
             Hosts = hosts;
             HttpClient = httpClient ?? DefaultHttpClientConfigurationName;
             Endpoint = endpoint;
+            Path = path;
         }
 
         public IEnumerable<string> GetAllHosts()
@@ -45,6 +48,6 @@ namespace NCoreUtils.AspNetCore.OAuth2
         }
 
         public bool Matches(HttpRequest request)
-            => GetAllHosts().Contains(request.Host.Value);
+            => GetAllHosts().Contains(request.Host.Host);
     }
 }

@@ -26,7 +26,8 @@ internal static class StartupExtensions
             }
             var httpClient = section[nameof(LoginProviderConfiguration.HttpClient)];
             var endpoint = section.GetRequiredValue(nameof(LoginProviderConfiguration.Endpoint));
-            configurations.Add(new(host, hosts, httpClient, endpoint));
+            var path = section[nameof(LoginProviderConfiguration.Path)];
+            configurations.Add(new(host, hosts, httpClient, endpoint, path));
         }
         return configurations;
     }
@@ -67,7 +68,8 @@ internal static class StartupExtensions
                     return new LoginProviderClient(new LoginProviderClientConfiguration
                     {
                         Endpoint = configuration.Endpoint,
-                        HttpClient = configuration.HttpClient
+                        HttpClient = configuration.HttpClient,
+                        Path = configuration.Path
                     }, serviceProvider.GetRequiredService<IHttpClientFactory>());
                 }
                 throw new NoConfigurationForHostException($"No configuration found for host {httpContext.Request.Host}.");
