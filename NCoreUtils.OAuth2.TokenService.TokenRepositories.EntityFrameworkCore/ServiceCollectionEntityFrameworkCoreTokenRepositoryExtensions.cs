@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NCoreUtils.Data;
@@ -8,6 +9,8 @@ namespace NCoreUtils.OAuth2
 {
     public static class ServiceCollectionEntityFrameworkCoreTokenRepositoryExtensions
     {
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(RefreshToken))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(RefreshTokenDbContext))]
         public static IServiceCollection AddEntityFrameworkCoreTokenRepository(
             this IServiceCollection services,
             Action<DbContextOptionsBuilder> configureDbContext)
