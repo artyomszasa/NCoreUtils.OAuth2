@@ -19,6 +19,10 @@ namespace NCoreUtils.OAuth2
         [JsonPropertyName("issuer")]
         public string Issuer { get; }
 
+        [JsonPropertyName("iss")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? IssuerFallback { get; }
+
         [JsonPropertyName("name")]
         public string Name { get; }
 
@@ -29,13 +33,14 @@ namespace NCoreUtils.OAuth2
         public ScopeCollection Scopes { get; }
 
         [JsonConstructor]
-        public LoginIdentity(string sub, string issuer, string name, string? email, ScopeCollection scopes)
+        public LoginIdentity(string sub, string issuer, string? issuerFallback, string name, string? email, ScopeCollection scopes)
         {
             if (string.IsNullOrWhiteSpace(sub))
             {
                 throw new ArgumentException("Sub must be a non-empty string.", nameof(sub));
             }
-            if (string.IsNullOrWhiteSpace(issuer))
+            var iss = issuer is null ? issuerFallback : issuer;
+            if (string.IsNullOrWhiteSpace(iss))
             {
                 throw new ArgumentException("Issuer must be a non-empty string.", nameof(issuer));
             }
@@ -44,11 +49,15 @@ namespace NCoreUtils.OAuth2
                 throw new ArgumentException("Name must be a non-empty string.", nameof(name));
             }
             Sub = sub;
-            Issuer = issuer;
+            Issuer = iss;
             Name = name;
             Email = email;
             Scopes = scopes;
         }
+
+        public LoginIdentity(string sub, string issuer, string name, string? email, ScopeCollection scopes)
+            : this(sub, issuer, null, name, email, scopes)
+        { /* noop */ }
 
         private int EmplaceNoCheck(Span<char> buffer)
         {
