@@ -15,11 +15,11 @@ namespace NCoreUtils.OAuth2;
 /// Scope collection that distinguishes between no value and empty value.
 /// </summary>
 [JsonConverter(typeof(ScopeCollectionConverter))]
-public partial struct ScopeCollection
+public readonly partial struct ScopeCollection
     : IReadOnlyCollection<string>
     , IEquatable<ScopeCollection>
     , ISpanExactEmplaceable
-// NOTE: compatibility / should be removed in uture releases
+// NOTE: compatibility / should be removed in future releases
 #pragma warning disable CS0618
     , IEmplaceable<ScopeCollection>
 #pragma warning restore CS0618
@@ -53,7 +53,19 @@ public partial struct ScopeCollection
 
     private static readonly IEqualityComparer<HashSet<string>> _equalityComparer = HashSet<string>.CreateSetComparer();
 
-    private static readonly Regex _regexWs = new("\\s+", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+#if NET6_0_OR_GREATER
+    private static char[] WsChars { get; } = [ ' ', '\t', '\r', '\n' ];
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static string[] SplitScopes(string input)
+        => input.Split(WsChars, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+#else
+    private static Regex RegexWhitespace { get; } = new("\\s+", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static string[] SplitScopes(string input)
+        => RegexWhitespace.Split(input);
+#endif
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [DebuggerStepThrough]
@@ -100,7 +112,7 @@ public partial struct ScopeCollection
         {
             return default;
         }
-        return new ScopeCollection(_regexWs.Split(input));
+        return new ScopeCollection(SplitScopes(input));
     }
 
     public static ScopeCollection Parse(string? input, IFormatProvider? formatProvider)
@@ -206,7 +218,7 @@ public partial struct ScopeCollection
         return GetEmplaceBufferSize(_scopes);
     }
 
-    string IFormattable.ToString(string? format, System.IFormatProvider? formatProvider)
+    string IFormattable.ToString(string? format, IFormatProvider? formatProvider)
         => ToString();
 
     public int ComputeRequiredBufferSize()
@@ -218,7 +230,7 @@ public partial struct ScopeCollection
         return GetEmplaceBufferSize(_scopes);
     }
 
-    public int Emplace(System.Span<char> span)
+    public int Emplace(Span<char> span)
     {
         if (TryEmplace(span, out var used))
         {

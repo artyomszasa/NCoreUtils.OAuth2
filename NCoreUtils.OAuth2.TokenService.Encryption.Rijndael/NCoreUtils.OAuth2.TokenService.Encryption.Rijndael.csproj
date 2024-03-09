@@ -1,9 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Internal.Abstractions\NCoreUtils.OAuth2.TokenService.Internal.Abstractions.csproj" />
-  </ItemGroup>
-</Project>

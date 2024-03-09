@@ -3,79 +3,78 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NCoreUtils.OAuth2
+namespace NCoreUtils.OAuth2;
+
+public sealed partial class AesTokenEncryption : ITokenEncryption, IDisposable
 {
-    public sealed partial class AesTokenEncryption : ITokenEncryption, IDisposable
+    private readonly Aes _alg;
+
+    private readonly EncryptorPool _encryptorPool;
+
+    private readonly DecryptorPool _decryptorPool;
+
+    private int _isDisposed;
+
+    private bool IsDisposed
     {
-        private readonly Aes _alg;
+        get => 0 != Interlocked.CompareExchange(ref _isDisposed, 0, 0);
+    }
 
-        private readonly EncryptorPool _encryptorPool;
+    public AesTokenEncryption(AesTokenEncryptionConfiguration configuration)
+    {
+        _alg = Aes.Create();
+        _alg.KeySize = configuration.KeyValue.Length * 8;
+        _alg.Key = configuration.KeyValue;
+        _alg.IV = configuration.IVValue;
+        _encryptorPool = new EncryptorPool(_alg);
+        _decryptorPool = new DecryptorPool(_alg);
+    }
 
-        private readonly DecryptorPool _decryptorPool;
-
-        private int _isDisposed;
-
-        private bool IsDisposed
+    private void ThrowIfDisposed()
+    {
+        if (IsDisposed)
         {
-            get => 0 != Interlocked.CompareExchange(ref _isDisposed, 0, 0);
+            throw new ObjectDisposedException(nameof(AesTokenEncryption));
         }
+    }
 
-        public AesTokenEncryption(AesTokenEncryptionConfiguration configuration)
+    public ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, int offset, int count, CancellationToken cancellationToken = default)
+    {
+        var decryptor = _decryptorPool.Rent();
+        try
         {
-            _alg = Aes.Create();
-            _alg.KeySize = configuration.KeyValue.Length * 8;
-            _alg.Key = configuration.KeyValue;
-            _alg.IV = configuration.IVValue;
-            _encryptorPool = new EncryptorPool(_alg);
-            _decryptorPool = new DecryptorPool(_alg);
+            var data = decryptor.TransformFinalBlock(encryptedToken, offset, count);
+            if (!Token.TryReadFrom(data, out var token))
+            {
+                throw new InvalidOperationException("Failed to decrypt token: invalid token.");
+            }
+            return new ValueTask<Token>(token);
         }
-
-        private void ThrowIfDisposed()
+        finally
         {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException(nameof(AesTokenEncryption));
-            }
+            _decryptorPool.Return(decryptor);
         }
+    }
 
-        public ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, int offset, int count, CancellationToken cancellationToken = default)
+    public ValueTask<byte[]> EncryptTokenAsync(Token token, CancellationToken cancellationToken = default)
+    {
+        var encryptor = _encryptorPool.Rent();
+        try
         {
-            var decryptor = _decryptorPool.Rent();
-            try
-            {
-                var data = decryptor.TransformFinalBlock(encryptedToken, offset, count);
-                if (!Token.TryReadFrom(data, out var token))
-                {
-                    throw new InvalidOperationException("Failed to decrypt token: invalid token.");
-                }
-                return new ValueTask<Token>(token);
-            }
-            finally
-            {
-                _decryptorPool.Return(decryptor);
-            }
+            var data = token.ToByteArray();
+            return new ValueTask<byte[]>(encryptor.TransformFinalBlock(data, 0, data.Length));
         }
-
-        public ValueTask<byte[]> EncryptTokenAsync(Token token, CancellationToken cancellationToken = default)
+        finally
         {
-            var encryptor = _encryptorPool.Rent();
-            try
-            {
-                var data = token.ToByteArray();
-                return new ValueTask<byte[]>(encryptor.TransformFinalBlock(data, 0, data.Length));
-            }
-            finally
-            {
-                _encryptorPool.Return(encryptor);
-            }
+            _encryptorPool.Return(encryptor);
         }
+    }
 
-        public void Dispose()
+    public void Dispose()
+    {
+        if (0 == Interlocked.CompareExchange(ref _isDisposed, 1, 0))
         {
-            if (0 == Interlocked.CompareExchange(ref _isDisposed, 1, 0))
-            {
-                _alg.Dispose();
-            }
+            _alg.Dispose();
         }
     }
 }

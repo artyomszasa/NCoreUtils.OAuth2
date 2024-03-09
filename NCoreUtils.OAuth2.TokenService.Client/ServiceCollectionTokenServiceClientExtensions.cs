@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NCoreUtils.OAuth2.Internal;
-using NCoreUtils.Proto;
 
 namespace NCoreUtils.OAuth2;
 

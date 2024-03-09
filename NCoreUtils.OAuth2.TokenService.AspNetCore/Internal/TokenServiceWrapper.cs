@@ -9,15 +9,12 @@ using NCoreUtils.Proto;
 namespace NCoreUtils.AspNetCore.Internal;
 
 [ProtoService(typeof(TokenServiceEndpointsInfo), typeof(TokenServiceSerializerContext), ImplementationFactory = typeof(TokenServiceWrapper), Path = "")]
-public class TokenServiceWrapper : ITokenServiceEndpoints
+public partial class TokenServiceWrapper(ITokenService tokenService) : ITokenServiceEndpoints
 {
     public static ProtoTokenServiceWrapperImplementation CreateService(IServiceProvider serviceProvider)
         => new(new TokenServiceWrapper(serviceProvider.GetRequiredService<ITokenService>()));
 
-    private readonly ITokenService _tokenService;
-
-    public TokenServiceWrapper(ITokenService tokenService)
-        => _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+    private readonly ITokenService _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
 
     public ValueTask<IntrospectionResponse> IntrospectAsync(
         string token,

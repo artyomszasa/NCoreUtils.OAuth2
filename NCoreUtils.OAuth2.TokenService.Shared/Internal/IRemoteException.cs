@@ -1,7 +1,6 @@
-namespace NCoreUtils.OAuth2.Internal
+namespace NCoreUtils.OAuth2.Internal;
+
+public interface IRemoteException
 {
-    public interface IRemoteException
-    {
-        string Endpoint { get; }
-    }
+    string Endpoint { get; }
 }

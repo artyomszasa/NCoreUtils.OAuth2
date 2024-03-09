@@ -8,7 +8,7 @@ using NCoreUtils.Proto;
 namespace NCoreUtils.AspNetCore;
 
 [ProtoService(typeof(LoginProviderInfo), typeof(LoginProviderSerializerContext))]
-public class LoginProviderService { }
+public partial class LoginProviderService { }
 
 public partial class ProtoLoginProviderServiceImplementation
 {

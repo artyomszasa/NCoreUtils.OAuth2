@@ -3,22 +3,21 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NCoreUtils.OAuth2.Internal
-{
-    public class NoopTokenEncryption : ITokenEncryption
-    {
-        public ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, int offset, int count, CancellationToken cancellationToken = default)
-        {
-            if (Token.TryReadFrom(encryptedToken.AsSpan().Slice(offset, count), out var token))
-            {
-                return new ValueTask<Token>(token);
-            }
-            throw new InvalidOperationException("Unable to read token: invalid token.");
-        }
+namespace NCoreUtils.OAuth2.Internal;
 
-        public ValueTask<byte[]> EncryptTokenAsync(Token token, CancellationToken cancellationToken = default)
+public class NoopTokenEncryption : ITokenEncryption
+{
+    public ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, int offset, int count, CancellationToken cancellationToken = default)
+    {
+        if (Token.TryReadFrom(encryptedToken.AsSpan().Slice(offset, count), out var token))
         {
-            return new ValueTask<byte[]>(token.ToByteArray());
+            return new ValueTask<Token>(token);
         }
+        throw new InvalidOperationException("Unable to read token: invalid token.");
+    }
+
+    public ValueTask<byte[]> EncryptTokenAsync(Token token, CancellationToken cancellationToken = default)
+    {
+        return new ValueTask<byte[]>(token.ToByteArray());
     }
 }

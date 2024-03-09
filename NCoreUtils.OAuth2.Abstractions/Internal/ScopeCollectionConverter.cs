@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -8,7 +9,20 @@ namespace NCoreUtils.OAuth2.Internal;
 
 public sealed class ScopeCollectionConverter : JsonConverter<ScopeCollection>
 {
+
+#if NET6_0_OR_GREATER
+    private static char[] WsChars { get; } = [ ' ', '\t', '\r', '\n' ];
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static string[] SplitScopes(string input)
+        => input.Split(WsChars, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+#else
     private static Regex RegexWhitespace { get; } = new("\\s+", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static string[] SplitScopes(string input)
+        => RegexWhitespace.Split(input);
+#endif
 
     private static ScopeCollection ReadAsArray(ref Utf8JsonReader reader)
     {
@@ -34,7 +48,7 @@ public sealed class ScopeCollectionConverter : JsonConverter<ScopeCollection>
     public override ScopeCollection Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         => reader.TokenType switch
         {
-            JsonTokenType.String => RegexWhitespace.Split(reader.GetString() ?? string.Empty),
+            JsonTokenType.String => SplitScopes(reader.GetString() ?? string.Empty),
             JsonTokenType.Null => default,
             // NOTE: for compatibility reasons and should be removed in future (!)
             JsonTokenType.StartArray => ReadAsArray(ref reader),
@@ -45,7 +59,7 @@ public sealed class ScopeCollectionConverter : JsonConverter<ScopeCollection>
     {
         if (value.HasValue)
         {
-            writer.WriteStringValue(string.Join(" ", value._scopes));
+            writer.WriteStringValue(string.Join(' ', value._scopes));
         }
         else
         {

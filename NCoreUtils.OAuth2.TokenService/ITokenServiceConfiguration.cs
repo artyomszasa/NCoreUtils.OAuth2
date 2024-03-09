@@ -1,11 +1,10 @@
 using System;
 
-namespace NCoreUtils.OAuth2
-{
-    public interface ITokenServiceConfiguration
-    {
-        TimeSpan RefreshTokenExpiry { get; }
+namespace NCoreUtils.OAuth2;
 
-        TimeSpan AccessTokenExpiry { get; }
-    }
+public interface ITokenServiceConfiguration
+{
+    TimeSpan RefreshTokenExpiry { get; }
+
+    TimeSpan AccessTokenExpiry { get; }
 }

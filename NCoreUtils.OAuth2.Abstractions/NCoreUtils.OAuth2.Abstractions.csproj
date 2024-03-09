@@ -1,16 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net6.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net8.0;net7.0;net6.0;netstandard2.1</TargetFrameworks>
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Extensions.Memory" Version="7.0.0" />
+    <PackageReference Include="NCoreUtils.Extensions.Memory" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.1' ">
     <PackageReference Include="System.Text.Json" Version="6.0.0" />
+    <Compile Include="..\Shared\Trimming\*.cs" />
+    <Compile Include="..\Shared\Nullable\*.cs" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.1' ">
-    <Compile Remove="CodeAnalysis\**" />
     <Compile Remove="ScopeCollection.Compat.cs" />
   </ItemGroup>
 </Project>

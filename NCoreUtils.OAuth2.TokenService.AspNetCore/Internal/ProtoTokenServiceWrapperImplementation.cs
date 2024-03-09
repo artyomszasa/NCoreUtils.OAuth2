@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,6 +67,7 @@ public partial class ProtoTokenServiceWrapperImplementation
         );
     }
 
+    [SuppressMessage("Code Style", "CA1822")]
     private ScopeCollection ReadArgumentOfScopeCollection(string? input)
         => string.IsNullOrEmpty(input) ? default : ScopeCollection.Parse(input);
 

@@ -6,67 +6,72 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace NCoreUtils.OAuth2
+namespace NCoreUtils.OAuth2;
+
+public class OAuth2AuthenticationHandler : AuthenticationHandler<OAuth2AuthenticationSchemeOptions>
 {
-    public class OAuth2AuthenticationHandler : AuthenticationHandler<OAuth2AuthenticationSchemeOptions>
+    public ITokenHandler TokenHandler { get; }
+
+    public ITokenService TokenService { get; }
+
+    public IIntrospectionCache Cache { get; }
+
+    public OAuth2AuthenticationHandler(
+        IOptionsMonitor<OAuth2AuthenticationSchemeOptions> options,
+        ILoggerFactory logger,
+        UrlEncoder encoder,
+#if !NET8_0_OR_GREATER
+        ISystemClock clock,
+#endif
+        ITokenHandler tokenHandler,
+        ITokenService tokenService,
+        IIntrospectionCache? introspectionCache = default)
+#if NET8_0_OR_GREATER
+        : base(options, logger, encoder)
+#else
+        : base(options, logger, encoder, clock)
+#endif
     {
-        public ITokenHandler TokenHandler { get; }
+        TokenHandler = tokenHandler ?? throw new ArgumentNullException(nameof(tokenHandler));
+        TokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+        Cache = introspectionCache ?? new IntrospectionNoCache();
+    }
 
-        public ITokenService TokenService { get; }
-
-        public IIntrospectionCache Cache { get; }
-
-        public OAuth2AuthenticationHandler(
-            IOptionsMonitor<OAuth2AuthenticationSchemeOptions> options,
-            ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock,
-            ITokenHandler tokenHandler,
-            ITokenService tokenService,
-            IIntrospectionCache? introspectionCache = default)
-            : base(options, logger, encoder, clock)
+    protected virtual async Task<AuthenticateResult> ProcessTokenAsync(string token)
+    {
+        IntrospectionResponse data;
+        try
         {
-            TokenHandler = tokenHandler ?? throw new ArgumentNullException(nameof(tokenHandler));
-            TokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
-            Cache = introspectionCache ?? new IntrospectionNoCache();
+            data = await Cache.IntrospectAsync(TokenService, token, cancellationToken: Context.RequestAborted);
         }
-
-        protected virtual async Task<AuthenticateResult> ProcessTokenAsync(string token)
+        catch (Exception exn)
         {
-            IntrospectionResponse data;
-            try
-            {
-                data = await Cache.IntrospectAsync(TokenService, token, cancellationToken: Context.RequestAborted);
-            }
-            catch (Exception exn)
-            {
-                return AuthenticateResult.Fail(exn);
-            }
-            if (!data.Active)
-            {
-                return AuthenticateResult.Fail("Token is not active.");
-            }
-            var identity = new ClaimsIdentity(data.ReadClaims(), OAuth2AuthenticationSchemeOptions.Name, ClaimTypes.Name, ClaimTypes.Role);
-            var principal = new ClaimsPrincipal(identity);
-            return AuthenticateResult.Success(new AuthenticationTicket(
-                principal,
-                new AuthenticationProperties
-                {
-                    ExpiresUtc = data.ExpiresAt,
-                    IssuedUtc = data.IssuedAt
-                },
-                OAuth2AuthenticationSchemeOptions.Name
-            ));
+            return AuthenticateResult.Fail(exn);
         }
-
-        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+        if (!data.Active)
         {
-            var token = await TokenHandler.ReadTokenAsync(Context.Request, Context.RequestAborted);
-            if (token is null)
-            {
-                return AuthenticateResult.NoResult();
-            }
-            return await ProcessTokenAsync(token);
+            return AuthenticateResult.Fail("Token is not active.");
         }
+        var identity = new ClaimsIdentity(data.ReadClaims(), OAuth2AuthenticationSchemeOptions.Name, ClaimTypes.Name, ClaimTypes.Role);
+        var principal = new ClaimsPrincipal(identity);
+        return AuthenticateResult.Success(new AuthenticationTicket(
+            principal,
+            new AuthenticationProperties
+            {
+                ExpiresUtc = data.ExpiresAt,
+                IssuedUtc = data.IssuedAt
+            },
+            OAuth2AuthenticationSchemeOptions.Name
+        ));
+    }
+
+    protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+    {
+        var token = await TokenHandler.ReadTokenAsync(Context.Request, Context.RequestAborted);
+        if (token is null)
+        {
+            return AuthenticateResult.NoResult();
+        }
+        return await ProcessTokenAsync(token);
     }
 }
