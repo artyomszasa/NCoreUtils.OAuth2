@@ -3,33 +3,32 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace NCoreUtils.OAuth2
+namespace NCoreUtils.OAuth2;
+
+public class BearerTokenHandler : ITokenHandler
 {
-    public class BearerTokenHandler : ITokenHandler
+    private static string? GetBearerToken(HttpRequest request)
     {
-        private static string? GetBearerToken(HttpRequest request)
+        var headers = request.Headers;
+        var auth = headers.TryGetValue("Authorization", out var values) && values.Count > 0 ? values[0] : default;
+        if (!string.IsNullOrEmpty(auth) && auth.StartsWith("bearer ", StringComparison.InvariantCultureIgnoreCase))
         {
-            var headers = request.Headers;
-            var auth = headers.TryGetValue("Authorization", out var values) && values.Count > 0 ? values[0] : default;
-            if (!string.IsNullOrEmpty(auth) && auth.StartsWith("bearer ", StringComparison.InvariantCultureIgnoreCase))
+            var tokenIndex = 7;
+            while (auth.Length > tokenIndex && char.IsWhiteSpace(auth[tokenIndex]))
             {
-                var tokenIndex = 7;
-                while (auth.Length > tokenIndex && char.IsWhiteSpace(auth[tokenIndex]))
-                {
-                    ++tokenIndex;
-                }
-                return auth.Substring(tokenIndex);
+                ++tokenIndex;
             }
-            return default;
+            return auth[tokenIndex..];
         }
+        return default;
+    }
 
-        public string? CurrentToken { get; set; }
+    public string? CurrentToken { get; set; }
 
-        public ValueTask<string?> ReadTokenAsync(HttpRequest request, CancellationToken cancellationToken = default)
-        {
-            var token = GetBearerToken(request);
-            CurrentToken = token;
-            return new ValueTask<string?>(token);
-        }
+    public ValueTask<string?> ReadTokenAsync(HttpRequest request, CancellationToken cancellationToken = default)
+    {
+        var token = GetBearerToken(request);
+        CurrentToken = token;
+        return new ValueTask<string?>(token);
     }
 }

@@ -4,29 +4,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace NCoreUtils.OAuth2
+namespace NCoreUtils.OAuth2;
+
+public class CompositeTokenHandler(IReadOnlyList<ITokenHandler> handlers) : ITokenHandler
 {
-    public class CompositeTokenHandler : ITokenHandler
+    public IReadOnlyList<ITokenHandler> Handlers { get; } = handlers ?? throw new ArgumentNullException(nameof(handlers));
+
+    public string? CurrentToken { get; set; }
+
+    public async ValueTask<string?> ReadTokenAsync(HttpRequest request, CancellationToken cancellationToken = default)
     {
-        public IReadOnlyList<ITokenHandler> Handlers { get; }
-
-        public string? CurrentToken { get; set; }
-
-        public CompositeTokenHandler(IReadOnlyList<ITokenHandler> handlers)
-            => Handlers = handlers ?? throw new ArgumentNullException(nameof(handlers));
-
-        public async ValueTask<string?> ReadTokenAsync(HttpRequest request, CancellationToken cancellationToken = default)
+        foreach (var handler in Handlers)
         {
-            foreach (var handler in Handlers)
+            var token = await handler.ReadTokenAsync(request, cancellationToken);
+            if (null != token)
             {
-                var token = await handler.ReadTokenAsync(request, cancellationToken);
-                if (null != token)
-                {
-                    CurrentToken = token;
-                    return token;
-                }
+                CurrentToken = token;
+                return token;
             }
-            return default;
         }
+        return default;
     }
 }

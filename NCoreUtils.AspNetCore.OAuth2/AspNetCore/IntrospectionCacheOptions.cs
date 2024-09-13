@@ -1,8 +1,7 @@
-namespace NCoreUtils.AspNetCore
+namespace NCoreUtils.AspNetCore;
+
+public enum IntrospectionCacheOptions
 {
-    public enum IntrospectionCacheOptions
-    {
-        MemoryCache = 0,
-        NoCache = 255
-    }
+    MemoryCache = 0,
+    NoCache = 255
 }

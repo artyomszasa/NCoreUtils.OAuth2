@@ -13,10 +13,6 @@ public partial class LoginIdentity
 #pragma warning restore CS0618
     , ISpanExactEmplaceable
 {
-    private const int MaxCharBufferStackAllocSize = 8 * 1024;
-
-    private const int MaxCharBufferPoolAllocSize = 32 * 1024;
-
     [JsonPropertyName("sub")]
     public string Sub { get; }
 
@@ -53,46 +49,6 @@ public partial class LoginIdentity
         Name = name;
         Email = email;
         Scopes = scopes;
-    }
-
-    private int EmplaceNoCheck(Span<char> buffer)
-    {
-        var builder = new SpanBuilder(buffer);
-        builder.Append(Sub);
-        builder.Append('#');
-        builder.Append(Name);
-        if (null != Email)
-        {
-            builder.Append('<');
-            builder.Append(Email);
-            builder.Append('>');
-        }
-        builder.Append('@');
-        builder.Append(Issuer);
-        builder.Append('[');
-        builder.Append(Scopes);
-        builder.Append(']');
-        return builder.Length;
-    }
-
-    private string ToStringFallback(int requiredSize)
-    {
-        var builder = new StringBuilder(requiredSize);
-        builder.Append(Sub);
-        builder.Append('#');
-        builder.Append(Name);
-        if (null != Email)
-        {
-            builder.Append('<');
-            builder.Append(Email);
-            builder.Append('>');
-        }
-        builder.Append('@');
-        builder.Append(Issuer);
-        builder.Append('[');
-        builder.Append(Scopes);
-        builder.Append(']');
-        return builder.ToString();
     }
 
     [Obsolete("Use GetEmplaceBufferSize instead.")]
@@ -161,7 +117,7 @@ public partial class LoginIdentity
         if (!builder.TryAppend('@')
             || !builder.TryAppend(Issuer)
             || !builder.TryAppend('[')
-            || !builder.TryAppend(Scopes)
+            || !builder.TryAppend(Scopes, ScopeCollection.Emplacer)
             || !builder.TryAppend(']'))
         {
             used = 0;

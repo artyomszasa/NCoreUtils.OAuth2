@@ -1,32 +1,38 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 
-namespace NCoreUtils.AspNetCore.OAuth2
+namespace NCoreUtils.AspNetCore.OAuth2;
+
+public class LoginProviderConfiguration(string? host, IReadOnlyList<string> hosts, string httpClient, string endpoint)
 {
-    public class LoginProviderConfiguration
+    public const string DefaultHttpClientConfigurationName = "LoginProvider";
+
+    public string? Host { get; } = host;
+
+    public IReadOnlyList<string> Hosts { get; } = hosts;
+
+    public string HttpClient { get; } = httpClient;
+
+    public string Endpoint { get; } = endpoint switch
     {
-        public string? Host { get; set; }
+        null or "" => throw new ArgumentException("Endpoint must be a non-empty string.", nameof(endpoint)),
+        var ep => ep
+    };
 
-        public List<string> Hosts { get; set; } = new List<string>();
-
-        public string HttpClient { get; set; } = "LoginProvider";
-
-        public string Endpoint { get; set; } = string.Empty;
-
-        public IEnumerable<string> GetAllHosts()
+    public IEnumerable<string> GetAllHosts()
+    {
+        if (!string.IsNullOrEmpty(Host))
         {
-            if (!string.IsNullOrEmpty(Host))
-            {
-                yield return Host;
-            }
-            foreach (var host in Hosts)
-            {
-                yield return host;
-            }
+            yield return Host;
         }
-
-        public bool Matches(HttpRequest request)
-            => GetAllHosts().Contains(request.Host.Value);
+        foreach (var host in Hosts)
+        {
+            yield return host;
+        }
     }
+
+    public bool Matches(HttpRequest request)
+        => GetAllHosts().Contains(request.Host.Value);
 }

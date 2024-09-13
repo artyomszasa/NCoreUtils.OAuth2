@@ -47,11 +47,9 @@ public readonly partial struct ScopeCollection
         public void Reset() { }
     }
 
-    private const int MaxCharBufferStackAllocSize = 8 * 1024;
-
-    private const int MaxCharBufferPoolAllocSize = 32 * 1024;
-
     private static readonly IEqualityComparer<HashSet<string>> _equalityComparer = HashSet<string>.CreateSetComparer();
+
+    public static SpanEmplaceableEmplacer<ScopeCollection> Emplacer { get; } = new();
 
 #if NET6_0_OR_GREATER
     private static char[] WsChars { get; } = [ ' ', '\t', '\r', '\n' ];

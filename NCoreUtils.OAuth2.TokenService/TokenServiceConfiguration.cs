@@ -1,17 +1,14 @@
 using System;
 
-namespace NCoreUtils.OAuth2
+namespace NCoreUtils.OAuth2;
+
+public class TokenServiceConfiguration(TimeSpan refreshTokenExpiry, TimeSpan accessTokenExpiry) : ITokenServiceConfiguration
 {
-    public class TokenServiceConfiguration : ITokenServiceConfiguration
-    {
-        public TimeSpan RefreshTokenExpiry { get; }
+    public static readonly TimeSpan DefaultRefreshTokenExpiry = TimeSpan.FromDays(30);
 
-        public TimeSpan AccessTokenExpiry { get; }
+    public static readonly TimeSpan DefaultAccessTokenExpiry = TimeSpan.FromMinutes(15);
 
-        public TokenServiceConfiguration(TimeSpan refreshTokenExpiry, TimeSpan accessTokenExpiry)
-        {
-            RefreshTokenExpiry = refreshTokenExpiry;
-            AccessTokenExpiry = accessTokenExpiry;
-        }
-    }
+    public TimeSpan RefreshTokenExpiry { get; } = refreshTokenExpiry;
+
+    public TimeSpan AccessTokenExpiry { get; } = accessTokenExpiry;
 }

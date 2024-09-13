@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.OAuth2.TokenServ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.OAuth2.LoginProvider.Client", "NCoreUtils.OAuth2.LoginProvider.Client\NCoreUtils.OAuth2.LoginProvider.Client.csproj", "{317707BA-E751-4BFD-B558-D1085000D77A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoreUtils.OAuth2.TokenService.TokenRepositories.Npgsql", "NCoreUtils.OAuth2.TokenService.TokenRepositories.Npgsql\NCoreUtils.OAuth2.TokenService.TokenRepositories.Npgsql.csproj", "{A56FCE52-6732-4BB1-B7B0-203E49ABB2B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -324,5 +326,17 @@ Global
 		{317707BA-E751-4BFD-B558-D1085000D77A}.Release|x64.Build.0 = Release|Any CPU
 		{317707BA-E751-4BFD-B558-D1085000D77A}.Release|x86.ActiveCfg = Release|Any CPU
 		{317707BA-E751-4BFD-B558-D1085000D77A}.Release|x86.Build.0 = Release|Any CPU
+		{A56FCE52-6732-4BB1-B7B0-203E49ABB2B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A56FCE52-6732-4BB1-B7B0-203E49ABB2B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A56FCE52-6732-4BB1-B7B0-203E49ABB2B5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A56FCE52-6732-4BB1-B7B0-203E49ABB2B5}.Debug|x64.Build.0 = Debug|Any CPU
+		{A56FCE52-6732-4BB1-B7B0-203E49ABB2B5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A56FCE52-6732-4BB1-B7B0-203E49ABB2B5}.Debug|x86.Build.0 = Debug|Any CPU
+		{A56FCE52-6732-4BB1-B7B0-203E49ABB2B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A56FCE52-6732-4BB1-B7B0-203E49ABB2B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A56FCE52-6732-4BB1-B7B0-203E49ABB2B5}.Release|x64.ActiveCfg = Release|Any CPU
+		{A56FCE52-6732-4BB1-B7B0-203E49ABB2B5}.Release|x64.Build.0 = Release|Any CPU
+		{A56FCE52-6732-4BB1-B7B0-203E49ABB2B5}.Release|x86.ActiveCfg = Release|Any CPU
+		{A56FCE52-6732-4BB1-B7B0-203E49ABB2B5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
