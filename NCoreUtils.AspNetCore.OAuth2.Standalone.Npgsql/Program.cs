@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -56,11 +57,19 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .AddEnvironmentVariables("OAUTH2")
                 .Build();
 
+#if NET7_0
+
+        [RequiresDynamicCode("HostBuilder requires dynamic code")]
+#endif
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
         }
 
+#if NET7_0
+
+        [RequiresDynamicCode("HostBuilder requires dynamic code")]
+#endif
 #pragma warning disable IDE0060
         public static IHostBuilder CreateHostBuilder(string[] args)
 #pragma warning restore IDE0060

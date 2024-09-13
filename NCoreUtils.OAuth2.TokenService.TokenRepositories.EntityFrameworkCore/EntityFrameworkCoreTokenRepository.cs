@@ -15,6 +15,9 @@ namespace NCoreUtils.OAuth2
         public EntityFrameworkCoreTokenRepository(IDataRepository<RefreshToken> repository)
             => Repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
+#if NET7_0
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL3050", Justification = "Should be handled by the provider")]
+#endif
         public async ValueTask<bool> CheckRefreshTokenAsync(Token token, CancellationToken cancellationToken = default)
         {
             var issuedAt = token.IssuedAt.UtcTicks;
