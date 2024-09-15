@@ -9,8 +9,8 @@
     <!--
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
-    -->
     <PublishTrimmed>true</PublishTrimmed>
+    -->
     <EFCoreVersion>8.0.4</EFCoreVersion>
     <DefineConstants Condition=" '$(GoogleFluentdLogging)' == 'true' ">$(DefineConstants);GOOGLE_FLUENTD_LOGGING</DefineConstants>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
