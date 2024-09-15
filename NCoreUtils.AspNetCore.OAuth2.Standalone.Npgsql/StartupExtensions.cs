@@ -10,7 +10,7 @@ namespace NCoreUtils.AspNetCore.OAuth2;
 
 internal static class StartupExtensions
 {
-    private static IReadOnlyList<LoginProviderConfiguration> GetLoginProviderConfigurations(this IConfiguration configuration)
+    private static List<LoginProviderConfiguration> GetLoginProviderConfigurations(this IConfiguration configuration)
     {
         var configurations = new List<LoginProviderConfiguration>();
         foreach (var section in configuration.GetChildren())

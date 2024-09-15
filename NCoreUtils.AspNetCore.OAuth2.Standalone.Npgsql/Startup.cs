@@ -17,9 +17,9 @@ namespace NCoreUtils.AspNetCore.OAuth2
 {
     public class Startup
     {
-        private static void ConfigureRest(RestConfigurationBuilder builder)
+        private static void ConfigureRest(RestEndpointsConfigurationBuilder builder)
         {
-            builder.AddEntity<RefreshToken>();
+            builder.AddEntity<RefreshToken, int>();
             builder.ConfigureAccess(o => o.RestrictAll(user => user.Identity is not null && user.Identity.IsAuthenticated && (user.IsInRole("admin") || user.IsInRole("website"))));
         }
 
@@ -83,9 +83,9 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 // scoped login provider client
                 .AddDynamicLoginProvider(_configuration.GetSection("LoginProviders"))
                 // DATA query for REST
-                .AddDataQueryServices(_ => {})
+                .AddDataQueryServerServices(TokenQueryContext.Singleton)
                 // JSON options for REST requests
-                .AddTransient<JsonSerializerOptions>(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<JsonSerializerOptions>>().CurrentValue)
+                .AddRestJsonTypeInfoResolver(TokenSerializerContext.Default)
                 // Authorization for REST requests
                 .AddScoped<ITokenHandler, BearerTokenHandler>()
                 .AddAuthentication(OAuth2AuthenticationSchemeOptions.Name)
@@ -146,7 +146,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .UseEndpoints(endpoints =>
                 {
                     endpoints.MapTokenService(string.Empty);
-                    endpoints.MapRest("data", ConfigureRest);
+                    endpoints.MapRestEndpoints("data", ConfigureRest);
                 });
         }
     }

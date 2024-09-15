@@ -95,12 +95,9 @@ internal static class ConfigurationNpgsqlConnectionStringBuilderExtensions
                 case nameof(NpgsqlConnectionStringBuilder.IncludeRealm) when value is not null:
                     connectionStringBuilder.IncludeRealm = B(value);
                     break;
-                case nameof(NpgsqlConnectionStringBuilder.IntegratedSecurity) when value is not null:
-                    connectionStringBuilder.IntegratedSecurity = B(value);
-                    break;
-                case nameof(NpgsqlConnectionStringBuilder.InternalCommandTimeout) when value is not null:
-                    connectionStringBuilder.InternalCommandTimeout = I32(value);
-                    break;
+                // case nameof(NpgsqlConnectionStringBuilder.InternalCommandTimeout) when value is not null:
+                //     connectionStringBuilder.InternalCommandTimeout = I32(value);
+                //    break;
                 case nameof(NpgsqlConnectionStringBuilder.KeepAlive) when value is not null:
                     connectionStringBuilder.KeepAlive = I32(value);
                     break;
@@ -161,9 +158,9 @@ internal static class ConfigurationNpgsqlConnectionStringBuilderExtensions
                 case nameof(NpgsqlConnectionStringBuilder.Timezone):
                     connectionStringBuilder.Timezone = value;
                     break;
-                case nameof(NpgsqlConnectionStringBuilder.TrustServerCertificate) when value is not null:
-                    connectionStringBuilder.TrustServerCertificate = B(value);
-                    break;
+                // case nameof(NpgsqlConnectionStringBuilder.TrustServerCertificate) when value is not null:
+                //     connectionStringBuilder.TrustServerCertificate = B(value);
+                //     break;
                 case nameof(NpgsqlConnectionStringBuilder.Username):
                     connectionStringBuilder.Username = value;
                     break;

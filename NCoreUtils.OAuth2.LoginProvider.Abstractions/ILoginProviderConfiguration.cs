@@ -1,9 +1,8 @@
-namespace NCoreUtils.OAuth2
-{
-    public interface ILoginProviderConfiguration
-    {
-        string Issuer { get; }
+namespace NCoreUtils.OAuth2;
 
-        bool UseEmailAsUsername { get; }
-    }
+public interface ILoginProviderConfiguration
+{
+    string Issuer { get; }
+
+    bool UseEmailAsUsername { get; }
 }
