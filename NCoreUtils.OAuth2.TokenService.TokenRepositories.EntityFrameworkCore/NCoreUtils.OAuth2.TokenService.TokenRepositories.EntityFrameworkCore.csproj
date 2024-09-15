@@ -4,7 +4,7 @@
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Data.EntityFrameworkCore" Version="6.0.0-beta00" />
+    <PackageReference Include="NCoreUtils.Data.EntityFrameworkCore" Version="8.0.1-rc04" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.1' ">
     <Compile Remove="CodeAnalysis\**" />

@@ -17,6 +17,7 @@ namespace NCoreUtils.OAuth2
 
 #if NET7_0
         [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL3050", Justification = "Should be handled by the provider")]
+        [System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Should be handled by the provider")]
 #endif
         public async ValueTask<bool> CheckRefreshTokenAsync(Token token, CancellationToken cancellationToken = default)
         {
