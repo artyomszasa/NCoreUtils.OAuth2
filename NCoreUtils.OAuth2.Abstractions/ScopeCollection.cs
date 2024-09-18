@@ -29,23 +29,8 @@ public readonly partial struct ScopeCollection
     , IFormattable
 #endif
 {
-    [ExcludeFromCodeCoverage]
-    private sealed class EmptyEnumerator : IEnumerator<string>
-    {
-        public static IEnumerator<string> Instance { get; } = new EmptyEnumerator();
-
-        object IEnumerator.Current => default!;
-
-        public string Current => default!;
-
-        private EmptyEnumerator() { }
-
-        public void Dispose() { }
-
-        public bool MoveNext() => false;
-
-        public void Reset() { }
-    }
+    [SuppressMessage("Style", "IDE0028:Simplify collection initialization", Justification = "Intentional")]
+    private static readonly HashSet<string> EmptySet = new();
 
     private static readonly IEqualityComparer<HashSet<string>> _equalityComparer = HashSet<string>.CreateSetComparer();
 
@@ -205,6 +190,8 @@ public readonly partial struct ScopeCollection
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+    IEnumerator<string> IEnumerable<string>.GetEnumerator() => GetEnumerator();
+
     int ISpanExactEmplaceable.GetEmplaceBufferSize() => GetEmplaceBufferSize();
 
     private int GetEmplaceBufferSize()
@@ -254,8 +241,8 @@ public readonly partial struct ScopeCollection
     public override bool Equals(object? obj)
         => obj is ScopeCollection other && Equals(other);
 
-    public IEnumerator<string> GetEnumerator()
-        => _scopes is null ? EmptyEnumerator.Instance : _scopes.GetEnumerator();
+    public HashSet<string>.Enumerator GetEnumerator()
+        => (_scopes ?? EmptySet).GetEnumerator();
 
     public override int GetHashCode()
         => _scopes is null ? 0 : _equalityComparer.GetHashCode(_scopes);

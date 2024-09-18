@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using NCoreUtils.Proto;
+using HttpMethod = System.Net.Http.HttpMethod;
 
 namespace NCoreUtils.OAuth2.Internal;
 
