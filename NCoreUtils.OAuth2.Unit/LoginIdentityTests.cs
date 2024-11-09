@@ -9,11 +9,11 @@ namespace NCoreUtils.OAuth2.Unit
         [Fact]
         public void InvalidArgs()
         {
-            var exn = Assert.Throws<ArgumentException>(() => new LoginIdentity(default!, "issuer", "name", "email", default));
+            var exn = Assert.Throws<ArgumentException>(() => new LoginIdentity(default!, "issuer", "name", "email", default, default));
             Assert.Equal("sub", exn.ParamName);
-            exn = Assert.Throws<ArgumentException>(() => new LoginIdentity("sub", default!, "name", "email", default));
+            exn = Assert.Throws<ArgumentException>(() => new LoginIdentity("sub", default!, "name", "email", default, default));
             Assert.Equal("issuer", exn.ParamName);
-            exn = Assert.Throws<ArgumentException>(() => new LoginIdentity("sub", "issuer", default!, "email", default));
+            exn = Assert.Throws<ArgumentException>(() => new LoginIdentity("sub", "issuer", default!, "email", default, default));
             Assert.Equal("name", exn.ParamName);
         }
 
@@ -26,7 +26,7 @@ namespace NCoreUtils.OAuth2.Unit
         public void StringifyNoEmail(int count)
         {
             var scopes = count == 0 ? default : new ScopeCollection(Enumerable.Range(0, count).Select(e => $"scope-{e}"));
-            var identity = new LoginIdentity("sub", "issuer", "name", default, scopes);
+            var identity = new LoginIdentity("sub", "issuer", "name", default, scopes, default);
             var expected = $"sub#name@issuer[{scopes}]";
             Assert.Equal(expected, identity.ToString());
             var buffer = new char[identity.GetEmplaceBufferSize()];
@@ -44,7 +44,7 @@ namespace NCoreUtils.OAuth2.Unit
         public void StringifyWithEmail(int count)
         {
             var scopes = count == 0 ? default : new ScopeCollection(Enumerable.Range(0, count).Select(e => $"scope-{e}"));
-            var identity = new LoginIdentity("sub", "issuer", "name", "email", scopes);
+            var identity = new LoginIdentity("sub", "issuer", "name", "email", scopes, default);
             var expected = $"sub#name<email>@issuer[{scopes}]";
             Assert.Equal(expected, identity.ToString());
             var buffer = new char[identity.GetEmplaceBufferSize()];
@@ -56,13 +56,13 @@ namespace NCoreUtils.OAuth2.Unit
         [Fact]
         public void Equality()
         {
-            var identity0 = new LoginIdentity("sub", "issuer", "name", "email", default);
-            var identity1 = new LoginIdentity("sub", "issuer", "name", "email", default);
-            var identity2 = new LoginIdentity("sub", "issuer", "name", "email", new ScopeCollection("a"));
-            var identity3 = new LoginIdentity("sub1", "issuer", "name", "email", default);
-            var identity4 = new LoginIdentity("sub", "issuer1", "name", "email", default);
-            var identity5 = new LoginIdentity("sub", "issuer", "name1", "email", default);
-            var identity6 = new LoginIdentity("sub", "issuer", "name", "email1", default);
+            var identity0 = new LoginIdentity("sub", "issuer", "name", "email", default, default);
+            var identity1 = new LoginIdentity("sub", "issuer", "name", "email", default, default);
+            var identity2 = new LoginIdentity("sub", "issuer", "name", "email", new ScopeCollection("a"), default);
+            var identity3 = new LoginIdentity("sub1", "issuer", "name", "email", default, default);
+            var identity4 = new LoginIdentity("sub", "issuer1", "name", "email", default, default);
+            var identity5 = new LoginIdentity("sub", "issuer", "name1", "email", default, default);
+            var identity6 = new LoginIdentity("sub", "issuer", "name", "email1", default, default);
             Assert.Equal(identity0.GetHashCode(), identity1.GetHashCode());
             Assert.Equal(identity0, identity1);
             Assert.NotEqual(identity0, default!);

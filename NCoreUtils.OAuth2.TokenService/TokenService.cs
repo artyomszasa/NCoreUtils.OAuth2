@@ -31,9 +31,10 @@ public class TokenService(
             issuer: identity.Issuer,
             email: identity.Email,
             username: identity.Name,
-            scopes: identity.Scopes.ToList(),
+            scopes: identity.Scopes.ToArray(),
             issuedAt: now,
-            expiresAt: now + Configuration.AccessTokenExpiry
+            expiresAt: now + Configuration.AccessTokenExpiry,
+            custom: identity.Custom
         );
 
     protected virtual Token CreateRefreshToken(DateTimeOffset now, LoginIdentity identity)
@@ -43,9 +44,10 @@ public class TokenService(
             issuer: identity.Issuer,
             email: identity.Email,
             username: identity.Name,
-            scopes: identity.Scopes.ToList(),
+            scopes: identity.Scopes.ToArray(),
             issuedAt: now,
-            expiresAt: now + Configuration.RefreshTokenExpiry
+            expiresAt: now + Configuration.RefreshTokenExpiry,
+            custom: identity.Custom
         );
 
     protected virtual async ValueTask<AccessTokenResponse> CreateTokensAndResponseAsync(LoginIdentity identity, CancellationToken cancellationToken = default)
@@ -109,7 +111,8 @@ public class TokenService(
             issuedAt: tok.IssuedAt,
             notBefore: default,
             sub: tok.Sub,
-            issuer: tok.Issuer
+            issuer: tok.Issuer,
+            custom: tok.Custom
         );
     }
 
@@ -144,7 +147,8 @@ public class TokenService(
             username: tok.Username,
             scopes: tok.Scopes,
             issuedAt: now,
-            expiresAt: now + Configuration.AccessTokenExpiry
+            expiresAt: now + Configuration.AccessTokenExpiry,
+            custom: tok.Custom
         );
         var accessTokenBase64 = await TokenEncryption.EncryptTokenToBase64StringAsync(accessToken, cancellationToken);
         return new AccessTokenResponse(

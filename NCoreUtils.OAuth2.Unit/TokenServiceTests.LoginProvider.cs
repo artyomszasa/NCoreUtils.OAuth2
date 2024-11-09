@@ -15,7 +15,7 @@ namespace NCoreUtils.OAuth2.Unit
             public string Passcode { get; }
 
             public User(string sub, string password, string passcode, string issuer, string name, string? email, ScopeCollection scopes)
-                : base(sub, issuer, name, email, scopes)
+                : base(sub, issuer, name, email, scopes, default)
             {
                 Password = password;
                 Passcode = passcode;

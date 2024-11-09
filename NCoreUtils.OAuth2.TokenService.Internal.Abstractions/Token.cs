@@ -9,6 +9,27 @@ namespace NCoreUtils.OAuth2;
 
 public class Token : IEquatable<Token>
 {
+    private static bool CustomEq(IReadOnlyDictionary<string, string?>? a, IReadOnlyDictionary<string, string?>? b)
+    {
+        if (a is { Count: >0 })
+        {
+            if (b is null || b.Count != a.Count)
+            {
+                return false;
+            }
+            // NOTE: if a.Count == b.Count then it is enough to check that b contains all keys in a with the same value.
+            foreach (var (akey, avalue) in a)
+            {
+                if (!b.TryGetValue(akey, out var bvalue) || !StringComparer.InvariantCulture.Equals(avalue, bvalue))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return b is null || b.Count == 0;
+    }
+
     public static bool TryReadFrom(ReadOnlySpan<byte> buffer, [NotNullWhen(true)] out Token? token)
     {
         var reader = new SpanReader(buffer);
@@ -21,6 +42,21 @@ public class Token : IEquatable<Token>
             && reader.TryReadInt64(out var issuedAtTicks)
             && reader.TryReadInt64(out var expiresAtTicks))
         {
+            Dictionary<string, string?>? custom = default;
+            if (reader.Available != 0)
+            {
+                if (!reader.TryReadInt32(out var count)) { goto failure; }
+                if (count > 0)
+                {
+                    custom = new(StringComparer.InvariantCulture);
+                    for (var i = 0; i < count; ++i)
+                    {
+                        if (!reader.TryReadUtf8String(out var key) || string.IsNullOrEmpty(key)) { goto failure; }
+                        if (!reader.TryReadUtf8String(out var value)) { goto failure; }
+                        custom.Add(key, value);
+                    }
+                }
+            }
             token = new Token(
                 tokenType!,
                 sub!,
@@ -29,9 +65,12 @@ public class Token : IEquatable<Token>
                 username!,
                 scopes,
                 new DateTimeOffset(issuedAtTicks, TimeSpan.Zero),
-                new DateTimeOffset(expiresAtTicks, TimeSpan.Zero));
+                new DateTimeOffset(expiresAtTicks, TimeSpan.Zero),
+                custom
+            );
             return true;
         }
+    failure:
         token = default;
         return false;
     }
@@ -52,6 +91,9 @@ public class Token : IEquatable<Token>
 
     public DateTimeOffset ExpiresAt { get; }
 
+    public IReadOnlyDictionary<string, string?>? Custom { get; }
+
+    [Obsolete("Use ctor with custom argument.")]
     public Token(
         string tokenType,
         string sub,
@@ -61,6 +103,19 @@ public class Token : IEquatable<Token>
         IReadOnlyList<string> scopes,
         DateTimeOffset issuedAt,
         DateTimeOffset expiresAt)
+        : this(tokenType, sub, issuer, email, username, scopes, issuedAt, expiresAt, default)
+    { }
+
+    public Token(
+        string tokenType,
+        string sub,
+        string issuer,
+        string? email,
+        string username,
+        IReadOnlyList<string> scopes,
+        DateTimeOffset issuedAt,
+        DateTimeOffset expiresAt,
+        IReadOnlyDictionary<string, string?>? custom)
     {
         if (string.IsNullOrWhiteSpace(tokenType))
         {
@@ -86,6 +141,7 @@ public class Token : IEquatable<Token>
         Scopes = scopes;
         IssuedAt = issuedAt;
         ExpiresAt = expiresAt;
+        Custom = custom;
     }
 
     public bool TryWriteTo(Span<byte> buffer, out int size)
@@ -100,9 +156,23 @@ public class Token : IEquatable<Token>
             && writer.TryWriteInt64(IssuedAt.UtcTicks)
             && writer.TryWriteInt64(ExpiresAt.UtcTicks))
         {
+            if (Custom is { Count: >0 } custom)
+            {
+                if (!writer.TryWriteInt32(custom.Count)) { goto failure; }
+                foreach (var (key, value) in custom)
+                {
+                    if (!writer.TryWriteUtf8String(key)) { goto failure; }
+                    if (!writer.TryWriteUtf8String(value)) { goto failure; }
+                }
+            }
+            else
+            {
+                if (!writer.TryWriteInt32(0)) { goto failure; }
+            }
             size = writer.Written;
             return true;
         }
+    failure:
         size = default;
         return false;
     }
@@ -117,6 +187,15 @@ public class Token : IEquatable<Token>
         writer.WriteUtf8Strings(Scopes);
         writer.Write(IssuedAt.UtcTicks);
         writer.Write(ExpiresAt.UtcTicks);
+        if (Custom is { Count: >0 } custom)
+        {
+            writer.Write(custom.Count);
+            foreach (var (key, value) in custom)
+            {
+                writer.WriteUtf8String(key);
+                writer.WriteUtf8String(value);
+            }
+        }
     }
 
     public bool Equals(Token? other)
@@ -128,7 +207,8 @@ public class Token : IEquatable<Token>
             && Username == other.Username
             && Scopes.SequenceEqual(other.Scopes)
             && IssuedAt == other.IssuedAt
-            && ExpiresAt == other.ExpiresAt;
+            && ExpiresAt == other.ExpiresAt
+            && CustomEq(Custom, other.Custom);
 
     public override bool Equals(object? obj)
         => obj is Token other && Equals(other);
@@ -148,6 +228,7 @@ public class Token : IEquatable<Token>
         }
         hash.Add(IssuedAt);
         hash.Add(ExpiresAt);
+        hash.Add(Custom is null ? 0 : Custom.Count);
         return hash.ToHashCode();
     }
 }

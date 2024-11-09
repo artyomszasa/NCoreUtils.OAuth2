@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using NCoreUtils.OAuth2.Internal;
 
 namespace NCoreUtils.OAuth2;
 
-// TODO: use record once STJ bug is resolved.
 [method: JsonConstructor]
+[JsonConverter(typeof(IntrospectionResponseConverter))]
 public class IntrospectionResponse(
     bool active,
     ScopeCollection scope,
@@ -17,7 +18,8 @@ public class IntrospectionResponse(
     DateTimeOffset? issuedAt,
     DateTimeOffset? notBefore,
     string? sub,
-    string? issuer) : IEquatable<IntrospectionResponse>
+    string? issuer,
+    IReadOnlyDictionary<string, string?>? custom) : IEquatable<IntrospectionResponse>
 {
     public static bool operator==(IntrospectionResponse? a, IntrospectionResponse? b)
     {
@@ -48,8 +50,46 @@ public class IntrospectionResponse(
         default,
         default,
         default,
+        default,
         default
     );
+
+    private static bool CustomEq(IReadOnlyDictionary<string, string?>? a, IReadOnlyDictionary<string, string?>? b)
+    {
+        if (a is { Count: >0 })
+        {
+            if (b is null || b.Count != a.Count)
+            {
+                return false;
+            }
+            // NOTE: if a.Count == b.Count then it is enough to check that b contains all keys in a with the same value.
+            foreach (var (akey, avalue) in a)
+            {
+                if (!b.TryGetValue(akey, out var bvalue) || !StringComparer.InvariantCulture.Equals(avalue, bvalue))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return b is null || b.Count == 0;
+    }
+
+    [Obsolete("Use override with explicit \"custom\" parameter.")]
+    public IntrospectionResponse(
+        bool active,
+        ScopeCollection scope,
+        string? clientId,
+        string? email,
+        string? username,
+        string? tokenType,
+        DateTimeOffset? expiresAt,
+        DateTimeOffset? issuedAt,
+        DateTimeOffset? notBefore,
+        string? sub,
+        string? issuer)
+        : this(active, scope, clientId, email, username, tokenType, expiresAt, issuedAt, notBefore, sub, issuer, default)
+    { }
 
     [JsonPropertyName("active")]
     public bool Active { get; } = active;
@@ -106,6 +146,9 @@ public class IntrospectionResponse(
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Issuer { get; } = issuer;
 
+    [JsonIgnore]
+    public IReadOnlyDictionary<string, string?>? Custom { get; } = custom;
+
     public bool Equals(IntrospectionResponse? other)
         => other != null
             && Active == other.Active
@@ -118,14 +161,14 @@ public class IntrospectionResponse(
             && IssuedAt == other.IssuedAt
             && NotBefore == other.NotBefore
             && Sub == other.Sub
-            && Issuer == other.Issuer;
+            && Issuer == other.Issuer
+            && CustomEq(Custom, other.Custom);
 
     public override bool Equals(object? obj)
         => obj is IntrospectionResponse other && Equals(other);
 
     public override int GetHashCode()
-        => HashCode.Combine(
-            HashCode.Combine(Active, Scope, ClientId, Email, Username, TokenType),
-            HashCode.Combine(ExpiresAt, IssuedAt, NotBefore, Sub, Issuer)
-        );
+        => Active
+            ? HashCode.Combine(1, TokenType, Sub, Email, Scope, Issuer)
+            : default;
 }

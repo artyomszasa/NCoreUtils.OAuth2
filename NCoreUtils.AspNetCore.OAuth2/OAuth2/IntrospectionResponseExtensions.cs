@@ -35,5 +35,12 @@ public static class IntrospectionResponseExtensions
         {
             yield return new Claim(ClaimTypes.Role, scope, ClaimValueTypes.String, data.Issuer);
         }
+        if (data.Custom is IReadOnlyDictionary<string, string?> custom)
+        {
+            foreach (var (key, value) in custom)
+            {
+                yield return new Claim(key, value ?? string.Empty, ClaimValueTypes.String, data.Issuer);
+            }
+        }
     }
 }

@@ -14,7 +14,7 @@ public ref struct SpanReader(ReadOnlySpan<byte> buffer)
 
     private int _position = 0;
 
-    private readonly int Available
+    public readonly int Available
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => _buffer.Length - _position;
@@ -58,6 +58,11 @@ public ref struct SpanReader(ReadOnlySpan<byte> buffer)
             return false;
         }
         var size = BitConverter.ToInt32(Remaining);
+        if (-1 == size)
+        {
+            value = default;
+            return true;
+        }
         if (Available < size + sizeof(int))
         {
             value = default;

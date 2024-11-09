@@ -66,7 +66,8 @@ public class RepositoryLoginProvider<[DynamicallyAccessedMembers(DynamicallyAcce
             Configuration.Issuer,
             user.Username,
             user.Email,
-            grantedScopes
+            grantedScopes,
+            default
         );
     }
 

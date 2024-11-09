@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using NCoreUtils.OAuth2.Internal;
 using NCoreUtils.OAuth2.LoginProvider;
@@ -23,7 +24,7 @@ namespace NCoreUtils.OAuth2.Unit
         [Fact]
         public void LoginIdentityJsonSerialization()
         {
-            var id0 = new LoginIdentity(Sub, Issuer, Username, Email, TestScopes);
+            var id0 = new LoginIdentity(Sub, Issuer, Username, Email, TestScopes, default);
             var typeInfo = LoginProviderSerializerContext.Default.LoginIdentity;
             var json = JsonSerializer.Serialize(id0, typeInfo);
             var id1 = JsonSerializer.Deserialize(json, typeInfo);
@@ -43,7 +44,7 @@ namespace NCoreUtils.OAuth2.Unit
         [Fact]
         public void IntrospectionResponseJsonSerialization()
         {
-            var resp0 = new IntrospectionResponse(true, TestScopes, "1", Email, Username, "bearer", DateTimeOffset.Now.Normalize(), DateTimeOffset.Now.Normalize(), DateTimeOffset.Now.Normalize(), Sub, Issuer);
+            var resp0 = new IntrospectionResponse(true, TestScopes, "1", Email, Username, "bearer", DateTimeOffset.Now.Normalize(), DateTimeOffset.Now.Normalize(), DateTimeOffset.Now.Normalize(), Sub, Issuer, new Dictionary<string, string?> { { "key0", "value" }, { "key1", null } });
             var typeInfo = TokenServiceSerializerContext.Default.IntrospectionResponse;
             var json = JsonSerializer.Serialize(resp0, typeInfo);
             var resp1 = JsonSerializer.Deserialize(json, typeInfo);
@@ -70,13 +71,13 @@ namespace NCoreUtils.OAuth2.Unit
                 Assert.DoesNotContain("scope", json);
             }
             {
-                var obj = new IntrospectionResponse(true, default, "1", Email, Username, "bearer", DateTimeOffset.Now.Normalize(), DateTimeOffset.Now.Normalize(), DateTimeOffset.Now.Normalize(), Sub, Issuer);
+                var obj = new IntrospectionResponse(true, default, "1", Email, Username, "bearer", DateTimeOffset.Now.Normalize(), DateTimeOffset.Now.Normalize(), DateTimeOffset.Now.Normalize(), Sub, Issuer, default);
                 var typeInfo = TokenServiceSerializerContext.Default.IntrospectionResponse;
                 var json = JsonSerializer.Serialize(obj, typeInfo);
                 Assert.DoesNotContain("scope", json);
             }
             {
-                var obj = new LoginIdentity(Sub, Issuer, Username, Email, default);
+                var obj = new LoginIdentity(Sub, Issuer, Username, Email, default, default);
                 var typeInfo = LoginProviderSerializerContext.Default.LoginIdentity;
                 var json = JsonSerializer.Serialize(obj, typeInfo);
                 Assert.DoesNotContain("scope", json);

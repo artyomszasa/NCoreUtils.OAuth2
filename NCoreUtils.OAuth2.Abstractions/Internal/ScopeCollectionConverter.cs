@@ -45,7 +45,7 @@ public sealed class ScopeCollectionConverter : JsonConverter<ScopeCollection>
         return scopes;
     }
 
-    public override ScopeCollection Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public static ScopeCollection Deserialize(ref Utf8JsonReader reader)
         => reader.TokenType switch
         {
             JsonTokenType.String => SplitScopes(reader.GetString() ?? string.Empty),
@@ -55,7 +55,7 @@ public sealed class ScopeCollectionConverter : JsonConverter<ScopeCollection>
             JsonTokenType jtokenType => throw new JsonException($"Expected {JsonTokenType.String}, got {jtokenType}.")
         };
 
-    public override void Write(Utf8JsonWriter writer, ScopeCollection value, JsonSerializerOptions options)
+    public static void Serialize(Utf8JsonWriter writer, ScopeCollection value)
     {
         if (value.HasValue)
         {
@@ -66,4 +66,11 @@ public sealed class ScopeCollectionConverter : JsonConverter<ScopeCollection>
             writer.WriteNullValue();
         }
     }
+
+    public override ScopeCollection Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        => Deserialize(ref reader);
+
+
+    public override void Write(Utf8JsonWriter writer, ScopeCollection value, JsonSerializerOptions options)
+        => Serialize(writer, value);
 }

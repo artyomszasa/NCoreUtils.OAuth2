@@ -395,7 +395,7 @@ namespace NCoreUtils.OAuth2.Unit
             }
         }
 
-#pragma warning disable SYSLIB0011, IL2026
+#if !NET8_0_OR_GREATER
         [Fact]
         public void ExceptionTest()
         {
@@ -414,6 +414,6 @@ namespace NCoreUtils.OAuth2.Unit
             Assert.Equal(ex.ErrorCode, ex1.ErrorCode);
             Assert.Equal(ex.Message, ex1.Message);
         }
-#pragma warning restore SYSLIB0011, IL2026
+#endif
     }
 }
