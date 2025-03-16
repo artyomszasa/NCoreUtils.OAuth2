@@ -28,8 +28,9 @@ internal static class StartupExtensions
                 {
                     return new LoginProviderClient(new LoginProviderClientConfiguration
                     {
-                        Endpoint = configuration.Endpoint,
-                        HttpClient = configuration.HttpClient
+                        Endpoint = configuration.EndpointOrigin,
+                        HttpClient = configuration.HttpClient,
+                        Path = configuration.EndpointPath
                     }, serviceProvider.GetRequiredService<IHttpClientFactory>());
                 }
                 throw new InvalidOperationException($"No configuration found for host {httpContext.Request.Host}.");
