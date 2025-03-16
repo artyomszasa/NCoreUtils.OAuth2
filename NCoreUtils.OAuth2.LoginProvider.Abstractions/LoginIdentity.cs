@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 using NCoreUtils.Memory;
 
@@ -41,6 +40,10 @@ public partial class LoginIdentity
     [JsonPropertyName("issuer")]
     public string Issuer { get; }
 
+    [JsonPropertyName("iss")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? IssuerFallback { get; }
+
     [JsonPropertyName("name")]
     public string Name { get; }
 
@@ -57,17 +60,18 @@ public partial class LoginIdentity
 
     [Obsolete("Use ctor with custom argument.")]
     public LoginIdentity(string sub, string issuer, string name, string? email, ScopeCollection scopes)
-        : this(sub, issuer, name, email, scopes, default)
+        : this(sub, issuer, default, name, email, scopes, default)
     { }
 
     [JsonConstructor]
-    public LoginIdentity(string sub, string issuer, string name, string? email, ScopeCollection scopes, IReadOnlyDictionary<string, string?>? custom)
+    public LoginIdentity(string sub, string issuer, string? issuerFallback, string name, string? email, ScopeCollection scopes, IReadOnlyDictionary<string, string?>? custom)
     {
         if (string.IsNullOrWhiteSpace(sub))
         {
             throw new ArgumentException("Sub must be a non-empty string.", nameof(sub));
         }
-        if (string.IsNullOrWhiteSpace(issuer))
+        var iss = issuer is null ? issuerFallback : issuer;
+        if (string.IsNullOrWhiteSpace(iss))
         {
             throw new ArgumentException("Issuer must be a non-empty string.", nameof(issuer));
         }
@@ -76,12 +80,16 @@ public partial class LoginIdentity
             throw new ArgumentException("Name must be a non-empty string.", nameof(name));
         }
         Sub = sub;
-        Issuer = issuer;
+        Issuer = iss;
         Name = name;
         Email = email;
         Scopes = scopes;
         Custom = custom;
     }
+
+    public LoginIdentity(string sub, string issuer, string name, string? email, ScopeCollection scopes, IReadOnlyDictionary<string, string?>? custom)
+        : this(sub, issuer, default, name, email, scopes, custom)
+    { }
 
     [Obsolete("Use GetEmplaceBufferSize instead.")]
     public int ComputeRequiredBufferSize() => GetEmplaceBufferSize();

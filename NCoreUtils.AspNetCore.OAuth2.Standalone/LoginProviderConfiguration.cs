@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
-
 namespace NCoreUtils.AspNetCore.OAuth2;
 
 public class LoginProviderConfiguration(string? host, IReadOnlyList<string> hosts, string httpClient, string endpoint)

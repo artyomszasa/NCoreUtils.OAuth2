@@ -9,8 +9,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="$(GrpcVersion)" />
-    <PackageReference Include="NCoreUtils.Data.Generator" Version="8.0.0-rc04" />
-    <PackageReference Include="NCoreUtils.Data.Google.Cloud.Firestore" Version="8.0.0-rc04" />
+    <PackageReference Include="NCoreUtils.Data.Generator" Version="8.0.1-rc06" />
+    <PackageReference Include="NCoreUtils.Data.Google.Cloud.Firestore" Version="8.0.1-rc06" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.1' ">
     <Compile Include="..\Shared\Trimming\*.cs" />

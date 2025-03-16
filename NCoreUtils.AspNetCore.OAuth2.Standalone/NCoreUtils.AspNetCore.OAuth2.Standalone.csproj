@@ -22,7 +22,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NCoreUtils.AspNetCore.ForwardedHeaders" Version="8.0.0" />
-    <PackageReference Include="NCoreUtils.AspNetCore.Logging" Version="8.0.0" />
-    <PackageReference Include="NCoreUtils.Logging.Google.Fluentd" Version="8.0.0" />
+    <PackageReference Include="NCoreUtils.AspNetCore.Logging" Version="8.1.0-rc00" />
+    <PackageReference Include="NCoreUtils.Logging.Google.Fluentd" Version="8.1.0-rc00" />
   </ItemGroup>
 </Project>

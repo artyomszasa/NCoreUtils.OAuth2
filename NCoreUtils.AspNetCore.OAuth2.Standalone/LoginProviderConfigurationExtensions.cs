@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.AspNetCore.Http;
 
 namespace NCoreUtils.AspNetCore.OAuth2;
 
