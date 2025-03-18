@@ -109,7 +109,18 @@ public class Program
             .AddHttpContextAccessor()
             // token service
             .AddSingleton(aesConfiguration)
-            .AddFirestoreTokenRepository(configuration["Google:ProjectId"])
+            .AddFirestoreTokenRepository(
+                projectId: configuration["Google:ProjectId"],
+                configureGrpcChannelOptions: opts =>
+                {
+                    opts.HttpHandler = new SocketsHttpHandler
+                    {
+                        KeepAlivePingDelay = TimeSpan.FromSeconds(5),
+                        KeepAlivePingTimeout = TimeSpan.FromSeconds(20),
+                        KeepAlivePingPolicy = HttpKeepAlivePingPolicy.Always
+                    };
+                }
+            )
             .AddTokenService<AesTokenEncryption, FirestoreTokenRepository>(tokenServiceConfiguration)
             // scoped login provider client
             .AddDynamicLoginProvider(providers)

@@ -6,7 +6,7 @@
     <IsAotCompatible>false</IsAotCompatible>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Data.EntityFrameworkCore" Version="8.0.1-rc04" />
+    <PackageReference Include="NCoreUtils.Data.EntityFrameworkCore" Version="$(NCoreUtilsDataVersion)" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.1' ">
     <Compile Remove="CodeAnalysis\**" />

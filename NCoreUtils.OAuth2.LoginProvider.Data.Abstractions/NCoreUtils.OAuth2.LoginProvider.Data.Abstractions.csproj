@@ -4,6 +4,6 @@
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="8.0.0-rc04" />
+    <PackageReference Include="NCoreUtils.Data.Abstractions" Version="$(NCoreUtilsDataVersion)" />
   </ItemGroup>
 </Project>
