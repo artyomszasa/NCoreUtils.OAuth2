@@ -54,16 +54,28 @@ public static class ServiceCollectionFirestoreTokenRepositoryExtensions
         this IServiceCollection services,
         string? projectId = default,
         NCoreUtils.Data.Google.Cloud.Firestore.FirestoreConversionOptions? conversionOptions = default,
-        Google.Apis.Auth.OAuth2.GoogleCredential? googleCredential = default,
-        Action<Grpc.Net.Client.GrpcChannelOptions>? configureGrpcChannelOptions = default)
+        Google.Apis.Auth.OAuth2.GoogleCredential? googleCredential = default
+#if NET6_0_OR_GREATER
+        , Action<Grpc.Net.Client.GrpcChannelOptions>? configureGrpcChannelOptions = default
+#endif
+        )
         => services.AddFirestoreTokenRepository(new FirestoreConfiguration
         {
             ProjectId = projectId,
             ConversionOptions = conversionOptions,
             GoogleCredential = googleCredential,
+#if NET6_0_OR_GREATER
             ConfigureGrpcChannelOptions = configureGrpcChannelOptions
+#endif
         });
 
     public static IServiceCollection AddFirestoreTokenRepository(this IServiceCollection services, string? projectId)
-        => services.AddFirestoreTokenRepository(projectId, default, default, default);
+        => services.AddFirestoreTokenRepository(
+            projectId,
+            default,
+            default
+#if NET6_0_OR_GREATER
+            , default
+#endif
+        );
 }
