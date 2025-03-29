@@ -4,6 +4,8 @@ public class LoginProviderConfiguration
 {
     public const string DefaultHttpClientConfigurationName = "LoginProvider";
 
+    private HashSet<string> AllHosts { get; }
+
     public string? Host { get; }
 
     public IReadOnlyList<string> Hosts { get; }
@@ -18,8 +20,9 @@ public class LoginProviderConfiguration
 
     public LoginProviderConfiguration(string? host, IReadOnlyList<string> hosts, string httpClient, string endpoint)
     {
+        var hosts0 = hosts ?? [];
         Host = host;
-        Hosts = hosts;
+        Hosts = hosts0;
         HttpClient = httpClient;
         Endpoint = endpoint switch
         {
@@ -29,20 +32,36 @@ public class LoginProviderConfiguration
         var uri = new Uri(Endpoint, UriKind.Absolute);
         EndpointOrigin = $"{uri.Scheme}://{uri.Host}";
         EndpointPath = uri.AbsolutePath;
-    }
-
-    public IEnumerable<string> GetAllHosts()
-    {
-        if (!string.IsNullOrEmpty(Host))
+        if (string.IsNullOrEmpty(host))
         {
-            yield return Host;
+            AllHosts = [..hosts0];
         }
-        foreach (var host in Hosts)
+        else
         {
-            yield return host;
+            AllHosts = [host, ..hosts0];
         }
     }
 
     public bool Matches(HttpRequest request)
-        => GetAllHosts().Contains(request.Host.Value);
+    {
+        var host = request.Host;
+        if (host.HasValue)
+        {
+            if (host.Value is string { Length: >0 } rawHost)
+            {
+                if (AllHosts.Contains(rawHost))
+                {
+                    return true;
+                }
+            }
+            if (host.Host is string { Length: >0 } hostOnly)
+            {
+                if (AllHosts.Contains(hostOnly))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

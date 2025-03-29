@@ -19,6 +19,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <ProtoVersion>8.0.0-rc06</ProtoVersion>
-    <NCoreUtilsDataVersion>8.0.1-rc08</NCoreUtilsDataVersion>
+    <NCoreUtilsDataVersion>8.0.1-rc09</NCoreUtilsDataVersion>
   </PropertyGroup>
 </Project>
