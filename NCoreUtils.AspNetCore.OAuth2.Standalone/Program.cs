@@ -115,6 +115,7 @@ public class Program
                 {
                     opts.HttpHandler = new SocketsHttpHandler
                     {
+                        PooledConnectionIdleTimeout = Timeout.InfiniteTimeSpan,
                         KeepAlivePingDelay = TimeSpan.FromSeconds(5),
                         KeepAlivePingTimeout = TimeSpan.FromSeconds(20),
                         KeepAlivePingPolicy = HttpKeepAlivePingPolicy.Always
