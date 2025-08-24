@@ -1,12 +1,56 @@
 using System.Net;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using NCoreUtils.Logging;
 using NCoreUtils.OAuth2;
 
 namespace NCoreUtils.AspNetCore.OAuth2;
 
+[JsonSerializable(typeof(Google.RawServiceAccountCredentialData))]
+internal partial class RawServiceAccountCredentialDataSerializerContext : JsonSerializerContext { }
+
 public class Program
 {
+    #region RAW credentials
+
+    public static async Task<Google.RawServiceAccountCredentialData> ReadGACFromStreamAsync(Stream source, CancellationToken cancellationToken = default)
+    {
+        var raw = await JsonSerializer
+            .DeserializeAsync(source, RawServiceAccountCredentialDataSerializerContext.Default.RawServiceAccountCredentialData, cancellationToken)
+            .ConfigureAwait(false)
+            ?? throw new InvalidOperationException("Failed to deserialize service account credential data from stream.");
+        return raw;
+    }
+
+    public static async Task<Google.RawServiceAccountCredentialData> ReadGACFromPathAsync(string path, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+#if !NETFRAMEWORK
+            await
+#endif
+            using var source = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 0, FileOptions.SequentialScan | FileOptions.Asynchronous);
+            return await ReadGACFromStreamAsync(source, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exn)
+        {
+            throw new InvalidOperationException("Failed to read service account credential from \"{path}\".", exn);
+        }
+    }
+
+    public static Task<Google.RawServiceAccountCredentialData> ReadGACDefaultAsync(CancellationToken cancellationToken = default)
+    {
+        var path = Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
+        if (string.IsNullOrEmpty(path))
+        {
+            throw new InvalidOperationException("GOOGLE_APPLICATION_CREDENTIALS environment variable is not specified or empty.");
+        }
+        return ReadGACFromPathAsync(path, cancellationToken);
+    }
+
+    #endregion
+
     private static string GetEnvironmentName() => Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") switch
     {
         null or "" => Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") switch
@@ -91,8 +135,20 @@ public class Program
             ContentRootPath = Environment.CurrentDirectory
         });
 #if ENABLE_GOOGLE_K8S_METRICS
-        builder.AddGoogleHeapMonitoring();
+        var rawGoogleCredentials = ReadGACDefaultAsync().Result;
+        var googleCredentials = Google.ServiceAccountCredentialData.ValidateAndCreate(rawGoogleCredentials);
+        builder.AddGoogleHeapMonitoring(googleCredentials);
 #endif
+        global::Google.Apis.Auth.OAuth2.GoogleCredential.FromJsonParameters(new()
+        {
+            Type = rawGoogleCredentials.Type,
+            ProjectId = rawGoogleCredentials.ProjectId,
+            PrivateKeyId = rawGoogleCredentials.PrivateKeyId,
+            PrivateKey = rawGoogleCredentials.PrivateKey,
+            ClientEmail = rawGoogleCredentials.ClientEmail,
+            ClientId = rawGoogleCredentials.ClientId,
+            TokenUri = rawGoogleCredentials.TokenUri
+        });
         builder.Host.UseConsoleLifetime();
         // * CONFIGURATION *********************************************************************************************
         var configuration = CreateConfiguration();
@@ -123,7 +179,8 @@ public class Program
                         KeepAlivePingTimeout = TimeSpan.FromSeconds(20),
                         KeepAlivePingPolicy = HttpKeepAlivePingPolicy.Always
                     };
-                }
+                },
+                googleCredential: googleCredentials.
             )
             .AddTokenService<AesTokenEncryption, FirestoreTokenRepository>(tokenServiceConfiguration)
             // scoped login provider client
