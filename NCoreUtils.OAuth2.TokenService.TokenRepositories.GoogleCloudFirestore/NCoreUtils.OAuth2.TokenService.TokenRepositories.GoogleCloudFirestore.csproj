@@ -8,7 +8,6 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Internal.Abstractions\NCoreUtils.OAuth2.TokenService.Internal.Abstractions.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Grpc.Core" Version="$(GrpcVersion)" />
     <PackageReference Include="NCoreUtils.Data.Generator" Version="$(NCoreUtilsDataVersion)" />
     <PackageReference Include="NCoreUtils.Data.Google.Cloud.Firestore" Version="$(NCoreUtilsDataVersion)" />
   </ItemGroup>

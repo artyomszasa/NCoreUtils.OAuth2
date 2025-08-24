@@ -2,9 +2,7 @@
   <PropertyGroup>
     <LangVersion>12.0</LangVersion>
     <Nullable>enable</Nullable>
-    <Version>8.0.0-rc10</Version>
-    <!-- TODO: remove -->
-    <GrpcVersion>2.41.1</GrpcVersion>
+    <Version>8.0.0-rc11</Version>
     <Fx8NugetVersion>8.0.0</Fx8NugetVersion>
     <Fx7NugetVersion>7.0.0</Fx7NugetVersion>
     <Fx6NugetVersion>6.0.0</Fx6NugetVersion>
