@@ -90,6 +90,9 @@ public class Program
             EnvironmentName = GetEnvironmentName(),
             ContentRootPath = Environment.CurrentDirectory
         });
+#if ENABLE_GOOGLE_K8S_METRICS
+        builder.AddGoogleHeapMonitoring();
+#endif
         builder.Host.UseConsoleLifetime();
         // * CONFIGURATION *********************************************************************************************
         var configuration = CreateConfiguration();

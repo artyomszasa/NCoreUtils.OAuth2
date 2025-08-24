@@ -13,6 +13,13 @@
     <TrimMode>full</TrimMode>
     <!-- <NoWarn>IL2104</NoWarn> -->
   </PropertyGroup>
+  <PropertyGroup>
+    <DefineConstants Condition=" '$(NoMetrics)' != 'true' ">$(DefineConstants);ENABLE_GOOGLE_K8S_METRICS</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(NoMetrics)' != 'true' ">
+    <PackageReference Include="NCoreUtils.Extensions.Google.Cloud.Monitoring.ServiceAccount" Version="8.1.6.4-beta03" />
+    <Compile Include="..\Shared\GoogleMetrics\**\*.cs" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.LoginProvider.Client\NCoreUtils.OAuth2.LoginProvider.Client.csproj" />
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService\NCoreUtils.OAuth2.TokenService.csproj" />
