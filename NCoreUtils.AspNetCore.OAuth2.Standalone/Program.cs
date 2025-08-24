@@ -139,7 +139,7 @@ public class Program
         var googleCredentials = Google.ServiceAccountCredentialData.ValidateAndCreate(rawGoogleCredentials);
         builder.AddGoogleHeapMonitoring(googleCredentials);
 #endif
-        global::Google.Apis.Auth.OAuth2.GoogleCredential.FromJsonParameters(new()
+        var gc = global::Google.Apis.Auth.OAuth2.GoogleCredential.FromJsonParameters(new()
         {
             Type = rawGoogleCredentials.Type,
             ProjectId = rawGoogleCredentials.ProjectId,
@@ -180,7 +180,7 @@ public class Program
                         KeepAlivePingPolicy = HttpKeepAlivePingPolicy.Always
                     };
                 },
-                googleCredential: googleCredentials.
+                googleCredential: gc
             )
             .AddTokenService<AesTokenEncryption, FirestoreTokenRepository>(tokenServiceConfiguration)
             // scoped login provider client
