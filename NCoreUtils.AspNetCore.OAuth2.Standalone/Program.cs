@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -127,6 +128,15 @@ public class Program
     private static void ConfigureKestrel(KestrelServerOptions options)
         => options.Listen(GetListenEndpoint());
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(global::Google.Apis.Util.StandardResponse<object>))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(global::Google.Apis.Auth.GoogleJsonWebSignature))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(global::Google.Apis.Auth.JsonWebToken))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(global::Google.Apis.Auth.JsonWebToken.Header))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(global::Google.Apis.Auth.JsonWebToken.Payload))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(global::Google.Apis.Auth.OAuth2.ClientSecrets))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(global::Google.Apis.Auth.OAuth2.GoogleClientSecrets))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(global::Google.Apis.Auth.OAuth2.JsonCredentialParameters))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, "Google.Apis.Auth.OAuth2.Requests.IamSignBlobRequest", "Google.Apis.Auth, Version=1.67.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab")]
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateEmptyBuilder(new WebApplicationOptions
@@ -139,16 +149,16 @@ public class Program
         var googleCredentials = Google.ServiceAccountCredentialData.ValidateAndCreate(rawGoogleCredentials);
         builder.AddGoogleHeapMonitoring(googleCredentials);
 #endif
-        var gc = global::Google.Apis.Auth.OAuth2.GoogleCredential.FromJsonParameters(new()
-        {
-            Type = rawGoogleCredentials.Type,
-            ProjectId = rawGoogleCredentials.ProjectId,
-            PrivateKeyId = rawGoogleCredentials.PrivateKeyId,
-            PrivateKey = rawGoogleCredentials.PrivateKey,
-            ClientEmail = rawGoogleCredentials.ClientEmail,
-            ClientId = rawGoogleCredentials.ClientId,
-            TokenUri = rawGoogleCredentials.TokenUri
-        });
+        // var gc = global::Google.Apis.Auth.OAuth2.GoogleCredential.FromJsonParameters(new()
+        // {
+        //     Type = rawGoogleCredentials.Type,
+        //     ProjectId = rawGoogleCredentials.ProjectId,
+        //     PrivateKeyId = rawGoogleCredentials.PrivateKeyId,
+        //     PrivateKey = rawGoogleCredentials.PrivateKey,
+        //     ClientEmail = rawGoogleCredentials.ClientEmail,
+        //     ClientId = rawGoogleCredentials.ClientId,
+        //     TokenUri = rawGoogleCredentials.TokenUri
+        // });
         builder.Host.UseConsoleLifetime();
         // * CONFIGURATION *********************************************************************************************
         var configuration = CreateConfiguration();
@@ -179,8 +189,8 @@ public class Program
                         KeepAlivePingTimeout = TimeSpan.FromSeconds(20),
                         KeepAlivePingPolicy = HttpKeepAlivePingPolicy.Always
                     };
-                },
-                googleCredential: gc
+                }
+                // googleCredential: gc
             )
             .AddTokenService<AesTokenEncryption, FirestoreTokenRepository>(tokenServiceConfiguration)
             // scoped login provider client
