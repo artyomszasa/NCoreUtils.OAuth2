@@ -18,4 +18,11 @@ public interface ILoginProvider
         ScopeCollection scopes,
         CancellationToken cancellationToken = default
     );
+
+    ValueTask<LoginIdentity?> ClientCredentialsGrantAsync(
+        string clientId,
+        string clientSecret,
+        ScopeCollection scopes,
+        CancellationToken cancellationToken = default
+    );
 }

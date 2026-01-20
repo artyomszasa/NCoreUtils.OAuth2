@@ -14,6 +14,8 @@ public interface ITokenServiceEndpoints
         string? username,
         string? password,
         string? refreshToken,
+        string? clientId,
+        string? clientSecret,
         ScopeCollection scope,
         CancellationToken cancellationToken);
 

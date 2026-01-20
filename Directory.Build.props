@@ -2,7 +2,7 @@
   <PropertyGroup>
     <LangVersion>12.0</LangVersion>
     <Nullable>enable</Nullable>
-    <Version>8.0.0-rc10</Version>
+    <Version>8.0.1-rc00</Version>
     <!-- TODO: remove -->
     <GrpcVersion>2.41.1</GrpcVersion>
     <Fx8NugetVersion>8.0.0</Fx8NugetVersion>
@@ -14,11 +14,11 @@
     <FxNugetVersion Condition=" '$(TargetFramework)' == 'net6.0' ">$(Fx6NugetVersion)</FxNugetVersion>
     <FxNugetVersion Condition=" '$(TargetFramework)' != 'net6.0' And '$(TargetFramework)' != 'net7.0' And '$(TargetFramework)' != 'net8.0' ">$(Fx3NugetVersion)</FxNugetVersion>
     <IsTrimmable>true</IsTrimmable>
-    <IsAotCompatible>true</IsAotCompatible>
+    <IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">true</IsAotCompatible>
     <EmitCompilerGeneratedFiles Condition=" '$(Configuration)' == 'Debug' ">true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   <PropertyGroup>
-    <ProtoVersion>8.0.0-rc08</ProtoVersion>
+    <ProtoVersion>8.0.0-rc09</ProtoVersion>
     <NCoreUtilsDataVersion>8.0.1-rc09</NCoreUtilsDataVersion>
   </PropertyGroup>
 </Project>

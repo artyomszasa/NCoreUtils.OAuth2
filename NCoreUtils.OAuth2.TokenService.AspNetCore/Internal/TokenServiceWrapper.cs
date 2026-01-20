@@ -29,12 +29,15 @@ public partial class TokenServiceWrapper(ITokenService tokenService) : ITokenSer
         string? username,
         string? password,
         string? refreshToken,
+        string? clientId,
+        string? clientSecret,
         ScopeCollection scope,
         CancellationToken cancellationToken)
         => grantType switch
         {
             "password" => _tokenService.PasswordGrantAsync(username!, password!, scope, cancellationToken).AsTask(),
             "refresh_token" => _tokenService.RefreshTokenAsync(refreshToken!, scope, cancellationToken).AsTask(),
+            "client_credentials" => _tokenService.ClientCredentialsGrantAsync(clientId!, clientSecret!, scope, cancellationToken).AsTask(),
             _ => _tokenService.ExtensionGrantAsync(grantType, passcode!, scope, cancellationToken).AsTask()
         };
 }

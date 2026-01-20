@@ -53,6 +53,11 @@ namespace NCoreUtils.OAuth2.Unit
                 }
                 return new ValueTask<LoginIdentity?>(user);
             }
+
+            public ValueTask<LoginIdentity?> ClientCredentialsGrantAsync(string clientId, string clientSecret, ScopeCollection scopes, CancellationToken cancellationToken = default)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

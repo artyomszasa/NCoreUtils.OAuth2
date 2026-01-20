@@ -71,6 +71,9 @@ public class RepositoryLoginProvider<[DynamicallyAccessedMembers(DynamicallyAcce
         );
     }
 
+    public virtual ValueTask<LoginIdentity?> ClientCredentialsGrantAsync(string clientId, string clientSecret, ScopeCollection scopes, CancellationToken cancellationToken = default)
+        => default;
+
     public virtual ValueTask<LoginIdentity?> ExtensionGrantAsync(string type, string passcode, ScopeCollection scopes, CancellationToken cancellationToken = default)
         => default;
 

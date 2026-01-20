@@ -8,6 +8,19 @@ public class TokenServiceEndpointsWrapper(ITokenServiceEndpoints endpoints) : IT
 {
     private readonly ITokenServiceEndpoints _endpoints = endpoints ?? throw new ArgumentNullException(nameof(endpoints));
 
+    public ValueTask<AccessTokenResponse> ClientCredentialsGrantAsync(string clientId, string clientSecret, ScopeCollection scopes, CancellationToken cancellationToken = default)
+        => new(_endpoints.TokenAsync(
+            grantType: "client_credentials",
+            passcode: default,
+            username: default,
+            password: default,
+            refreshToken: default,
+            clientId: clientId,
+            clientSecret: clientSecret,
+            scope: scopes,
+            cancellationToken: cancellationToken
+        ));
+
     public ValueTask<AccessTokenResponse> ExtensionGrantAsync(string type, string passcode, ScopeCollection scopes, CancellationToken cancellationToken = default)
         => new(_endpoints.TokenAsync(
             grantType: type,
@@ -15,6 +28,8 @@ public class TokenServiceEndpointsWrapper(ITokenServiceEndpoints endpoints) : IT
             username: default,
             password: default,
             refreshToken: default,
+            clientId: default,
+            clientSecret: default,
             scope: scopes,
             cancellationToken: cancellationToken
         ));
@@ -34,6 +49,8 @@ public class TokenServiceEndpointsWrapper(ITokenServiceEndpoints endpoints) : IT
             username: username,
             password: password,
             refreshToken: default,
+            clientId: default,
+            clientSecret: default,
             scope: scopes,
             cancellationToken: cancellationToken
         ));
@@ -45,6 +62,8 @@ public class TokenServiceEndpointsWrapper(ITokenServiceEndpoints endpoints) : IT
             username: default,
             password: default,
             refreshToken: refreshToken,
+            clientId: default,
+            clientSecret: default,
             scope: scopes,
             cancellationToken: cancellationToken
         ));

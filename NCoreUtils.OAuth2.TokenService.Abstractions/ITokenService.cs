@@ -5,6 +5,12 @@ namespace NCoreUtils.OAuth2;
 
 public interface ITokenService
 {
+    ValueTask<AccessTokenResponse> ClientCredentialsGrantAsync(
+        string clientId,
+        string clientSecret,
+        ScopeCollection scopes,
+        CancellationToken cancellationToken = default);
+
     ValueTask<AccessTokenResponse> ExtensionGrantAsync(
         string type,
         string passcode,

@@ -67,6 +67,12 @@ public class TokenService(
         );
     }
 
+    public async ValueTask<AccessTokenResponse> ClientCredentialsGrantAsync(string clientId, string clientSecret, ScopeCollection scopes, CancellationToken cancellationToken = default)
+    {
+        var identity = await LoginProvider.ClientCredentialsGrantAsync(clientId, clientSecret, scopes, cancellationToken)
+            ?? throw new InvalidCredentialsException("Specified credentials are not valid.");
+        return await CreateTokensAndResponseAsync(identity, cancellationToken);
+    }
 
     public async ValueTask<AccessTokenResponse> ExtensionGrantAsync(string type, string passcode, ScopeCollection scopes, CancellationToken cancellationToken = default)
     {
