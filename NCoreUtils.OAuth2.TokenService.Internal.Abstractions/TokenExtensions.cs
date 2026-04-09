@@ -1,5 +1,3 @@
-using System.IO;
-
 namespace NCoreUtils.OAuth2;
 
 public static class TokenExtensions

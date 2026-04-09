@@ -1,7 +1,5 @@
-using System;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace NCoreUtils.OAuth2;
 
@@ -17,6 +15,7 @@ public sealed partial class AesTokenEncryption : ITokenEncryption, IDisposable
 
     private bool IsDisposed
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => 0 != Interlocked.CompareExchange(ref _isDisposed, 0, 0);
     }
 
@@ -30,16 +29,22 @@ public sealed partial class AesTokenEncryption : ITokenEncryption, IDisposable
         _decryptorPool = new DecryptorPool(_alg);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ThrowIfDisposed()
     {
+#if NET8_0_OR_GREATER
+        ObjectDisposedException.ThrowIf(IsDisposed, nameof(AesTokenEncryption));
+#else
         if (IsDisposed)
         {
             throw new ObjectDisposedException(nameof(AesTokenEncryption));
         }
+#endif
     }
 
     public ValueTask<Token> DecryptTokenAsync(byte[] encryptedToken, int offset, int count, CancellationToken cancellationToken = default)
     {
+        ThrowIfDisposed();
         var decryptor = _decryptorPool.Rent();
         try
         {
@@ -58,6 +63,7 @@ public sealed partial class AesTokenEncryption : ITokenEncryption, IDisposable
 
     public ValueTask<byte[]> EncryptTokenAsync(Token token, CancellationToken cancellationToken = default)
     {
+        ThrowIfDisposed();
         var encryptor = _encryptorPool.Rent();
         try
         {

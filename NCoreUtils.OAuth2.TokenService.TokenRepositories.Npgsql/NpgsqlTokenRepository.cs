@@ -1,4 +1,3 @@
-
 using Npgsql;
 using static NCoreUtils.OAuth2.ServiceCollectionNpgsqlTokenRepositoryExtensions;
 

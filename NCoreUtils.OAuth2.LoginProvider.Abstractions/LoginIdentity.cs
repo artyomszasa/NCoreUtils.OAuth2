@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using NCoreUtils.Memory;
 
@@ -7,7 +5,7 @@ namespace NCoreUtils.OAuth2;
 
 public partial class LoginIdentity
     : IEquatable<LoginIdentity>
-// NOTE: compatibility / should be removed in uture releases
+// NOTE: compatibility / should be removed in future releases
 #pragma warning disable CS0618
     , IEmplaceable<ScopeCollection>
 #pragma warning restore CS0618

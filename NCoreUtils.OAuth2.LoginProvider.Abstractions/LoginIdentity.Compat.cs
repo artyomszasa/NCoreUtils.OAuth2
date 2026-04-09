@@ -1,5 +1,3 @@
-using System;
-
 namespace NCoreUtils.OAuth2;
 
 public partial class LoginIdentity

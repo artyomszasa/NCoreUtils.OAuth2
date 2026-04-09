@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
 using NCoreUtils.OAuth2.Internal;
 
 namespace NCoreUtils.OAuth2;
