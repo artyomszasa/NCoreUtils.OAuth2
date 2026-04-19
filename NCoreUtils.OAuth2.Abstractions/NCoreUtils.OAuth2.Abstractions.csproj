@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net10.0;net8.0;net6.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0;net6.0;netstandard2.1;net48</TargetFrameworks>
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
@@ -9,11 +9,11 @@
   <ItemGroup Condition=" '$(TargetFramework)' != 'net10.0' ">
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.1' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.1' Or '$(TargetFramework)' == 'net48' ">
     <Compile Include="..\Shared\Trimming\*.cs" />
     <Compile Include="..\Shared\Nullable\*.cs" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.1' ">
+  <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard2.1' And '$(TargetFramework)' != 'net48' ">
     <Compile Remove="ScopeCollection.Compat.cs" />
   </ItemGroup>
 </Project>

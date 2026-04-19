@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
 namespace NCoreUtils.OAuth2.Internal;
+
 public static class Sha512Helper
 {
     private static readonly ConcurrentQueue<SHA512> _queue = new();

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace NCoreUtils.OAuth2.Data;
 
 public interface IUser<TId>

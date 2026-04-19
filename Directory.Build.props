@@ -15,13 +15,13 @@
     <FxNugetVersion Condition=" '$(TargetFramework)' == 'net8.0' ">$(Fx8NugetVersion)</FxNugetVersion>
     <FxNugetVersion Condition=" '$(TargetFramework)' == 'net7.0' ">$(Fx7NugetVersion)</FxNugetVersion>
     <FxNugetVersion Condition=" '$(TargetFramework)' == 'net6.0' ">$(Fx6NugetVersion)</FxNugetVersion>
-    <FxNugetVersion Condition=" '$(TargetFramework)' != 'net6.0' And '$(TargetFramework)' != 'net7.0' And '$(TargetFramework)' != 'net8.0' ">$(Fx3NugetVersion)</FxNugetVersion>
+    <FxNugetVersion Condition=" '$(TargetFramework)' != 'net6.0' And '$(TargetFramework)' != 'net7.0' And '$(TargetFramework)' != 'net8.0' And '$(TargetFramework)' != 'net10.0' ">$(Fx3NugetVersion)</FxNugetVersion>
     <IsTrimmable>true</IsTrimmable>
     <IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">true</IsAotCompatible>
     <EmitCompilerGeneratedFiles Condition=" '$(Configuration)' == 'Debug' ">true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   <PropertyGroup>
     <ProtoVersion>10.0.0</ProtoVersion>
-    <NCoreUtilsDataVersion>8.0.1-rc09</NCoreUtilsDataVersion>
+    <NCoreUtilsDataVersion>10.0.0-rc00</NCoreUtilsDataVersion>
   </PropertyGroup>
 </Project>

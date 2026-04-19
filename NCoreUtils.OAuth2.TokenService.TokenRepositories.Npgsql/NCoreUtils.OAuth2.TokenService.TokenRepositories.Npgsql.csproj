@@ -7,11 +7,11 @@
   <ItemGroup>
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Internal.Abstractions\NCoreUtils.OAuth2.TokenService.Internal.Abstractions.csproj" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net10.0' ">
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net10.0' And '$(TargetFramework)' != 'net8.0' ">
     <PackageReference Include="Npgsql" Version="8.0.3" />
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net10.0' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net10.0' Or '$(TargetFramework)' == 'net8.0' ">
     <PackageReference Include="Npgsql" Version="10.0.1" />
   </ItemGroup>
 </Project>

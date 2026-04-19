@@ -1,14 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NCoreUtils.AspNetCore.Rest;
 using NCoreUtils.OAuth2;
@@ -21,16 +14,16 @@ namespace NCoreUtils.AspNetCore.OAuth2
         private static ForwardedHeadersOptions ConfigureForwardedHeaders()
         {
             var opts = new ForwardedHeadersOptions();
-            opts.KnownNetworks.Clear();
+            opts.KnownIPNetworks.Clear();
             opts.KnownProxies.Clear();
             opts.ForwardedHeaders = ForwardedHeaders.All;
             opts.ForwardLimit = 8;
             return opts;
         }
 
-        private static void ConfigureRest(RestConfigurationBuilder builder)
+        private static void ConfigureRest(RestEndpointsConfigurationBuilder builder)
         {
-            builder.AddEntity<RefreshToken>();
+            builder.AddEntity<RefreshToken, int>();
             builder.ConfigureAccess(o => o.RestrictAll(user => user.Identity is not null && user.Identity.IsAuthenticated && (user.IsInRole("admin") || user.IsInRole("website"))));
         }
 
@@ -82,7 +75,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 // scoped login provider client
                 .AddDynamicLoginProvider(providers)
                 // DATA query for REST
-                .AddDataQueryServices(_ => {})
+                .AddDataQueryServerServices(_ => {})
                 // JSON options for REST requests
                 .AddTransient(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<JsonSerializerOptions>>().CurrentValue)
                 // Authorization for REST requests
@@ -122,7 +115,7 @@ namespace NCoreUtils.AspNetCore.OAuth2
                 .UseEndpoints(endpoints =>
                 {
                     endpoints.MapTokenService(string.Empty);
-                    endpoints.MapRest("data", ConfigureRest);
+                    endpoints.MapRestEndpoints("data", ConfigureRest);
                 });
         }
     }

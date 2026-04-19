@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -59,7 +57,11 @@ public sealed class ScopeCollectionConverter : JsonConverter<ScopeCollection>
     {
         if (value.HasValue)
         {
+#if NETFRAMEWORK
+            writer.WriteStringValue(string.Join(" ", value._scopes));
+#else
             writer.WriteStringValue(string.Join(' ', value._scopes));
+#endif
         }
         else
         {

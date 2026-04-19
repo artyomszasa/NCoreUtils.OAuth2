@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using NCoreUtils.Memory;
 using NCoreUtils.OAuth2.Data;

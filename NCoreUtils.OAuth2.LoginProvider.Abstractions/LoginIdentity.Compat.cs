@@ -1,5 +1,18 @@
 namespace NCoreUtils.OAuth2;
 
+#if NETFRAMEWORK
+
+internal static class LoginIdentityCompactExtensions
+{
+    public static void Deconstruct(this KeyValuePair<string, string?> source, out string key, out string? value)
+    {
+        key = source.Key;
+        value = source.Value;
+    }
+}
+
+#endif
+
 public partial class LoginIdentity
 {
     bool ISpanEmplaceable.TryGetEmplaceBufferSize(out int minimumBufferSize)

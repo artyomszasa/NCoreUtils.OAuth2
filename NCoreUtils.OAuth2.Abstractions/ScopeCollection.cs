@@ -91,7 +91,7 @@ public readonly partial struct ScopeCollection
 
     public static ScopeCollection Parse(string? input)
     {
-        if (string.IsNullOrEmpty(input))
+        if (input is null or string { Length: 0 })
         {
             return default;
         }

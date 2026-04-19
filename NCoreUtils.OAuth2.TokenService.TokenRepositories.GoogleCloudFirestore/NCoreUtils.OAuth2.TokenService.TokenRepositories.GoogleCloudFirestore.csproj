@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net7.0;net6.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net10.0;net8.0;net6.0;netstandard2.1</TargetFrameworks>
     <RootNamespace>NCoreUtils.OAuth2</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -8,7 +8,6 @@
     <ProjectReference Include="..\NCoreUtils.OAuth2.TokenService.Internal.Abstractions\NCoreUtils.OAuth2.TokenService.Internal.Abstractions.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Grpc.Core" Version="$(GrpcVersion)" />
     <PackageReference Include="NCoreUtils.Data.Generator" Version="$(NCoreUtilsDataVersion)" />
     <PackageReference Include="NCoreUtils.Data.Google.Cloud.Firestore" Version="$(NCoreUtilsDataVersion)" />
   </ItemGroup>
